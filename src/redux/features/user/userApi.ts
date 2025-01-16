@@ -10,6 +10,14 @@ const userApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
 
+    getFriendInfo: builder.query({
+      query: (id) => ({
+        url: `/users/friend/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
+
     updateUser: builder.mutation({
       query: (updatedUserInfo) => ({
         url: "/users/me",
@@ -60,6 +68,7 @@ const userApi = baseApi.injectEndpoints({
 
 export const {
   useGetUserInfoQuery,
+  useGetFriendInfoQuery,
   useUpdateUserMutation,
   useGetAllUsersQuery,
   useDeleteUserMutation,

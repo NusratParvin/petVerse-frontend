@@ -5,26 +5,23 @@ import {
   CardBody,
   CardHeader,
   Avatar,
-  Button,
   Link,
   Skeleton,
 } from "@nextui-org/react";
 import { MapPin, Link as LinkIcon, Calendar, PhoneCall } from "lucide-react";
+import { useParams } from "next/navigation";
 
-import UpdateProfileInfo from "./updateProfileInfo";
-
-import { useGetUserInfoQuery } from "@/src/redux/features/user/userApi";
 import avatarImage from "@/src/assets/images/team.png";
+import { useGetFriendInfoQuery } from "@/src/redux/features/user/userApi";
+import FriendArticles from "./friendArticles";
 
-export default function Profile() {
-  const { data: userInfo, isLoading, error } = useGetUserInfoQuery(undefined);
+export default function FriendProfile() {
+  const { id } = useParams();
+
+  const { data: userInfo, isLoading, error } = useGetFriendInfoQuery(id);
   const user = userInfo?.data;
-  console.log(user, "here i ");
-  const [isEditing, setIsEditing] = useState(false);
 
-  const toggleEditMode = () => {
-    setIsEditing(!isEditing);
-  };
+  console.log(user, "here i ");
 
   if (isLoading) {
     return (
@@ -67,14 +64,31 @@ export default function Profile() {
     );
   }
 
+  // const handleUnfriend = async (
+  //   requestId: string,
+  //   action: "accept" | "reject" | "cancel"
+  // ) => {
+  //   try {
+  //     if (action === "accept") {
+  //       await acceptFriendRequest(requestId).unwrap();
+  //     } else if (action === "reject") {
+  //       await rejectFriendRequest(requestId).unwrap();
+  //     } else if (action === "cancel") {
+  //       await cancelFriendRequest(requestId).unwrap();
+  //     }
+  //     toast(`Request ${action}ed successfully`);
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast(`Failed to ${action} the friend request`);
+  //   }
+  // };
+
   if (error) return <div>Error loading user data.</div>;
 
   return (
-    <div className="me-1">
-      {isEditing ? (
-        <UpdateProfileInfo toggleEditMode={toggleEditMode} user={user} />
-      ) : (
-        <Card className="w-full max-w-3xl mx-auto shadow-md" radius="none">
+    <div>
+      <div className="mx-1">
+        <Card className="w-full   mx-auto shadow-md" radius="none">
           {/* Background header with a gradient */}
           <CardHeader className="h-[120px] overflow-hidden p-0 relative">
             <div className="w-full h-full bg-gradient-to-r from-blue-400 to-customBlue absolute top-0 left-0 z-0" />
@@ -92,15 +106,15 @@ export default function Profile() {
               <div>
                 <h2 className="text-xl font-semibold"> {user?.name}</h2>
               </div>
-              {/* Edit button */}
-              <Button
-                color="default"
-                radius="full"
-                variant="flat"
-                onClick={toggleEditMode}
-              >
-                Edit
-              </Button>
+              {/* Unfriend button */}
+              {/* <Button
+              color="default"
+              radius="full"
+              variant="flat"
+              onClick={() => handleUnfriend(request._id, "cancel")}
+            >
+              Unfriend
+            </Button> */}
             </div>
 
             {/* Bio */}
@@ -163,7 +177,10 @@ export default function Profile() {
             </div>
           </CardBody>
         </Card>
-      )}
+      </div>
+      <div className="mx-1">
+        <FriendArticles articles={user?.articles} />
+      </div>
     </div>
   );
 }

@@ -15,24 +15,43 @@ import {
   ChevronDown,
   ChevronUp,
   MessagesSquare,
+  Share2,
+  UserCheck,
+  UserPlus,
+  Clock,
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import fallbackImage from "@/src/assets/images/fallback.jpg";
-import { useVoteArticleMutation } from "@/src/redux/features/articles/articlesApi";
-import { TArticle } from "@/src/types";
+import {
+  useReactToArticleMutation,
+  useShareArticleMutation,
+  useVoteArticleMutation,
+} from "@/src/redux/features/articles/articlesApi";
+import { REACTION_TYPE, TArticle } from "@/src/types";
 import {
   useFollowUserMutation,
   useGetUserInfoQuery,
 } from "@/src/redux/features/user/userApi";
+import EmojiReactionDock from "@/src/components/shared/reactionPicker";
+import {
+  useGetFriendsListQuery,
+  useSendFriendRequestMutation,
+} from "@/src/redux/features/friends/friendsApi";
 
 const ArticleCard = ({ article }: { article: TArticle }) => {
   const { authorId } = article;
   const [isFollowing, setIsFollowing] = useState(false);
   const [voteArticle] = useVoteArticleMutation();
+  const [shareArticle, { isLoading }] = useShareArticleMutation();
+  // console.log(article);
+  const [reactToArticle] = useReactToArticleMutation();
+  const [sendFriendRequest] = useSendFriendRequestMutation();
+
   const [isExpanded, setIsExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -43,14 +62,28 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
   const { data: userInfo } = useGetUserInfoQuery(undefined);
   const user = userInfo?.data;
 
+  const { data } = useGetFriendsListQuery(undefined);
+  const friendsData = data?.data;
+  // console.log(friendsData);
+  const pendingRequests = friendsData?.pendingRequestsSent || [];
+  const friends = friendsData?.friends || [];
+
+  const isPending = pendingRequests.some(
+    (req: any) => req.friend._id === authorId?._id && req.isSentRequest
+  );
+  const isFriend = friends.some(
+    (friend: any) => friend.friend._id === authorId?._id
+  );
+  // console.log(isPending, isFriend);
+
   // Check if the article is purchased by the user
   const hasPurchased = user?.purchasedArticles?.some(
-    (purchasedArticle: string) => purchasedArticle === article._id,
+    (purchasedArticle: string) => purchasedArticle === article._id
   );
 
   useEffect(() => {
     const alreadyFollowing = article?.authorId?.followers?.includes(
-      user?._id as string,
+      user?._id as string
     );
 
     setIsFollowing(alreadyFollowing || false);
@@ -97,6 +130,20 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
     }
   };
 
+  const handleAddFriend = async () => {
+    try {
+      const response = await sendFriendRequest(authorId?._id).unwrap();
+
+      // console.log("Friend request sent:", response);
+      toast.success("Friend request sent!", { className: "text-yellow-600" });
+    } catch (error) {
+      // console.error("Error sending friend request:", error);
+      toast.error("Failed to send friend request. Please try again.", {
+        className: "text-red-600",
+      });
+    }
+  };
+
   const handleBuyNow = () => {
     const paymentData = {
       articleId: article._id,
@@ -107,6 +154,37 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
     const encodedData = encodeURIComponent(JSON.stringify(paymentData));
 
     router.push(`/user/article/payment?data=${encodedData}`);
+  };
+
+  const handleShare = async () => {
+    try {
+      await shareArticle({
+        articleId: article._id,
+        // userId: user?._id,
+      }).unwrap();
+      console.log("Article shared successfully!");
+    } catch (error) {
+      console.error("Failed to share the article:", error);
+    }
+  };
+
+  // Handle emoji reaction
+  const handleReaction = async (reaction: REACTION_TYPE) => {
+    try {
+      await reactToArticle({
+        articleId: article._id,
+        reaction,
+      }).unwrap();
+      // console.log(res);
+      // console.log(`Reacted with ${reaction}:`, res);
+
+      toast.success("Reacted", {
+        className: "text-green-600",
+      });
+    } catch (error) {
+      toast.error("Failed to submit your reaction. Please try again.");
+      // console.error("Failed to react:", error);
+    }
   };
 
   return (
@@ -124,15 +202,30 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
                 <h3 className="text-base font-bold">
                   {authorId?.name || "Anonymous"}
                 </h3>
-                {user?._id !== authorId?._id && (
-                  <Button
-                    className="mr-2 text-xs h-6 min-w-unit-16 bg-customBlue text-white"
-                    color="primary"
-                    size="sm"
-                    onClick={handleFollow}
-                  >
-                    {isFollowing ? "Unfollow" : "Follow"}
-                  </Button>
+                {user?._id != authorId?._id && (
+                  <div className="flex items-center">
+                    <Button
+                      className="mr-2 text-xs h-6 min-w-unit-16 bg-customBlue text-white"
+                      color="primary"
+                      size="sm"
+                      onClick={handleFollow}
+                    >
+                      {isFollowing ? "Unfollow" : "Follow"}
+                    </Button>
+                    <span className="ml-2">
+                      {isFriend ? (
+                        <UserCheck className="text-green-500" size={14} />
+                      ) : isPending ? (
+                        <Clock className="text-yellow-500" size={14} />
+                      ) : (
+                        <UserPlus
+                          className="text-gray-500 hover:text-blue-500 cursor-pointer"
+                          size={14}
+                          onClick={() => handleAddFriend()}
+                        />
+                      )}
+                    </span>
+                  </div>
                 )}
               </div>
               <div className="flex items-center text-xs text-gray-500 mt-1">
@@ -221,8 +314,8 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
       </CardBody>
 
       {/* Card Footer */}
-      <CardFooter className="flex justify-between items-center p-5 text-gray-700">
-        <div className="flex space-x-3">
+      <CardFooter className="flex justify-between items-center py-5 text-gray-700">
+        <div className="flex gap-1">
           <Button
             size="sm"
             startContent={<ArrowUp className="text-green-500" size={16} />}
@@ -251,6 +344,33 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
           >
             {article?.comments?.length}
           </Button>
+          <Button
+            disabled={isLoading}
+            size="sm"
+            startContent={<Share2 className="text-customBlue" size={16} />}
+            variant="light"
+            onClick={handleShare}
+          >
+            {isLoading ? "Sharing..." : "Share"} ({article?.shareCount})
+          </Button>
+
+          {/* Reaction Section */}
+          <div className="">
+            {/* <EmojiReactionDock onReact={handleReaction} /> */}
+            <EmojiReactionDock
+              onReact={handleReaction}
+              reactionSummary={
+                article?.reactionSummary || {
+                  like: 0,
+                  love: 0,
+                  haha: 0,
+                  wow: 0,
+                  sad: 0,
+                  angry: 0,
+                }
+              } // Default empty reactionSummary
+            />
+          </div>
         </div>
         <div className="flex items-center">
           {article.isPremium && !hasPurchased && (

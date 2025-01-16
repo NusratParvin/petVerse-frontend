@@ -1,7 +1,31 @@
-import { Home, User, Settings, Bookmark, Pen, DollarSign } from "lucide-react";
+import {
+  Home,
+  User,
+  Settings,
+  Pen,
+  DollarSign,
+  Newspaper,
+  Users,
+  NotebookText,
+} from "lucide-react";
 
 export const userLinks = [
   { href: "/user/newsfeed", label: "News Feed", icon: <Home size={16} /> },
+  {
+    href: "/user/create-article",
+    label: "Create Article",
+    icon: <Pen size={16} />,
+  },
+  {
+    href: "/user/my-friends",
+    label: "My Friends",
+    icon: <Users size={16} />,
+  },
+  {
+    href: "/user/pages",
+    label: "My Pages",
+    icon: <NotebookText size={16} />,
+  },
   {
     href: "/user/profile",
     label: "My Profile",
@@ -10,7 +34,7 @@ export const userLinks = [
   {
     href: "/user/manage-articles",
     label: "Manage Articles",
-    icon: <Pen size={16} />,
+    icon: <Newspaper size={16} />,
   },
 ];
 
@@ -23,12 +47,12 @@ export const adminLinks = [
   {
     href: "/admin/manage-users",
     label: "Manage Users",
-    icon: <User size={16} />,
+    icon: <Users size={16} />,
   },
   {
     href: "/admin/manage-articles",
     label: "Manage Articles",
-    icon: <Bookmark size={16} />,
+    icon: <Newspaper size={16} />,
   },
   {
     href: "/admin/manage-payments",
@@ -36,8 +60,13 @@ export const adminLinks = [
     icon: <DollarSign size={16} />,
   },
   {
+    href: "/admin/my-profile",
+    label: "My Profile",
+    icon: <User size={16} />,
+  },
+  {
     href: "/admin/edit-profile",
     label: "Edit Profile",
-    icon: <Settings size={16} />,
+    icon: <Pen size={16} />,
   },
 ];

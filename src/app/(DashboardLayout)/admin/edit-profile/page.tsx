@@ -163,7 +163,7 @@ const AdminEditProfile = () => {
   }
 
   return (
-    <Card className="w-full max-w-3xl mx-auto shadow-md" radius="none">
+    <Card className="w-full pb-8 mx-auto shadow-md" radius="none">
       {/* Background header with a gradient */}
       <div className="h-[120px] overflow-hidden p-0 relative bg-gradient-to-r from-blue-400 to-customBlue" />
       <div className="flex flex-row justify-between items-center">
@@ -199,9 +199,9 @@ const AdminEditProfile = () => {
       </div>
 
       {/* Avatar */}
-      <div className="relative mt-8">
+      <div className="relative w-full  md:w-[80%] my-16 mx-auto">
         <form id="profileForm" onSubmit={handleSubmit(onSubmit)}>
-          <CardBody className="mt-10 ps-8 text-black ">
+          <CardBody className="mt-10 ps-0 text-black ">
             {/* Name */}
             <div className="grid grid-cols-[100px_1fr] gap-4 items-center mb-4">
               <label className="text-right text-black text-sm" htmlFor="name">
@@ -289,26 +289,25 @@ const AdminEditProfile = () => {
               />
             </div>
           </CardBody>
-        </form>
-      </div>
-
-      {/* Save and Cancel buttons */}
-      <div className="flex items-center justify-end gap-2 mt-2">
-        <Button
-          className="bg-customBlue font-semibold text-white"
-          color="default"
-          form="profileForm"
-          type="submit"
-        >
-          Save
-        </Button>
-        <Button
-          color="default"
-          variant="shadow"
-          onClick={() => window.history.back()}
-        >
-          <X size={16} />
-        </Button>
+        </form>{" "}
+        {/* Save and Cancel buttons */}
+        <div className="flex items-center justify-end gap-2 m-2 ">
+          <Button
+            className="bg-customBlue font-semibold text-white"
+            color="default"
+            form="profileForm"
+            type="submit"
+          >
+            Save
+          </Button>
+          <Button
+            color="default"
+            variant="shadow"
+            onClick={() => window.history.back()}
+          >
+            <X size={16} />
+          </Button>
+        </div>
       </div>
     </Card>
   );

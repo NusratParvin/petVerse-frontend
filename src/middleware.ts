@@ -11,7 +11,11 @@ export async function middleware(request: NextRequest) {
 
   if (!accessToken) {
     // If no token, redirect to login page unless it's a public route
-    if (pathname === "/login" || pathname === "/register") {
+    if (
+      pathname === "/login" ||
+      pathname === "/register" ||
+      pathname.startsWith("/api/auth/callback")
+    ) {
       return NextResponse.next(); // Allow access to login/register
     } else {
       return NextResponse.redirect(
@@ -32,10 +36,11 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith("/profile")
     ) {
       return NextResponse.next(); // Allow access to user profile
-    } else {
-      // If role does not match, redirect to a not authorized page
-      return NextResponse.redirect(new URL("/", request.url));
     }
+    // else {
+    //   // If role does not match, redirect to a not authorized page
+    //   return NextResponse.redirect(new URL("/", request.url));
+    // }
   } catch (error) {
     // Token verification failed, redirect to login
     return NextResponse.redirect(
@@ -45,5 +50,12 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile", "/admin", "/login", "/register"],
+  matcher: [
+    "/user",
+    "/admin",
+    "/user/[[...page]]",
+    "/admin/[[...page]]",
+    "/login",
+    "/register",
+  ],
 };

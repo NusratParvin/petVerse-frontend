@@ -79,6 +79,24 @@ export const articlesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Articles"],
     }),
+
+    shareArticle: builder.mutation({
+      query: ({ articleId }) => ({
+        url: "/share",
+        method: "POST",
+        body: { articleId },
+      }),
+      invalidatesTags: ["Articles"],
+    }),
+
+    reactToArticle: builder.mutation({
+      query: ({ articleId, reaction }) => ({
+        url: `/articles/${articleId}/react`,
+        method: "POST",
+        body: { reaction },
+      }),
+      invalidatesTags: ["Articles"],
+    }),
   }),
 });
 
@@ -90,8 +108,9 @@ export const {
   useCreateArticleMutation,
   useUpdateArticleMutation,
   usePublishArticleMutation,
-
+  useShareArticleMutation,
   useDeleteArticleMutation,
   useGetDashboardFeedQuery,
   useVoteArticleMutation,
+  useReactToArticleMutation,
 } = articlesApi;

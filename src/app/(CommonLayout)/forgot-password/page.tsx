@@ -24,7 +24,7 @@ const ForgetPassword = () => {
         setEmailSent(true);
         console.log(result);
         toast.success(
-          "A reset link has been sent to your email. Please check your inbox.",
+          "A reset link has been sent to your email. Please check your inbox."
         );
       }
     } catch (error) {

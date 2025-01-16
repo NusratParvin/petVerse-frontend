@@ -6,7 +6,7 @@ export default function layout({ children }: { children: ReactNode }) {
   return (
     <div className="aqua flex flex-col md:flex-row w-full gap-0  ">
       {/* Middle Content (children) */}
-      <div className="md:w-[70%] w-full relative overflow-y-auto">
+      <div className="md:w-[70%] w-full relative overflow-y-auto  border-l border-gray-200">
         {children}
       </div>
 

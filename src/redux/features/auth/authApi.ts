@@ -15,7 +15,7 @@ const authApi = baseApi.injectEndpoints({
         url: "/users/me",
         method: "GET",
       }),
-      providesTags: ["User"],
+      // providesTags: ["User"],
     }),
 
     signup: builder.mutation({
@@ -26,13 +26,18 @@ const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    // resetPassword: builder.mutation({
-    //   query: ({ id, newPassword, token }) => ({
-    //     url: `/auth/reset-password`,
-    //     method: "POST",
-    //     body: { id, newPassword, token },
-    //   }),
-    // }),
+    socialLogin: builder.mutation({
+      query: (payload: {
+        email: string;
+        name: string;
+        profilePhoto?: string;
+        provider: string;
+      }) => ({
+        url: "/auth/social-login",
+        method: "POST",
+        body: payload,
+      }),
+    }),
 
     resetPassword: builder.mutation({
       query: ({ id, newPassword, token }) => ({
@@ -53,6 +58,7 @@ const authApi = baseApi.injectEndpoints({
       }),
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {
@@ -60,4 +66,5 @@ export const {
   useSignupMutation,
   useResetPasswordMutation,
   useForgetPasswordMutation,
+  useSocialLoginMutation,
 } = authApi;

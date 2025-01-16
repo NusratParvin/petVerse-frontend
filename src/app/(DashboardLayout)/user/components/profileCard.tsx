@@ -18,25 +18,25 @@ const UserProfileCard = () => {
   }
 
   return (
-    <Card className="flex flex-col justify-center w-[200px] p-4 rounded-sm bg-transparent text-black/80">
+    <Card className="w-[200px] px-4 py-2 rounded-sm bg-transparent text-black/80">
       {/* User Avatar */}
-      <Avatar
-        alt={user?.name}
-        className="mx-auto rounded-full"
-        size="lg"
-        src={user?.profilePhoto}
-      />
+      <div className="flex items-center gap-4">
+        <Avatar
+          alt={user?.name}
+          className="rounded-full"
+          size="lg"
+          src={user?.profilePhoto}
+        />
 
-      <Divider className="my-2 divide-gray-100" />
-
-      <div className="text-center">
-        <h2 className="font-semibold text-sm">{user?.name}</h2>
-        <h2 className="px-5 text-gray-600 text-xs">
-          {user?.address || "No address available"}
-        </h2>
+        <div className="flex flex-col">
+          <h2 className="font-semibold text-sm">{user?.name}</h2>
+          <h2 className="text-gray-600 text-xs">
+            {user?.address || "No address available"}
+          </h2>
+        </div>
       </div>
 
-      <Divider className="my-2 dark:divide-gray-300" />
+      {/* <Divider className="my-2 dark:divide-gray-300" />
 
       <div className="flex justify-center pt-2 space-x-4 mb-2">
         <Link aria-label="Facebook" href="/">
@@ -51,7 +51,7 @@ const UserProfileCard = () => {
         <Link aria-label="Instagram" href="/">
           <Instagram className="text-customBlue/80 w-4 h-4" />
         </Link>
-      </div>
+      </div> */}
     </Card>
   );
 };

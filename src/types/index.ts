@@ -45,6 +45,8 @@ export interface TUser {
   following: string[];
   articles: string[];
   purchasedArticles: string[];
+  shareIds: string[];
+  pendingInvites: string[];
   createdAt: string;
 }
 
@@ -53,6 +55,15 @@ export type TPopulatedAuthor = {
   name: string;
   profilePhoto?: string;
   followers: string[];
+};
+
+export type TReactionSummary = {
+  like: number;
+  love: number;
+  haha: number;
+  wow: number;
+  sad: number;
+  angry: number;
 };
 
 export type TArticle = {
@@ -68,7 +79,8 @@ export type TArticle = {
   comments: string[];
   isPremium: boolean;
   isPublish?: boolean;
-
+  shareCount: number;
+  reactionSummary: TReactionSummary;
   price: number;
   isDeleted: boolean;
   createdAt: string;
@@ -99,7 +111,7 @@ export interface TComment {
 }
 
 export type TTransaction = {
-  _id?: string;
+  _id: string;
   transactionId: string;
   userId: string;
   articleId: string;
@@ -110,3 +122,12 @@ export type TTransaction = {
   createdAt: string;
   updatedAt?: string;
 };
+
+export enum REACTION_TYPE {
+  LIKE = "like",
+  LOVE = "love",
+  HAHA = "haha",
+  WOW = "wow",
+  SAD = "sad",
+  ANGRY = "angry",
+}

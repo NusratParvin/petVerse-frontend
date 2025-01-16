@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import { RootState } from "../../store";
 
-import { TUserRole } from "@/src/types";
+import { TUser, TUserRole } from "@/src/types";
 
 // export type TUser = {
 //   email: string;
@@ -12,20 +12,20 @@ import { TUserRole } from "@/src/types";
 //   iat: number;
 //   exp: number;
 // };
-type TUser = {
-  _id?: string;
-  name: string;
-  email: string;
-  password: string;
-  phone: string;
-  address: string;
-  role: TUserRole;
-  profilePhoto?: string;
-  terms?: boolean;
-  followers: string[];
-  following: string[];
-  articles: string[];
-};
+// type TUser = {
+//   _id?: string;
+//   name: string;
+//   email: string;
+//   password: string;
+//   phone: string;
+//   address: string;
+//   role: TUserRole;
+//   profilePhoto?: string;
+//   terms?: boolean;
+//   followers: string[];
+//   following: string[];
+//   articles: string[];
+// };
 
 type TAuthState = {
   user: null | TUser;
@@ -44,19 +44,24 @@ const authSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
-      console.log(action.payload);
+      // console.log(action.payload);
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
+    },
 
-      // Cookies.remove("accessToken", { path: "/" });
-      // Cookies.remove("refreshToken", { path: "/" });
+    removePendingInvite: (state, action) => {
+      if (state.user) {
+        state.user.pendingInvites =
+          state.user?.pendingInvites?.filter((id) => id !== action.payload) ||
+          [];
+      }
     },
   },
 });
 
-export const { setUser, logout } = authSlice.actions;
+export const { setUser, logout, removePendingInvite } = authSlice.actions;
 
 export default authSlice.reducer;
 export const useCurrentToken = (state: RootState) => state.auth.token;

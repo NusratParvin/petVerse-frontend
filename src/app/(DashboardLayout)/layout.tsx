@@ -10,14 +10,14 @@ export default function layout({ children }: { children: ReactNode }) {
 
       <div className=" flex flex-col md:flex-row w-full gap-0">
         {/* Left Sidebar */}
-        <div className="md:w-[20%] w-full  ">
-          <div className="fixed top-0 h-screen">
-            <MenuSidebar />
-          </div>
+        <div className="md:w-[20%] w-full relative ">
+          {/* <div className="relat   "> */}
+          <MenuSidebar />
+          {/* </div> */}
         </div>
 
         {/* Middle Content (children) */}
-        <div className="md:w-[80%] w-full relative overflow-y-auto top-12">
+        <div className="md:w-[80%] w-full relative overflow-y-hidden top-12">
           {children}
         </div>
 

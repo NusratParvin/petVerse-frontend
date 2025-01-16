@@ -9,11 +9,11 @@ const Sidebar = () => {
   const user = useAppSelector(useCurrentUser);
 
   return (
-    <div className="flex flex-col bg-secondary/20 border-none">
-      <div className="min-h-[50vh]">
+    <div className="flex flex-col bg-secondary/20 border-none ">
+      <div className="min-h-[40vh]">
         <SuggestedAuthor />
       </div>
-      <div className="min-h-[60vh]">
+      <div className="min-h-[50vh] ">
         <SuggestedArticles />
       </div>
     </div>

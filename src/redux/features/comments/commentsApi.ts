@@ -33,6 +33,13 @@ export const commentsApi = baseApi.injectEndpoints({
         body: articleId,
       }),
     }),
+
+    getAllCommentsForAdmin: builder.query({
+      query: () => ({
+        url: "/comments",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -41,4 +48,5 @@ export const {
   useVoteCommentMutation,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
+  useGetAllCommentsForAdminQuery,
 } = commentsApi;

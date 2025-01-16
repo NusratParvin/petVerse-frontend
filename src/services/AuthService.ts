@@ -2,37 +2,32 @@
 
 import { cookies } from "next/headers";
 
-// import { cookies } from "next/headers";
-// import { FieldValues } from "react-hook-form";
-// import { jwtDecode } from "jwt-decode";
+// export const loginUser = async (data: FormValues) => {
+//   const res = await fetch(`${process.env.BACKEND_URL}/login`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(data),
+//     cache: "no-store",
+//   });
+//   const userInfo = await res.json();
 
-// import axiosInstance from "../lib/AxiosInstance";
-// import { IUserJwtPayload } from "../types";
-
-// export const register = async (userData: FieldValues) => {
-//   try {
-//     const { data } = axiosInstance.post("/auth/register", userData);
-
-//     if (data.success) {
-//       cookies().set("accessToken", data?.data?.accessToken);
-//       cookies().set("refreshToken", data?.data?.refreshToken);
-//     }
-//   } catch (error: any) {
-//     throw new Error(error.response?.data?.message || error.message);
-//   }
+//   return userInfo;
 // };
 
-// export const login = async (userData: FieldValues) => {
-//   try {
-//     const { data } = axiosInstance.post("/auth/login", userData);
+// export const registerUser = async (data: UserData) => {
+//   const res = await fetch(`${process.env.BACKEND_URL}/register`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(data),
+//     cache: "no-store",
+//   });
+//   const userInfo = await res.json();
 
-//     if (data.success) {
-//       cookies().set("accessToken", data?.data?.accessToken);
-//       cookies().set("refreshToken", data?.data?.refreshToken);
-//     }
-//   } catch (error: any) {
-//     throw new Error(error.response?.data?.message || error.message);
-//   }
+//   return userInfo;
 // };
 
 export const logoutCookies = () => {
