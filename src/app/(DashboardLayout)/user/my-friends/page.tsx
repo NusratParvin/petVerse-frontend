@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardHeader, CardBody, Avatar, Button } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Avatar, Button } from "@heroui/react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 
@@ -48,10 +48,10 @@ const MyFriends = () => {
   const pendingRequestsSent = friendsData?.pendingRequestsSent || [];
 
   const sentRequests = pendingRequestsSent.filter(
-    (req: FriendRequest) => req.isSentRequest
+    (req: FriendRequest) => req.isSentRequest,
   ); // Requests sent by user
   const receivedRequests = pendingRequestsReceived.filter(
-    (req: FriendRequest) => !req.isSentRequest
+    (req: FriendRequest) => !req.isSentRequest,
   ); // Requests received by user
   const friends = friendsData?.friends || [];
 
@@ -59,7 +59,7 @@ const MyFriends = () => {
 
   const handleRequestResponse = async (
     requestId: string,
-    action: "accept" | "reject" | "cancel"
+    action: "accept" | "reject" | "cancel",
   ) => {
     try {
       if (action === "accept") {

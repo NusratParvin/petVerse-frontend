@@ -8,7 +8,7 @@ import {
   Button,
   Link,
   Skeleton,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { MapPin, Link as LinkIcon, Calendar, PhoneCall } from "lucide-react";
 
 import UpdateProfileInfo from "./updateProfileInfo";

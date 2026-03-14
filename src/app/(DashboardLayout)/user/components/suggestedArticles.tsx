@@ -1,4 +1,4 @@
-import { Card, CardBody, Image, Link } from "@nextui-org/react";
+import { Card, CardBody, Image, Link } from "@heroui/react";
 
 import { useGetAllArticlesQuery } from "@/src/redux/features/articles/articlesApi";
 import { TArticle } from "@/src/types";

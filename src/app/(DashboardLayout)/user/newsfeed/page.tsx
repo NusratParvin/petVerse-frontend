@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Input, Button, Select, SelectItem, Divider } from "@nextui-org/react";
+// import { Input, Button, Select, SelectItem, Divider } from "@heroui-org/react";
+import { Input, Button, Select, SelectItem, Divider } from "@heroui/react";
 import { Search, X } from "lucide-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -65,7 +66,7 @@ const Page = () => {
   };
 
   const handleVotingFilterChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
+    e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     setVotingOrder(e.target.value);
   };
@@ -102,34 +103,34 @@ const Page = () => {
           .includes(filters.searchQuery.toLowerCase()) ||
         article.content
           .toLowerCase()
-          .includes(filters.searchQuery.toLowerCase())
+          .includes(filters.searchQuery.toLowerCase()),
     )
     .filter(
       (article) =>
         !filters.category ||
         filters.category === "All" ||
-        article.category === filters.category
+        article.category === filters.category,
     )
     .filter(
       (article) =>
         !filters.isPremium ||
         filters.isPremium === "All" ||
         (filters.isPremium === "Free" && article.isPremium === false) ||
-        (filters.isPremium === "Premium" && article.isPremium === true)
+        (filters.isPremium === "Premium" && article.isPremium === true),
     )
     .sort((a, b) =>
       sortOrder === "newest"
         ? new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         : sortOrder === "oldest"
           ? new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
-          : 0
+          : 0,
     )
     .sort((a, b) =>
       votingOrder === "upvotes"
         ? b.upvotes - a.upvotes
         : votingOrder === "downvotes"
           ? b.downvotes - a.downvotes
-          : 0
+          : 0,
     );
 
   return (
@@ -167,15 +168,9 @@ const Page = () => {
           value={filters.category}
           onChange={handleInputChange}
         >
-          <SelectItem key="All" value="All">
-            All
-          </SelectItem>
-          <SelectItem key="Tip" value="Tip">
-            Tip
-          </SelectItem>
-          <SelectItem key="Story" value="Story">
-            Story
-          </SelectItem>
+          <SelectItem key="All">All</SelectItem>
+          <SelectItem key="Tip">Tip</SelectItem>
+          <SelectItem key="Story">Story</SelectItem>
         </Select>
 
         <Select
@@ -186,15 +181,9 @@ const Page = () => {
           value={filters.isPremium}
           onChange={handleInputChange}
         >
-          <SelectItem key="All" value="All">
-            All
-          </SelectItem>
-          <SelectItem key="Free" value="Free">
-            Free
-          </SelectItem>
-          <SelectItem key="Premium" value="Premium">
-            Premium
-          </SelectItem>
+          <SelectItem key="All">All</SelectItem>
+          <SelectItem key="Free">Free</SelectItem>
+          <SelectItem key="Premium">Premium</SelectItem>
         </Select>
 
         <Select
@@ -204,12 +193,8 @@ const Page = () => {
           value={sortOrder}
           onChange={handleSortChange}
         >
-          <SelectItem key="newest" value="newest">
-            Newest
-          </SelectItem>
-          <SelectItem key="oldest" value="oldest">
-            Oldest
-          </SelectItem>
+          <SelectItem key="newest">Newest</SelectItem>
+          <SelectItem key="oldest">Oldest</SelectItem>
         </Select>
 
         <Select
@@ -219,12 +204,8 @@ const Page = () => {
           value={votingOrder}
           onChange={handleVotingFilterChange}
         >
-          <SelectItem key="upvotes" value="upvotes">
-            Upvotes
-          </SelectItem>
-          <SelectItem key="downvotes" value="downvotes">
-            Downvotes
-          </SelectItem>
+          <SelectItem key="upvotes">Upvotes</SelectItem>
+          <SelectItem key="downvotes">Downvotes</SelectItem>
         </Select>
       </div>
 
@@ -249,9 +230,9 @@ const Page = () => {
           </div>
         </InfiniteScroll>
       ) : (
-        <p className="text-center text-gray-500">
+        <div className="text-center text-gray-500">
           <NoArticlesFound />{" "}
-        </p>
+        </div>
       )}
     </div>
   );

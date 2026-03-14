@@ -9,18 +9,22 @@ import {
   Card,
   CardBody,
   Spacer,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useForm, FieldValues, Controller } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 
-import "react-quill/dist/quill.snow.css";
+// import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import { useRouter } from "next/navigation";
 
 import { useCreateArticleMutation } from "@/src/redux/features/articles/articlesApi";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill-new"), {
+  ssr: false,
+  loading: () => <div className="h-40 bg-gray-100 animate-pulse rounded" />,
+});
 
 const ArticleForm = () => {
   const router = useRouter();
@@ -160,12 +164,8 @@ const ArticleForm = () => {
                 label="Category"
                 placeholder="Select a category"
               >
-                <SelectItem key="Tip" value="Tip">
-                  Tip
-                </SelectItem>
-                <SelectItem key="Story" value="Story">
-                  Story
-                </SelectItem>
+                <SelectItem key="Tip">Tip</SelectItem>
+                <SelectItem key="Story">Story</SelectItem>
               </Select>
             )}
             rules={{ required: "Category is required" }}

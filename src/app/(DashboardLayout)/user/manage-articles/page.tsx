@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Input } from "@nextui-org/react";
+import { Input } from "@heroui/react";
 
 import ErrorNewsfeed from "../newsfeed/components/errorNewsfeed";
 import LoaderNewsfeed from "../newsfeed/components/loaderNewsfeed";

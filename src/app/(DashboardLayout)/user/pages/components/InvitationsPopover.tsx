@@ -6,7 +6,7 @@ import {
   PopoverContent,
   Button,
   Avatar,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Bell, Check, X } from "lucide-react";
 
 // const InvitationsPopover = ({

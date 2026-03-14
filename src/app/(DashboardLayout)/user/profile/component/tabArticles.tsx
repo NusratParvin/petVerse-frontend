@@ -1,5 +1,5 @@
 "use client";
-import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
+import { Tabs, Tab, Card, CardBody } from "@heroui/react";
 import React, { useState } from "react";
 
 import ArticleCard from "../../newsfeed/components/articleCard";

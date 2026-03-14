@@ -9,17 +9,21 @@ import {
   Card,
   CardBody,
   Spacer,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import "react-quill-new/dist/quill.snow.css";
 
 import { useUpdateArticleMutation } from "@/src/redux/features/articles/articlesApi";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill-new"), {
+  ssr: false,
+  loading: () => <div className="h-40 bg-gray-100 animate-pulse rounded" />,
+});
 
 type EditArticleFormProps = {
   article: any;
@@ -48,7 +52,7 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({
   const [uploading, setUploading] = useState(false);
 
   const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
 
@@ -69,7 +73,7 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
       const data = await res.json();
 
@@ -207,12 +211,8 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({
               }
             }}
           >
-            <SelectItem key="Tip" value="Tip">
-              Tip
-            </SelectItem>
-            <SelectItem key="Story" value="Story">
-              Story
-            </SelectItem>
+            <SelectItem key="Tip">Tip</SelectItem>
+            <SelectItem key="Story">Story</SelectItem>
           </Select>
 
           {/* Image Upload */}

@@ -1,31 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-// import Cookies from "js-cookie";
-
 import { RootState } from "../../store";
-
-import { TUser, TUserRole } from "@/src/types";
-
-// export type TUser = {
-//   email: string;
-//   id: string;
-//   role: string;
-//   iat: number;
-//   exp: number;
-// };
-// type TUser = {
-//   _id?: string;
-//   name: string;
-//   email: string;
-//   password: string;
-//   phone: string;
-//   address: string;
-//   role: TUserRole;
-//   profilePhoto?: string;
-//   terms?: boolean;
-//   followers: string[];
-//   following: string[];
-//   articles: string[];
-// };
+import { TUser } from "@/src/types";
 
 type TAuthState = {
   user: null | TUser;
@@ -44,13 +19,11 @@ const authSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
-      // console.log(action.payload);
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
     },
-
     removePendingInvite: (state, action) => {
       if (state.user) {
         state.user.pendingInvites =
@@ -62,7 +35,6 @@ const authSlice = createSlice({
 });
 
 export const { setUser, logout, removePendingInvite } = authSlice.actions;
-
 export default authSlice.reducer;
 export const useCurrentToken = (state: RootState) => state.auth.token;
 export const useCurrentUser = (state: RootState) => state.auth.user;

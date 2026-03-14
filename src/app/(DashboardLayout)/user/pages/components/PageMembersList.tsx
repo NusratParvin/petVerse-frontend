@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button, Avatar } from "@nextui-org/react";
+import { Button, Avatar } from "@heroui/react";
 import { toast } from "sonner";
-import { ScrollShadow } from "@nextui-org/scroll-shadow";
+import { ScrollShadow } from "@heroui/scroll-shadow";
 
 import { useInviteToPageMutation } from "@/src/redux/features/pages/pagesApi";
 
@@ -41,7 +41,7 @@ export const PageMembersList = ({
 
       // Add the invited friend to the pending invites list
       const invitedFriend = friends.find(
-        (friend) => friend.friend._id === userId
+        (friend) => friend.friend._id === userId,
       );
 
       if (invitedFriend) {
@@ -120,7 +120,7 @@ export const PageMembersList = ({
               ?.filter(
                 (friend) =>
                   !members?.find((m) => m._id === friend?.friend._id) &&
-                  !pendingInvites?.find((p) => p._id === friend?.friend._id)
+                  !pendingInvites?.find((p) => p._id === friend?.friend._id),
               )
               .map((friend) => (
                 <div

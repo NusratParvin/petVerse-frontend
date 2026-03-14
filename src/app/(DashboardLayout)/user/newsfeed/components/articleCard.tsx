@@ -8,7 +8,7 @@ import {
   Button,
   Chip,
   Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import {
   ArrowUp,
   ArrowDown,
@@ -69,21 +69,21 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
   const friends = friendsData?.friends || [];
 
   const isPending = pendingRequests.some(
-    (req: any) => req.friend._id === authorId?._id && req.isSentRequest
+    (req: any) => req.friend._id === authorId?._id && req.isSentRequest,
   );
   const isFriend = friends.some(
-    (friend: any) => friend.friend._id === authorId?._id
+    (friend: any) => friend.friend._id === authorId?._id,
   );
   // console.log(isPending, isFriend);
 
   // Check if the article is purchased by the user
   const hasPurchased = user?.purchasedArticles?.some(
-    (purchasedArticle: string) => purchasedArticle === article._id
+    (purchasedArticle: string) => purchasedArticle === article._id,
   );
 
   useEffect(() => {
     const alreadyFollowing = article?.authorId?.followers?.includes(
-      user?._id as string
+      user?._id as string,
     );
 
     setIsFollowing(alreadyFollowing || false);

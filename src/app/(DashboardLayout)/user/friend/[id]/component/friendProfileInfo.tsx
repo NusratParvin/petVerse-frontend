@@ -7,7 +7,7 @@ import {
   Avatar,
   Link,
   Skeleton,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { MapPin, Link as LinkIcon, Calendar, PhoneCall } from "lucide-react";
 import { useParams } from "next/navigation";
 

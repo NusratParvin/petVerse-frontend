@@ -30,9 +30,9 @@ import { cookies } from "next/headers";
 //   return userInfo;
 // };
 
-export const logoutCookies = () => {
-  cookies().delete("accessToken");
-  cookies().delete("refreshToken");
+export const logoutCookies = async () => {
+  (await cookies()).delete("accessToken");
+  (await cookies()).delete("refreshToken");
 
   return { success: true };
 };

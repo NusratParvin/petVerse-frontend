@@ -1,6 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-// import storage from "redux-persist/lib/storage";
-
 import {
   persistStore,
   persistReducer,
@@ -11,13 +9,9 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-
+import storage from "redux-persist/lib/storage";
 import authReducer from "./features/auth/authSlice";
 import baseApi from "./api/baseApi";
-import storage from "./storageEngine";
-
-// const isClient = typeof window !== "undefined";
-// const storageEngine = isClient ? storage : noopStorage;
 
 const persistConfig = {
   key: "root",
@@ -40,8 +34,5 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
-
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;

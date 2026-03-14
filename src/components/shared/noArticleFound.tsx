@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardBody } from "@nextui-org/react";
+import { Card, CardBody } from "@heroui/react";
 import { FileX } from "lucide-react";
 
 export default function NoArticlesFound() {

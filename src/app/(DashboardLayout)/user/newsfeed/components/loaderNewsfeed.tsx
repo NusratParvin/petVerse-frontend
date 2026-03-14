@@ -5,7 +5,7 @@ import {
   CardFooter,
   CardHeader,
   Skeleton,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 const LoaderNewsfeed = () => {
   return (

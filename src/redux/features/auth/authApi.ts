@@ -10,13 +10,13 @@ const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    getUserInfo: builder.query({
-      query: () => ({
-        url: "/users/me",
-        method: "GET",
-      }),
-      // providesTags: ["User"],
-    }),
+    // getUserInfo: builder.query({
+    //   query: () => ({
+    //     url: "/users/me",
+    //     method: "GET",
+    //   }),
+    //   // providesTags: ["User"],
+    // }),
 
     signup: builder.mutation({
       query: (newUserInfo) => ({

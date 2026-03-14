@@ -15,7 +15,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 

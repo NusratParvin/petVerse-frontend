@@ -1,5 +1,5 @@
 "use client";
-import { Avatar, Card, Divider } from "@nextui-org/react";
+import { Avatar, Card, Divider } from "@heroui/react";
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 import Link from "next/link";
 

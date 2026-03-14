@@ -1,4 +1,4 @@
-import { Card, Button, Avatar, Link, Skeleton } from "@nextui-org/react";
+import { Card, Button, Avatar, Link, Skeleton } from "@heroui/react";
 
 import { useCurrentUser } from "@/src/redux/features/auth/authSlice";
 import { useGetMostFollowedAuthorsQuery } from "@/src/redux/features/user/userApi";

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardBody, Avatar, Button, Input } from "@nextui-org/react";
+import { Card, CardBody, Avatar, Button, Input } from "@heroui/react";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ const UpdateProfileInfo: React.FC<UpdateProfileInfoProps> = ({
   toggleEditMode,
 }) => {
   const [profilePhoto, setProfilePhoto] = useState(
-    user?.profilePhoto || avatarImage
+    user?.profilePhoto || avatarImage,
   );
   const [uploading, setUploading] = useState(false);
   const dispatch = useAppDispatch();
@@ -63,7 +63,7 @@ const UpdateProfileInfo: React.FC<UpdateProfileInfoProps> = ({
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
       const data = await res.json();
 
