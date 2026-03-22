@@ -1,4 +1,3 @@
-
 import "@/src/styles/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
@@ -32,16 +31,14 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head />
-      <body
-        className={clsx(
-          "min-h-screen bg-background font-raleway antialiased",
-          fontRaleway.variable
-        )}
-      >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          {children}
-        </Providers>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={clsx("min-h-screen  antialiased", fontRaleway.variable)}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

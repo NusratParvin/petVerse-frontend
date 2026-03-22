@@ -189,7 +189,7 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
 
   return (
     <Card
-      className="w-full mx-auto text-black/80 text-sm bg-white shadow-lg"
+      className="w-full mx-auto text-black/80 text-sm bg-transparent shadow-lg"
       radius="none"
     >
       {/* Card Header */}

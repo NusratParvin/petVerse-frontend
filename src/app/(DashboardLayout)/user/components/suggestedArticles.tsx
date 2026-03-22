@@ -21,7 +21,7 @@ export default function SuggestedArticles() {
     .slice(0, 4);
 
   return (
-    <Card className="w-full" radius="none">
+    <Card className="w-full bg-transparent" radius="none">
       <CardBody className="p-4 ms-1 mt-3 text-black/70 text-base">
         <h2 className="font-bold mb-4">New articles to read</h2>
         {sortedArticles.map((article: TArticle, index: number) => (

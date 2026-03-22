@@ -28,7 +28,7 @@ export default function SuggestedAuthor() {
   if (error) return <div>Error loading authors</div>;
 
   return (
-    <Card className="w-full" radius="none">
+    <Card className="w-full bg-transparent" radius="none">
       <div className="p-4 text-black/70 ">
         <h2 className="text-base font-bold my-4">Author List</h2>
         {authors?.data?.slice(0, 4).map((author: any, index: number) => (

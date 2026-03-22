@@ -7,10 +7,9 @@ import {
   Avatar,
 } from "@heroui/react";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { PawPrint } from "lucide-react";
+import { PawPrint, Moon, Sun } from "lucide-react";
 
 import InvitationsPopover from "../user/pages/components/InvitationsPopover";
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
@@ -24,6 +23,8 @@ import {
   useRejectPageInvitationMutation,
 } from "@/src/redux/features/pages/pagesApi";
 import { logoutCookies } from "@/src/services/AuthService";
+import { Switch } from "@heroui/react";
+import ThemeToggle from "@/src/components/ThemeToggle";
 
 interface PageDetail {
   _id: string;
@@ -45,6 +46,15 @@ const NavbarDashboard = () => {
   const [acceptInvitation] = useAcceptPageInvitationMutation();
   const [rejectInvitation] = useRejectPageInvitationMutation();
   const [pageDetails, setPageDetails] = useState<PageDetail[]>([]);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const icons = {
+    darkMode: {
+      off: Moon,
+      on: Sun,
+      selectedControlClass: "",
+    },
+  };
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -110,44 +120,24 @@ const NavbarDashboard = () => {
   };
 
   return (
-    <div
-      className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-6"
-      style={{
-        background: "rgba(7,11,24,0.7)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(255,255,255,0.07)",
-      }}
-    >
+    <div className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-6 bg-pv-bg/10 backdrop-blur-xl border-b border-white/[0.07]">
       {/* Logo */}
       <button
         onClick={handleDashboardClick}
         className="flex items-center gap-2"
       >
-        <div
-          className="w-7 h-7 rounded-lg flex items-center justify-center"
-          style={{
-            background: "rgba(180,60,255,0.2)",
-            border: "1px solid rgba(180,60,255,0.35)",
-          }}
-        >
-          <PawPrint size={14} color="#CC44FF" />
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-pv-purple/20 border border-pv-purple/35">
+          <PawPrint size={14} className="text-pv-purple" />
         </div>
-        <span
-          style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: "17px",
-            fontWeight: 700,
-            letterSpacing: "-0.4px",
-            color: "#F5D020",
-          }}
-        >
-          Pet<span style={{ color: "#00E5CC" }}>Verse</span>
+        <span className="font-grotesk text-[17px] font-bold tracking-tight text-pv-yellow">
+          Pet<span className="text-pv-teal">Verse</span>
         </span>
       </button>
 
       {/* Right side */}
       <div className="flex items-center gap-3">
+        <ThemeToggle />
+
         <InvitationsPopover
           handleAccept={handleAccept}
           handleReject={handleReject}

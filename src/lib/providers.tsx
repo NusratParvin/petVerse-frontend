@@ -30,7 +30,12 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <HeroUIProvider navigate={router.push}>
-          <NextThemesProvider {...themeProps}>
+          <NextThemesProvider
+            {...themeProps}
+            attribute="class"
+            themes={["petverse-dark", "petverse-light"]}
+            defaultTheme="petverse-dark"
+          >
             {children}
             <Toaster />
           </NextThemesProvider>

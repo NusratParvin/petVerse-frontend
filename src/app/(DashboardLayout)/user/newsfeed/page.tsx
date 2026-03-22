@@ -134,7 +134,7 @@ const Page = () => {
     );
 
   return (
-    <div className="p-3 bg-white rounded-lg shadow-md">
+    <div className="p-3  shadow-md">
       {/* Search and Reset Section */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="font-semibold text-2xl text-customBlue">Articles</h1>
