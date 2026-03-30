@@ -35,6 +35,10 @@ export function Providers({ children, themeProps }: ProvidersProps) {
             attribute="class"
             themes={["petverse-dark", "petverse-light"]}
             defaultTheme="petverse-dark"
+            value={{
+              "petverse-light": "light",
+              "petverse-dark": "dark", // ← This makes dark: work
+            }}
           >
             {children}
             <Toaster />

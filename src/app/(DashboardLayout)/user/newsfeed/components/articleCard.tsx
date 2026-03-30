@@ -189,7 +189,7 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
 
   return (
     <Card
-      className="w-full mx-auto text-black/80 text-sm bg-transparent shadow-lg"
+      className="w-full mx-auto dark:bg-gray-800 dark:text-white bg-white text-gray-900 shadow-lg rounded-3xl text-xs"
       radius="none"
     >
       {/* Card Header */}
@@ -199,7 +199,7 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
             <Avatar className="w-12 h-12" src={authorId?.profilePhoto} />
             <div className="ml-3 flex-grow">
               <div className="flex gap-6 items-end">
-                <h3 className="text-base font-bold">
+                <h3 className="text-sm font-bold">
                   {authorId?.name || "Anonymous"}
                 </h3>
                 {user?._id != authorId?._id && (
@@ -277,7 +277,7 @@ const ArticleCard = ({ article }: { article: TArticle }) => {
           </div>
         </div>
 
-        <h2 className="text-base text-customOrange/80 font-semibold mb-2 underline">
+        <h2 className="text-sm text-customOrange/80 font-semibold mb-2 underline">
           {article?.isPremium && !hasPurchased ? (
             <Tooltip color="warning" content="Buy to read more">
               {article.title}

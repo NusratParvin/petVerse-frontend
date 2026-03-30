@@ -120,9 +120,16 @@ const NavbarDashboard = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-6 bg-pv-bg/10 backdrop-blur-xl border-b border-white/[0.07]">
+    <div
+      className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-6 bg-transparent dark:bg-pv-bg/10 backdrop-blur-xl border-b border-white/[0.07]"
+      // className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-6 backdrop-blur-xl"
+      // style={{
+      //   background: "rgba(2,8,18,0.6)",
+      //   borderBottom: "1px solid rgba(255,255,255,0.03)",
+      // }}
+    >
       {/* Logo */}
-      <button
+      {/* <button
         onClick={handleDashboardClick}
         className="flex items-center gap-2"
       >
@@ -132,7 +139,30 @@ const NavbarDashboard = () => {
         <span className="font-grotesk text-[17px] font-bold tracking-tight text-pv-yellow">
           Pet<span className="text-pv-teal">Verse</span>
         </span>
-      </button>
+      </button> */}
+      {/* Logo Area - Compact */}
+      <div
+        className=" pt-4 pb-3"
+        // style={{
+        //   borderColor: isDark
+        //     ? "rgba(70, 130, 180, 0.15)"
+        //     : "rgba(70, 130, 180, 0.1)",
+        // }}
+      >
+        <div className="flex items-center gap-2">
+          <div className=" flex items-center justify-center ">
+            <PawPrint size={28} className="text-lime-burst" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold tracking-tight dark:text-white text-steel-blue">
+              Pet<span className="text-lime-burst">Verse</span>
+            </h1>
+            <p className="text-[8px] dark:text-white/40 text-steel-blue/60">
+              where paws connect
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Right side */}
       <div className="flex items-center gap-3">
