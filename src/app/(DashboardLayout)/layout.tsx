@@ -65,9 +65,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <div className="md:w-[220px] w-full shrink-0">
           <MenuSidebar />
         </div>
-        <div className="flex-1 min-h-screen overflow-y-auto bg-transparent">
-          {children}
-        </div>
+        <div className="flex-1">{children}</div>
       </div>
     </ThemeLayout>
   );
