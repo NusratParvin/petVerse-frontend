@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Card, CardBody, Avatar, Button } from "@nextui-org/react";
+import { Card, CardBody, Avatar, Button } from "@heroui/react";
 import { ArrowUp, ArrowDown, Pen, X } from "lucide-react";
 import { toast } from "sonner";
 

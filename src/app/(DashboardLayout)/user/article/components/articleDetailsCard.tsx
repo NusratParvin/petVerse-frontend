@@ -7,7 +7,7 @@ import {
   Avatar,
   Button,
   Chip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { ArrowUp, ArrowDown, MessagesSquare } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";

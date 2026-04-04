@@ -28,7 +28,7 @@ const myPets = [
 // Navigation items with icons
 const navItems = [
   { href: "/user/newsfeed", label: "News Feed", icon: <PawPrint size={14} /> },
-  { href: "/user/pets", label: "My Pets", icon: <Heart size={14} /> },
+  { href: "/user/my-pets", label: "My Pets", icon: <Heart size={14} /> },
   { href: "/user/health", label: "Health", icon: <Stethoscope size={14} /> },
   {
     href: "/user/reminders",
@@ -36,7 +36,11 @@ const navItems = [
     icon: <Bell size={14} />,
     badge: 2,
   },
-  { href: "/user/create", label: "Create", icon: <FileText size={14} /> },
+  {
+    href: "/user/create-article",
+    label: "Create Article",
+    icon: <FileText size={14} />,
+  },
   { href: "/user/friends", label: "Friends", icon: <Users size={14} /> },
   { href: "/user/profile", label: "Profile", icon: <User size={14} /> },
 ];

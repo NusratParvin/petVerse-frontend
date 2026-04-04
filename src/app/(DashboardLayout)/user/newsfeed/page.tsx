@@ -134,7 +134,7 @@ const Page = () => {
     );
 
   return (
-    <div className="p-3  shadow-md">
+    <div>
       {/* Search and Reset Section */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="font-semibold text-2xl text-customBlue">Articles</h1>
@@ -209,7 +209,7 @@ const Page = () => {
         </Select>
       </div>
 
-      <Divider className="my-4" />
+      <Divider className="my-1" />
 
       {filteredArticles.length > 0 ? (
         <InfiniteScroll
@@ -223,7 +223,7 @@ const Page = () => {
           loader={<LoaderNewsfeed />}
           next={loadMore}
         >
-          <div className="p-2 flex flex-col gap-4">
+          <div className="p-1 flex flex-col gap-4">
             {filteredArticles.slice(0, page * 2).map((article) => (
               <ArticleCard key={article._id} article={article} />
             ))}

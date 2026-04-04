@@ -1,6 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { Button, Avatar, Card, CardBody, Input } from "@nextui-org/react";
+import { Button, Avatar, Card, CardBody, Input } from "@heroui/react";
 import { toast } from "sonner";
 
 import { useAppSelector } from "@/src/redux/hooks";

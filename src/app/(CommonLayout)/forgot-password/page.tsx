@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Input, Button, Card, Spacer } from "@nextui-org/react";
+import { Input, Button, Card, Spacer } from "@heroui/react";
 import { toast } from "sonner";
 
 import { useForgetPasswordMutation } from "@/src/redux/features/auth/authApi";
@@ -24,7 +24,7 @@ const ForgetPassword = () => {
         setEmailSent(true);
         console.log(result);
         toast.success(
-          "A reset link has been sent to your email. Please check your inbox."
+          "A reset link has been sent to your email. Please check your inbox.",
         );
       }
     } catch (error) {

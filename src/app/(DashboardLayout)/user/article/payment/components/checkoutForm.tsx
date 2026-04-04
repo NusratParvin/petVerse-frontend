@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { toast } from "sonner";
-import { Card, CardBody, Button, Input } from "@nextui-org/react";
+import { Card, CardBody, Button, Input } from "@heroui/react";
 import { Lock } from "lucide-react";
 
 import PaymentSuccess from "./paymentSuccess";

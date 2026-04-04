@@ -6,9 +6,9 @@ import {
   CardFooter,
   Button,
   Divider,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { CheckCircle, ArrowRight, Home } from "lucide-react";
-import { Link } from "@nextui-org/react";
+import { Link } from "@heroui/react";
 
 interface PaymentSuccessProps {
   amount: number;

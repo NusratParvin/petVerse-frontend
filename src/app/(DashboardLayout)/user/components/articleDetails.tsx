@@ -7,7 +7,7 @@ import {
   Avatar,
   Image,
   Chip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import {
   ArrowUp,
   ArrowDown,

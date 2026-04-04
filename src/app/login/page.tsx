@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { getSession, signIn, useSession } from "next-auth/react";
+// import { getSession, signIn, useSession } from "next-auth/react";
 
 // import image from "@/src/assets/images/Fish-logo-template-on-transparent-background-PNG.png";
 import { useAppDispatch } from "@/src/redux/hooks";
@@ -92,7 +92,7 @@ const Login = () => {
   const autofillCredentials = (role: "user" | "admin") => {
     if (role === "user") {
       setValue("email", "u@u.com"); // Sets the email value
-      setValue("password", "111111"); // Sets the password value
+      setValue("password", "u@u.com"); // Sets the password value
     } else if (role === "admin") {
       setValue("email", "admin@gmail.com");
       setValue("password", "111111");
