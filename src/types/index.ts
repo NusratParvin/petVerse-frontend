@@ -131,3 +131,14 @@ export enum REACTION_TYPE {
   SAD = "sad",
   ANGRY = "angry",
 }
+
+// My Pets //
+export const speciesEmoji: Record<string, string> = {
+  dog: "🐕",
+  cat: "🐈",
+  bird: "🦜",
+  fish: "🐠",
+  rabbit: "🐇",
+  reptile: "🦎",
+  other: "🐾",
+};

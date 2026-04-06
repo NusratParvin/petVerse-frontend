@@ -10,14 +10,14 @@ const config = {
   theme: {
     extend: {
       colors: {
-        "pv-yellow": "#F5D020",
-        "pv-teal": "#00E5CC",
-        "pv-purple": "#1E90FF", // ← changed to electric blue
-        "pv-coral": "#FF4D6D",
-        "pv-bg": "#020812", // ← deeper black-blue
-        "pv-surface": "#040d1f",
+        yellow: "#F5D020",
+        teal: "#00E5CC",
+        purple: "#1E90FF", // ← changed to electric blue
+        coral: "#FF4D6D",
+        green: "#5aab1e",
+        bg: "#020812", // ← deeper black-blue
+        surface: "#040d1f",
         "steel-blue": "#4682B4",
-        // "steel-blue": "#20B2AA",
         "lime-burst": "#B8FF2E",
       },
       backgroundImage: {
