@@ -142,3 +142,62 @@ export const speciesEmoji: Record<string, string> = {
   reptile: "🦎",
   other: "🐾",
 };
+
+export type TSpecies =
+  | "dog"
+  | "cat"
+  | "bird"
+  | "fish"
+  | "rabbit"
+  | "reptile"
+  | "other";
+
+export type TGender = "male" | "female" | "unknown";
+
+export type TEmirate =
+  | "dubai"
+  | "abu-dhabi"
+  | "sharjah"
+  | "ajman"
+  | "ras-al-khaimah"
+  | "fujairah"
+  | "umm-al-quwain";
+
+export type THealthRecordType =
+  | "vaccine"
+  | "vet-visit"
+  | "medication"
+  | "grooming"
+  | "other";
+
+export type THealthRecord = {
+  _id: string;
+  type: THealthRecordType;
+  title: string;
+  date: Date | string;
+  nextDueDate?: Date | string;
+  notes?: string;
+  cost?: number;
+  vetName?: string;
+};
+
+export type TPet = {
+  _id: string;
+  owner: string;
+  name: string;
+  species: TSpecies;
+  breed?: string;
+  gender: TGender;
+  dateOfBirth?: Date | string;
+  weight?: number;
+  microchipNumber?: string;
+  profilePhoto?: string;
+  isNeutered: boolean;
+  emirate?: TEmirate;
+  healthRecords: THealthRecord[];
+  whatsappAlerts: boolean;
+  whatsappNumber: string;
+  isDeleted: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};

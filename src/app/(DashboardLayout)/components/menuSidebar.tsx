@@ -48,17 +48,11 @@ const navItems = [
 export default function MenuSidebar() {
   const user = useAppSelector(useCurrentUser);
   const pathname = usePathname();
-  const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  const isDark = mounted && (theme === "petverse-dark" || theme === "dark");
 
   return (
     <>
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden h-14 flex items-center justify-around px-4 backdrop-blur-xl bg-white/95 dark:bg-pv-bg/95 border-t border-steel-blue/20 dark:border-steel-blue/30">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden h-14 flex items-center justify-around px-4 backdrop-blur-xl bg-white/95 dark:bg-bg/95 border-t border-steel-blue/20 dark:border-steel-blue/30">
         {navItems.slice(0, 5).map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -99,7 +93,7 @@ export default function MenuSidebar() {
 
       {/* Desktop Sidebar */}
       <aside
-        className="hidden lg:flex fixed top-0 left-0 h-screen w-[220px] flex-col z-40 overflow-y-auto transition-all duration-500 bg-white dark:bg-pv-bg border-r border-steel-blue/10 dark:border-lime-burst/20 custom-scrollbar"
+        className="hidden lg:flex fixed top-0 left-0 h-screen w-[220px] flex-col z-40 overflow-y-auto transition-all duration-500 bg-white dark:bg-bg border-r border-steel-blue/10 dark:border-lime-burst/20 custom-scrollbar"
         style={{ top: "56px", height: "calc(100vh - 56px)" }}
       >
         {/* My Pets Section */}
@@ -156,7 +150,7 @@ export default function MenuSidebar() {
           <button className="group w-full mt-2 py-1.5 px-2 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 transition-all duration-200 border border-dashed border-lime-burst text-steel-blue bg-lime-burst/70 hover:bg-lime-burst/90 hover:scale-[1.02] dark:border-lime-burst dark:text-lime-burst dark:bg-lime-burst/5 dark:hover:bg-lime-burst/15">
             <Plus
               size={12}
-              className="transition-transform duration-300 group-hover:rotate-90"
+              className="transition-transform duration-300 group-hover:rotate-180"
             />
             ADD A PET
           </button>

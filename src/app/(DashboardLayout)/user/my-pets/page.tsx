@@ -1,31 +1,11 @@
 "use client";
 import { useState } from "react";
-import { useTheme } from "next-themes";
 import { Plus, PawPrint } from "lucide-react";
-import Link from "next/link";
 import { useGetMyPetsQuery } from "@/src/redux/features/pets/petsApi";
 import AddPetModal from "./components/addPetModal";
-import { speciesEmoji } from "@/src/types";
-
-const speciesStyles: Record<string, string> = {
-  dog: "bg-steel-blue/15 hover:bg-steel-blue/25 text-steel-blue dark:text-steel-blue/90 border-steel-blue/25",
-  cat: "bg-lime-burst/12 hover:bg-lime-burst/20 text-lime-burst dark:text-lime-burst/90 border-lime-burst/20",
-  bird: "bg-coral/12 hover:bg-coral/20 text-coral dark:text-coral/90 border-coral/20",
-  fish: "bg-teal/12 hover:bg-teal/20 text-teal dark:text-teal/90 border-teal/20",
-  rabbit:
-    "bg-yellow/12 hover:bg-yellow/20 text-yellow dark:text-yellow/90 border-yellow/20",
-  reptile:
-    "bg-reptile-green/12 hover:bg-reptile-green/20 text-reptile-green dark:text-reptile-green/90 border-reptile-green/20",
-  other:
-    "bg-white/8 hover:bg-white/12 text-white/60 dark:text-white/50 border-white/15",
-};
-
-function calculateAge(dob?: string) {
-  if (!dob) return null;
-  const diff = Date.now() - new Date(dob).getTime();
-  const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
-  return years < 1 ? "< 1 yr" : `${years} yr${years > 1 ? "s" : ""}`;
-}
+import { Button } from "@heroui/react";
+import PetCardLoader from "./components/petCardLoader";
+import PetsGrid from "./components/petsGrid";
 
 // export default function MyPets() {
 //   const { theme } = useTheme();
@@ -49,7 +29,7 @@ function calculateAge(dob?: string) {
 //       <div className="flex items-center justify-between mb-6">
 //         <div>
 //           <h1
-//             className="font-grotesk text-2xl font-bold"
+//             className="  text-2xl font-bold"
 //             style={{ color: isDark ? "rgba(255,255,255,0.92)" : "#1a1a2e" }}
 //           >
 //             My Pets
@@ -65,14 +45,14 @@ function calculateAge(dob?: string) {
 //               : `${pets.length} pet${pets.length !== 1 ? "s" : ""}`}
 //           </p>
 //         </div>
-//         <button
-//           onClick={() => setShowAddModal(true)}
+//         <Button
+//           onPress={() => setShowAddModal(true)}
 //           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
 //           style={{ background: "#B8FF2E", color: "#0a0e1a" }}
 //         >
 //           <Plus size={16} />
 //           Add Pet
-//         </button>
+//         </Button>
 //       </div>
 
 //       {/* Loading */}
@@ -132,7 +112,7 @@ function calculateAge(dob?: string) {
 //             🐾
 //           </div>
 //           <p
-//             className="font-grotesk font-semibold text-base mb-1"
+//             className="  font-semibold text-base mb-1"
 //             style={{ color: isDark ? "rgba(255,255,255,0.7)" : "#1a1a2e" }}
 //           >
 //             No pets yet
@@ -145,14 +125,14 @@ function calculateAge(dob?: string) {
 //           >
 //             Add your first pet to get started
 //           </p>
-//           <button
-//             onClick={() => setShowAddModal(true)}
+//           <Button
+//             onPress={() => setShowAddModal(true)}
 //             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold"
 //             style={{ background: "#B8FF2E", color: "#0a0e1a" }}
 //           >
 //             <Plus size={15} />
 //             Add a Pet
-//           </button>
+//           </Button>
 //         </div>
 //       )}
 
@@ -206,7 +186,7 @@ function calculateAge(dob?: string) {
 //                 {/* Info */}
 //                 <div className="p-4">
 //                   <h3
-//                     className="font-grotesk font-bold text-sm mb-1"
+//                     className="  font-bold text-sm mb-1"
 //                     style={{
 //                       color: isDark ? "rgba(255,255,255,0.9)" : "#1a1a2e",
 //                     }}
@@ -275,8 +255,8 @@ function calculateAge(dob?: string) {
 //           })}
 
 //           {/* Add Pet card */}
-//           <button
-//             onClick={() => setShowAddModal(true)}
+//           <Button
+//             onPress={() => setShowAddModal(true)}
 //             className="rounded-2xl flex flex-col items-center justify-center gap-3 min-h-[180px] transition-all hover:scale-[1.02]"
 //             style={{
 //               background: "transparent",
@@ -303,7 +283,7 @@ function calculateAge(dob?: string) {
 //             >
 //               Add a Pet
 //             </span>
-//           </button>
+//           </Button>
 //         </div>
 //       )}
 
@@ -313,154 +293,75 @@ function calculateAge(dob?: string) {
 //   );
 // }
 export default function MyPets() {
-  const [showAddModal, setShowAddModal] = useState(false);
   const { data, isLoading } = useGetMyPetsQuery(undefined);
   const pets = data?.data || [];
+  const [showAddModal, setShowAddModal] = useState(false);
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="px-4 py-2 w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-3">
         <div>
-          <h1 className="font-grotesk text-2xl font-bold text-gray-900 dark:text-white/92">
+          <h1 className="text-base font-semibold text-gray-900 dark:text-white/90">
             My Pets
           </h1>
-          <p className="text-sm mt-1 text-gray-500 dark:text-white/30">
+          {/* <p className="text-sm mt-1 text-gray-500 dark:text-white/30">
             {isLoading
               ? "Loading..."
               : `${pets.length} pet${pets.length !== 1 ? "s" : ""}`}
-          </p>
+          </p> */}
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-90 bg-lime-burst text-gray-900"
-        >
-          <Plus size={16} />
-          Add Pet
-        </button>
+
+        <p className="text-sm mt-1 text-gray-500 dark:text-white/30">
+          {isLoading
+            ? "Loading..."
+            : `${pets.length} pet${pets.length !== 1 ? "s" : ""}`}
+        </p>
       </div>
 
       {/* Loading */}
-      {isLoading && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="rounded-2xl overflow-hidden animate-pulse bg-white/85 dark:bg-white/5 border border-steel-blue/12 dark:border-white/7"
-            >
-              <div className="h-28 bg-steel-blue/5 dark:bg-white/3" />
-              <div className="p-4">
-                <div className="h-4 w-24 rounded mb-2 bg-steel-blue/8 dark:bg-white/6" />
-                <div className="h-3 w-32 rounded bg-steel-blue/5 dark:bg-white/4" />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {isLoading && <PetCardLoader />}
 
       {/* Empty state */}
       {!isLoading && pets.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 rounded-2xl bg-white/85 dark:bg-white/5 border border-steel-blue/12 dark:border-white/7">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-lime-burst/10 dark:bg-lime-burst/10">
+        <div className="flex flex-col items-center justify-center py-20 rounded-lg bg-white/85 dark:bg-white/5 border border-steel-blue/10 dark:border-white/10 shadow-lg">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-lime-burst/50 dark:bg-lime-burst/70">
             🐾
           </div>
-          <p className="font-grotesk font-semibold text-base mb-1 text-gray-900 dark:text-white/70">
+          <p className="  font-semibold text-base mb-1 text-gray-900 dark:text-white/70">
             No pets yet
           </p>
           <p className="text-sm mb-5 text-gray-500 dark:text-white/30">
             Add your first pet to get started
           </p>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-lime-burst text-gray-900"
+
+          <Button
+            variant="shadow"
+            size="sm"
+            onPress={() => setShowAddModal(true)}
+            className="flex items-center gap-1 px-6 py-0 rounded-lg text-xs font-semibold transition-all hover:bg-lime-burst bg-lime-burst/90 text-gray-800"
           >
-            <Plus size={15} />
-            Add a Pet
-          </button>
+            <Plus
+              size={14}
+              className="duration-300 group-hover:rotate-180 transition-transform"
+            />
+            Add Pet
+          </Button>
         </div>
       )}
 
       {/* Pets Grid */}
       {!isLoading && pets.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {pets.map((pet: any) => {
-            const speciesStyle =
-              speciesStyles[pet.species] || speciesStyles.other;
-            const age = calculateAge(pet.dateOfBirth);
-            return (
-              <Link
-                key={pet._id}
-                href={`/user/pets/${pet._id}`}
-                className="rounded-2xl overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg bg-white/85 dark:bg-white/5 border border-steel-blue/12 dark:border-white/7"
-              >
-                {/* Emoji banner */}
-                <div className="h-28 flex items-center justify-center text-5xl relative bg-steel-blue/5 dark:bg-steel-blue/8">
-                  {pet.profilePhoto ? (
-                    <img
-                      src={pet.profilePhoto}
-                      alt={pet.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    speciesEmoji[pet.species] || "🐾"
-                  )}
-                  {/* Health records count badge */}
-                  {pet.healthRecords?.length > 0 && (
-                    <div className="absolute top-2 right-2 text-[9px] font-bold px-2 py-0.5 rounded-full bg-lime-burst/20 dark:bg-lime-burst/20 text-steel-blue dark:text-lime-burst">
-                      {pet.healthRecords.length} records
-                    </div>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="p-4">
-                  <h3 className="font-grotesk font-bold text-sm mb-1 text-gray-900 dark:text-white/90">
-                    {pet.name}
-                  </h3>
-                  <p className="text-[11px] mb-3 text-gray-500 dark:text-white/30">
-                    {pet.breed || pet.species}
-                    {pet.gender && ` · ${pet.gender}`}
-                    {age && ` · ${age}`}
-                  </p>
-                  <div className="flex gap-1.5 flex-wrap">
-                    <span
-                      className={`text-[9px] font-semibold px-2 py-0.5 rounded-full capitalize border ${speciesStyle}`}
-                    >
-                      {pet.species}
-                    </span>
-                    {pet.microchipNumber && (
-                      <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-teal/10 dark:bg-teal/10 text-teal dark:text-teal border border-teal/20 dark:border-teal/20">
-                        Chipped
-                      </span>
-                    )}
-                    {pet.whatsappAlerts && (
-                      <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-lime-burst/10 dark:bg-lime-burst/10 text-lime-burst dark:text-lime-burst border border-lime-burst/20 dark:border-lime-burst/20">
-                        Alerts On
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-
-          {/* Add Pet card */}
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="rounded-2xl flex flex-col items-center justify-center gap-3 min-h-[180px] transition-all hover:scale-[1.02] border-2 border-dashed border-steel-blue/25 dark:border-lime-burst/25 bg-transparent"
-          >
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl bg-steel-blue/8 dark:bg-lime-burst/10">
-              +
-            </div>
-            <span className="text-xs font-medium text-gray-500 dark:text-white/35">
-              Add a Pet
-            </span>
-          </button>
-        </div>
+        <PetsGrid pets={pets} setShowAddModal={setShowAddModal} />
       )}
 
       {/* Add Pet Modal */}
-      {showAddModal && <AddPetModal onClose={() => setShowAddModal(false)} />}
+      {showAddModal && (
+        <AddPetModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+        />
+      )}
     </div>
   );
 }
