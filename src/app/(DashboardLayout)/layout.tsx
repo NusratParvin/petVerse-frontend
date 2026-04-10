@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
-import MenuSidebar from "./components/menuSidebar";
 import NavbarDashboard from "./components/navbarDashboard";
 import ThemeLayout from "./components/ThemeLayout";
+import LeftSidebar from "./components/leftSidebar/leftSidebar";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -63,7 +63,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <NavbarDashboard />
       <div className="relative z-10 flex flex-col md:flex-row w-full pt-12">
         <div className="md:w-[220px] w-full shrink-0">
-          <MenuSidebar />
+          <LeftSidebar />
         </div>
         <div className="flex-1">{children}</div>
       </div>

@@ -143,6 +143,14 @@ export const speciesEmoji: Record<string, string> = {
   other: "🐾",
 };
 
+export const recordIcon: Record<string, string> = {
+  vaccine: "💉",
+  "vet-visit": "🏥",
+  medication: "💊",
+  grooming: "✂️",
+  other: "📋",
+};
+
 export type TSpecies =
   | "dog"
   | "cat"

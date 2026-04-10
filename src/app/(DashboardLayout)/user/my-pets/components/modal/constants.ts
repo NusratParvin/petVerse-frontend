@@ -1,25 +1,5 @@
 import { TEmirate, TGender, TSpecies } from "@/src/types";
 
-// export const SPECIES = [
-//   "dog",
-//   "cat",
-//   "bird",
-//   "fish",
-//   "rabbit",
-//   "reptile",
-//   "other",
-// ] as const;
-// export const GENDERS = ["male", "female", "unknown"] as const;
-// export const EMIRATES = [
-//   "dubai",
-//   "abu-dhabi",
-//   "sharjah",
-//   "ajman",
-//   "ras-al-khaimah",
-//   "fujairah",
-//   "umm-al-quwain",
-// ] as const;
-
 export const SPECIES: TSpecies[] = [
   "dog",
   "cat",

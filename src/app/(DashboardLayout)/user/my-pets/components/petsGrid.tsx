@@ -3,8 +3,8 @@ import { speciesEmoji, TPet } from "@/src/types";
 import Link from "next/link";
 
 const speciesStyles: Record<string, string> = {
-  dog: "bg-steel-blue/15 hover:bg-steel-blue/25 text-steel-blue dark:text-steel-blue/90 border-steel-blue/25",
-  cat: "bg-lime-burst/12 hover:bg-lime-burst/20 text-lime-burst dark:text-lime-burst/90 border-lime-burst/20",
+  dog: "bg-steel-blue/20 hover:bg-steel-blue/25 text-steel-blue dark:text-steel-blue/90 border-steel-blue/25",
+  cat: "bg-lime-burst/20 hover:bg-lime-burst/20 text-lime-burst dark:text-lime-burst/90 border-lime-burst/20",
   bird: "bg-coral/12 hover:bg-coral/20 text-coral dark:text-coral/90 border-coral/20",
   fish: "bg-teal/12 hover:bg-teal/20 text-teal dark:text-teal/90 border-teal/20",
   rabbit:
@@ -29,13 +29,13 @@ const PetsGrid = ({ pets, setShowAddModal }: PetsGridProps) => {
   };
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {pets.map((pet: any) => {
-        const speciesStyle = speciesStyles[pet.species] || speciesStyles.other;
+      {pets?.map((pet: any) => {
+        const speciesStyle = speciesStyles[pet?.species] || speciesStyles.other;
         const age = calculateAge(pet.dateOfBirth);
         return (
           <Link
             key={pet._id}
-            href={`/user/pets/${pet._id}`}
+            href={`/user/my-pets/${pet._id}`}
             className="rounded-2xl overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg bg-white/85 dark:bg-white/5 border border-steel-blue/12 dark:border-white/7"
           >
             {/* Emoji banner */}

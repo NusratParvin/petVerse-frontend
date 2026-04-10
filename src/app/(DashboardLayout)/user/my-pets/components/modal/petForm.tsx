@@ -37,6 +37,8 @@ export default function PetForm({
 
   const whatsappAlerts = watch("whatsappAlerts");
 
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
       {/* Name */}
@@ -58,9 +60,18 @@ export default function PetForm({
           <label className={labelClass}>Species *</label>
           <select {...register("species")} className={inputClass}>
             {" "}
-            <option value="">Select species</option>
+            <option
+              value=""
+              className="dark:text-gray-800 dark:bg-steel-blue/30 text-[11px]"
+            >
+              Select species
+            </option>
             {SPECIES.map((s) => (
-              <option key={s} value={s}>
+              <option
+                key={s}
+                value={s}
+                className="dark:text-gray-800 dark:bg-steel-blue/30 text-[11px]"
+              >
                 {s.charAt(0).toUpperCase() + s.slice(1)}
               </option>
             ))}
@@ -70,9 +81,18 @@ export default function PetForm({
           <label className={labelClass}>Gender</label>
           <select {...register("gender")} className={inputClass}>
             {" "}
-            <option value="">Select gender</option>
+            <option
+              value=""
+              className="dark:text-gray-800 dark:bg-steel-blue/30 text-[11px]"
+            >
+              Select gender
+            </option>
             {GENDERS.map((g) => (
-              <option key={g} value={g}>
+              <option
+                key={g}
+                value={g}
+                className="dark:text-gray-800 dark:bg-steel-blue/30 text-[11px]"
+              >
                 {g.charAt(0).toUpperCase() + g.slice(1)}
               </option>
             ))}
@@ -97,13 +117,14 @@ export default function PetForm({
           <input
             {...register("dateOfBirth")}
             type="date"
+            max={today}
             className={inputClass}
           />
         </div>
         <div>
           <label className={labelClass}>Weight (kg)</label>
           <input
-            {...register("weight")}
+            {...register("weight", { valueAsNumber: true })}
             type="number"
             step="0.1"
             className={inputClass}
@@ -121,9 +142,18 @@ export default function PetForm({
       <div>
         <label className={labelClass}>Emirate</label>
         <select {...register("emirate")} className={inputClass}>
-          <option value="">Select emirate</option>
+          <option
+            value=""
+            className="dark:text-gray-800 dark:bg-steel-blue/30 text-[11px]"
+          >
+            Select emirate
+          </option>
           {EMIRATES.map((e) => (
-            <option key={e} value={e}>
+            <option
+              key={e}
+              value={e}
+              className="dark:text-gray-800 dark:bg-steel-blue/30 text-[11px]"
+            >
               {e
                 .split("-")
                 .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
@@ -175,6 +205,7 @@ export default function PetForm({
             {...register("whatsappNumber")}
             className={inputClass}
             placeholder="+971XXXXXXXXX"
+            required={whatsappAlerts}
           />
           {errors.whatsappNumber && (
             <p className="text-red-500 text-[10px] mt-1">

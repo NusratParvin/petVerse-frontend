@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useTheme } from "next-themes";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Edit2, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -9,26 +8,9 @@ import {
   useDeletePetMutation,
   useDeleteHealthRecordMutation,
 } from "@/src/redux/features/pets/petsApi";
-import EditPetModal from "../components/editPetModal";
 import AddHealthRecordModal from "../components/addHealthRecordModal";
-
-const speciesEmoji: Record<string, string> = {
-  dog: "🐕",
-  cat: "🐈",
-  bird: "🦜",
-  fish: "🐠",
-  rabbit: "🐇",
-  reptile: "🦎",
-  other: "🐾",
-};
-
-const recordIcon: Record<string, string> = {
-  vaccine: "💉",
-  "vet-visit": "🏥",
-  medication: "💊",
-  grooming: "✂️",
-  other: "📋",
-};
+import { recordIcon, speciesEmoji } from "@/src/types";
+import EditPetModal from "../components/editPetModal";
 
 function getDaysLeft(date: string) {
   const diff = new Date(date).getTime() - Date.now();
@@ -43,8 +25,6 @@ function calculateAge(dob?: string) {
 }
 
 export default function PetProfilePage() {
-  const { theme } = useTheme();
-  const isDark = theme === "petverse-dark";
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -56,14 +36,6 @@ export default function PetProfilePage() {
   const [showEditPet, setShowEditPet] = useState(false);
 
   const pet = data?.data;
-
-  const cardStyle = {
-    background: isDark ? "rgba(255,255,255,0.04)" : "#ffffff",
-    border: isDark
-      ? "1px solid rgba(255,255,255,0.07)"
-      : "1px solid rgba(70,130,180,0.1)",
-    boxShadow: isDark ? "none" : "0 2px 10px rgba(70,130,180,0.05)",
-  };
 
   const handleDeletePet = async () => {
     if (!confirm(`Delete ${pet?.name}? This cannot be undone.`)) return;
@@ -96,43 +68,34 @@ export default function PetProfilePage() {
 
   if (!pet) {
     return (
-      <div className="p-6 text-center">
-        <p
-          style={{
-            color: isDark ? "rgba(255,255,255,0.4)" : "rgba(30,30,60,0.4)",
-          }}
-        >
-          Pet not found
-        </p>
+      <div className="p-6 text-center text-gray-500 dark:text-white/40">
+        Pet not found
       </div>
     );
   }
+
+  const getDueColor = (daysLeft: number | null) => {
+    if (daysLeft === null) return "";
+    if (daysLeft <= 3) return "text-coral dark:text-coral";
+    if (daysLeft <= 7) return "text-steel-blue dark:text-steel-blue";
+    return "text-lime-burst dark:text-lime-burst";
+  };
 
   return (
     <div className="p-6 max-w-4xl">
       {/* Back button */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 mb-5 text-sm transition-colors hover:opacity-80"
-        style={{
-          color: isDark ? "rgba(255,255,255,0.4)" : "rgba(30,30,60,0.4)",
-        }}
+        className="flex items-center gap-2 mb-5 text-sm text-gray-500 dark:text-white/40 hover:opacity-80 transition-opacity"
       >
         <ArrowLeft size={14} />
         My Pets
       </button>
 
       {/* Hero card */}
-      <div className="rounded-2xl overflow-hidden mb-5" style={cardStyle}>
+      <div className="rounded-2xl overflow-hidden mb-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10 shadow-sm">
         {/* Banner */}
-        <div
-          className="h-32 flex items-center justify-center text-6xl relative"
-          style={{
-            background: isDark
-              ? "linear-gradient(135deg, rgba(70,130,180,0.15), rgba(30,50,120,0.1))"
-              : "linear-gradient(135deg, rgba(70,130,180,0.08), rgba(30,100,200,0.05))",
-          }}
-        >
+        <div className="h-32 flex items-center justify-center text-6xl relative bg-gradient-to-br from-steel-blue/10 to-steel-blue/5 dark:from-steel-blue/15 dark:to-steel-blue/5">
           {pet.profilePhoto ? (
             <img
               src={pet.profilePhoto}
@@ -140,32 +103,20 @@ export default function PetProfilePage() {
               className="w-full h-full object-cover"
             />
           ) : (
-            speciesEmoji[pet.species] || "🐾"
+            <span>{speciesEmoji[pet.species] || "🐾"}</span>
           )}
 
           {/* Action buttons */}
           <div className="absolute top-3 right-3 flex gap-2">
             <button
               onClick={() => setShowEditPet(true)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
-              style={{
-                background: isDark
-                  ? "rgba(255,255,255,0.1)"
-                  : "rgba(255,255,255,0.8)",
-                color: isDark ? "#fff" : "#4682B4",
-              }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-white/80 dark:bg-white/10 text-steel-blue dark:text-white hover:bg-white dark:hover:bg-white/20"
             >
               <Edit2 size={13} />
             </button>
             <button
               onClick={handleDeletePet}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
-              style={{
-                background: isDark
-                  ? "rgba(255,77,109,0.2)"
-                  : "rgba(255,77,109,0.1)",
-                color: "#FF4D6D",
-              }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-coral/10 dark:bg-coral/20 text-coral hover:bg-coral/20 dark:hover:bg-coral/30"
             >
               <Trash2 size={13} />
             </button>
@@ -174,18 +125,10 @@ export default function PetProfilePage() {
 
         {/* Info */}
         <div className="p-5">
-          <h1
-            className="font-grotesk text-xl font-bold mb-1"
-            style={{ color: isDark ? "rgba(255,255,255,0.92)" : "#1a1a2e" }}
-          >
+          <h1 className="font-grotesk text-xl font-bold mb-1 text-gray-900 dark:text-white/92">
             {pet.name}
           </h1>
-          <p
-            className="text-sm mb-4"
-            style={{
-              color: isDark ? "rgba(255,255,255,0.35)" : "rgba(30,30,60,0.45)",
-            }}
-          >
+          <p className="text-sm mb-4 text-gray-500 dark:text-white/35">
             {pet.breed || pet.species}
             {pet.gender && ` · ${pet.gender}`}
             {pet.emirate &&
@@ -205,27 +148,12 @@ export default function PetProfilePage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-xl p-3 text-center"
-                style={{
-                  background: isDark
-                    ? "rgba(255,255,255,0.05)"
-                    : "rgba(70,130,180,0.06)",
-                }}
+                className="rounded-xl p-3 text-center bg-steel-blue/5 dark:bg-white/5"
               >
-                <div
-                  className="font-grotesk font-bold text-sm"
-                  style={{ color: isDark ? "#B8FF2E" : "#4682B4" }}
-                >
+                <div className="font-grotesk font-bold text-sm text-steel-blue dark:text-lime-burst">
                   {stat.val}
                 </div>
-                <div
-                  className="text-[10px] mt-0.5"
-                  style={{
-                    color: isDark
-                      ? "rgba(255,255,255,0.3)"
-                      : "rgba(30,30,60,0.4)",
-                  }}
-                >
+                <div className="text-[10px] mt-0.5 text-gray-500 dark:text-white/30">
                   {stat.label}
                 </div>
               </div>
@@ -237,26 +165,14 @@ export default function PetProfilePage() {
       {/* Two column */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Health Passport */}
-        <div className="rounded-2xl p-5" style={cardStyle}>
+        <div className="rounded-2xl p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
           <div className="flex items-center justify-between mb-4">
-            <h2
-              className="font-grotesk font-bold text-sm"
-              style={{ color: isDark ? "rgba(255,255,255,0.85)" : "#1a1a2e" }}
-            >
+            <h2 className="font-grotesk font-bold text-sm text-gray-900 dark:text-white/85">
               Health Passport
             </h2>
             <button
               onClick={() => setShowAddRecord(true)}
-              className="text-[10px] font-semibold px-3 py-1 rounded-full transition-all"
-              style={{
-                background: isDark
-                  ? "rgba(184,255,46,0.12)"
-                  : "rgba(70,130,180,0.1)",
-                color: isDark ? "#B8FF2E" : "#4682B4",
-                border: isDark
-                  ? "1px solid rgba(184,255,46,0.2)"
-                  : "1px solid rgba(70,130,180,0.2)",
-              }}
+              className="text-[10px] font-semibold px-3 py-1 rounded-full transition-all bg-steel-blue/10 dark:bg-lime-burst/15 text-steel-blue dark:text-lime-burst border border-steel-blue/20 dark:border-lime-burst/25 hover:bg-steel-blue/20 dark:hover:bg-lime-burst/25"
             >
               + Add Record
             </button>
@@ -264,14 +180,7 @@ export default function PetProfilePage() {
 
           {pet.healthRecords?.length === 0 ? (
             <div className="text-center py-8">
-              <p
-                className="text-xs"
-                style={{
-                  color: isDark
-                    ? "rgba(255,255,255,0.25)"
-                    : "rgba(30,30,60,0.35)",
-                }}
-              >
+              <p className="text-xs text-gray-500 dark:text-white/25">
                 No health records yet
               </p>
             </div>
@@ -281,71 +190,30 @@ export default function PetProfilePage() {
                 const daysLeft = record.nextDueDate
                   ? getDaysLeft(record.nextDueDate)
                   : null;
-                const dueColor =
-                  daysLeft === null
-                    ? null
-                    : daysLeft <= 3
-                      ? "#FF4D6D"
-                      : daysLeft <= 7
-                        ? "#4682B4"
-                        : "#B8FF2E";
-                const dueDark =
-                  daysLeft === null
-                    ? null
-                    : daysLeft <= 3
-                      ? "#FF4D6D"
-                      : daysLeft <= 7
-                        ? "#4682B4"
-                        : "#5aab1e";
+                const dueColor = getDueColor(daysLeft);
 
                 return (
                   <div
                     key={record._id || idx}
-                    className="flex gap-3 py-2.5 relative group"
-                    style={{
-                      borderBottom:
-                        idx < pet.healthRecords.length - 1
-                          ? `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "rgba(70,130,180,0.07)"}`
-                          : "none",
-                    }}
+                    className="flex gap-3 py-2.5 relative group border-b border-steel-blue/10 dark:border-white/5 last:border-0"
                   >
                     {/* Timeline dot */}
-                    <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 mt-0.5"
-                      style={{
-                        background: isDark
-                          ? "rgba(70,130,180,0.15)"
-                          : "rgba(70,130,180,0.1)",
-                      }}
-                    >
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 mt-0.5 bg-steel-blue/10 dark:bg-steel-blue/15">
                       {recordIcon[record.type] || "📋"}
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p
-                        className="text-xs font-semibold"
-                        style={{
-                          color: isDark ? "rgba(255,255,255,0.85)" : "#1a1a2e",
-                        }}
-                      >
+                      <p className="text-xs font-semibold text-gray-900 dark:text-white/85">
                         {record.title}
                       </p>
-                      <p
-                        className="text-[10px] mt-0.5"
-                        style={{
-                          color: isDark
-                            ? "rgba(255,255,255,0.28)"
-                            : "rgba(30,30,60,0.38)",
-                        }}
-                      >
+                      <p className="text-[10px] mt-0.5 text-gray-500 dark:text-white/28">
                         {new Date(record.date).toLocaleDateString()}
                         {record.vetName && ` · ${record.vetName}`}
                         {record.cost && ` · AED ${record.cost}`}
                       </p>
                       {daysLeft !== null && (
                         <p
-                          className="text-[10px] font-medium mt-1"
-                          style={{ color: isDark ? dueColor! : dueDark! }}
+                          className={`text-[10px] font-medium mt-1 ${dueColor}`}
                         >
                           {daysLeft <= 0
                             ? "Overdue!"
@@ -357,13 +225,7 @@ export default function PetProfilePage() {
                     {/* Delete record */}
                     <button
                       onClick={() => handleDeleteRecord(record._id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0"
-                      style={{
-                        color: "#FF4D6D",
-                        background: isDark
-                          ? "rgba(255,77,109,0.1)"
-                          : "rgba(255,77,109,0.08)",
-                      }}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-coral bg-coral/10 dark:bg-coral/20 hover:bg-coral/20 dark:hover:bg-coral/30"
                     >
                       <Trash2 size={11} />
                     </button>
@@ -375,11 +237,8 @@ export default function PetProfilePage() {
         </div>
 
         {/* Pet Details */}
-        <div className="rounded-2xl p-5" style={cardStyle}>
-          <h2
-            className="font-grotesk font-bold text-sm mb-4"
-            style={{ color: isDark ? "rgba(255,255,255,0.85)" : "#1a1a2e" }}
-          >
+        <div className="rounded-2xl p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
+          <h2 className="font-grotesk font-bold text-sm mb-4 text-gray-900 dark:text-white/85">
             Pet Details
           </h2>
           <div className="flex flex-col">
@@ -404,60 +263,22 @@ export default function PetProfilePage() {
             ].map((row, idx, arr) => (
               <div
                 key={row.label}
-                className="flex justify-between items-center py-2"
-                style={{
-                  borderBottom:
-                    idx < arr.length - 1
-                      ? `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "rgba(70,130,180,0.07)"}`
-                      : "none",
-                }}
+                className="flex justify-between items-center py-2 border-b border-steel-blue/10 dark:border-white/5 last:border-0"
               >
-                <span
-                  className="text-xs"
-                  style={{
-                    color: isDark
-                      ? "rgba(255,255,255,0.35)"
-                      : "rgba(30,30,60,0.4)",
-                  }}
-                >
+                <span className="text-xs text-gray-500 dark:text-white/35">
                   {row.label}
                 </span>
-                <span
-                  className="text-xs font-medium capitalize"
-                  style={{
-                    color: isDark ? "rgba(255,255,255,0.85)" : "#1a1a2e",
-                  }}
-                >
+                <span className="text-xs font-medium capitalize text-gray-900 dark:text-white/85">
                   {row.val}
                 </span>
               </div>
             ))}
             {pet.microchipNumber && (
-              <div
-                className="mt-3 pt-3"
-                style={{
-                  borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "rgba(70,130,180,0.07)"}`,
-                }}
-              >
-                <p
-                  className="text-[10px] mb-1"
-                  style={{
-                    color: isDark
-                      ? "rgba(255,255,255,0.3)"
-                      : "rgba(30,30,60,0.4)",
-                  }}
-                >
+              <div className="mt-3 pt-3 border-t border-steel-blue/10 dark:border-white/5">
+                <p className="text-[10px] mb-1 text-gray-500 dark:text-white/30">
                   Microchip ID
                 </p>
-                <span
-                  className="font-mono text-[11px] px-2 py-1 rounded-md"
-                  style={{
-                    background: isDark
-                      ? "rgba(0,229,204,0.1)"
-                      : "rgba(0,150,136,0.08)",
-                    color: isDark ? "#00E5CC" : "#007a70",
-                  }}
-                >
+                <span className="font-mono text-[11px] px-2 py-1 rounded-md bg-teal/10 dark:bg-teal/10 text-teal dark:text-teal">
                   {pet.microchipNumber}
                 </span>
               </div>
@@ -474,7 +295,11 @@ export default function PetProfilePage() {
         />
       )}
       {showEditPet && (
-        <EditPetModal pet={pet} onClose={() => setShowEditPet(false)} />
+        <EditPetModal
+          pet={pet}
+          onClose={() => setShowEditPet(false)}
+          isOpen={showEditPet}
+        />
       )}
     </div>
   );
