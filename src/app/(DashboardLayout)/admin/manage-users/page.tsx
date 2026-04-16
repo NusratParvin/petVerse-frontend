@@ -15,7 +15,7 @@ import {
   User,
   Chip,
   Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Edit, Eye, Trash } from "lucide-react";
 import { toast } from "sonner";
 

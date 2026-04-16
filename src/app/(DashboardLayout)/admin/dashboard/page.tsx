@@ -506,7 +506,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 import { Users, FileText, DollarSign, ThumbsUp } from "lucide-react";
 import {
   LineChart,
@@ -638,7 +638,7 @@ export default function AdminDashboard() {
       .fill(0)
       .map((_, index) => {
         const date = new Date(
-          now.getTime() - (6 - index) * 24 * 60 * 60 * 1000
+          now.getTime() - (6 - index) * 24 * 60 * 60 * 1000,
         );
 
         return {
@@ -655,7 +655,7 @@ export default function AdminDashboard() {
 
       if (articleDate >= sevenDaysAgo) {
         const index = data.findIndex(
-          (d) => d.date === articleDate.toISOString().split("T")[0]
+          (d) => d.date === articleDate.toISOString().split("T")[0],
         );
 
         if (index !== -1) {
@@ -669,7 +669,7 @@ export default function AdminDashboard() {
 
       if (commentDate >= sevenDaysAgo) {
         const index = data.findIndex(
-          (d) => d.date === commentDate.toISOString().split("T")[0]
+          (d) => d.date === commentDate.toISOString().split("T")[0],
         );
 
         if (index !== -1) {
@@ -683,7 +683,7 @@ export default function AdminDashboard() {
 
       if (reactionDate >= sevenDaysAgo) {
         const index = data.findIndex(
-          (d) => d.date === reactionDate.toISOString().split("T")[0]
+          (d) => d.date === reactionDate.toISOString().split("T")[0],
         );
 
         if (index !== -1) {
@@ -710,7 +710,7 @@ export default function AdminDashboard() {
   const totalAmount =
     allTransactions?.data?.reduce(
       (acc: number, transaction: TTransaction) => acc + transaction.amount,
-      0
+      0,
     ) || 0;
   const revenue = totalAmount * 0.3;
 

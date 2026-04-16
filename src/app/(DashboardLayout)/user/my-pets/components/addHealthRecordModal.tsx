@@ -1,219 +1,313 @@
+// "use client";
+
+// import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/react";
+// import { useState } from "react";
+// import { toast } from "sonner";
+// import {
+//   Calendar,
+//   DollarSign,
+//   FileText,
+//   Stethoscope,
+//   Syringe,
+//   User,
+//   ClipboardList,
+// } from "lucide-react";
+// import { useAddHealthRecordMutation } from "@/src/redux/features/pets/petsApi";
+// import { inputClass, labelClass } from "./modal/petInfo/constants";
+
+// const TYPES = [
+//   { value: "vaccine", label: "Vaccine", icon: Syringe },
+//   { value: "vet-visit", label: "Vet Visit", icon: Stethoscope },
+//   { value: "medication", label: "Medication", icon: ClipboardList },
+//   { value: "grooming", label: "Grooming", icon: User },
+//   { value: "other", label: "Other", icon: FileText },
+// ];
+
+// interface AddHealthRecordModalProps {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   petId: string;
+// }
+
+// export default function AddHealthRecordModal({
+//   isOpen,
+//   onClose,
+//   petId,
+// }: AddHealthRecordModalProps) {
+//   const [addRecord, { isLoading }] = useAddHealthRecordMutation();
+
+//   const [form, setForm] = useState({
+//     type: "vaccine",
+//     title: "",
+//     date: "",
+//     nextDueDate: "",
+//     vetName: "",
+//     cost: "",
+//     notes: "",
+//   });
+
+//   const handleChange = (
+//     e: React.ChangeEvent<
+//       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+//     >,
+//   ) => {
+//     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+//   };
+
+//   const handleSubmit = async () => {
+//     if (!form.title || !form.date) {
+//       toast.error("Title and date are required");
+//       return;
+//     }
+//     try {
+//       await addRecord({
+//         petId,
+//         ...form,
+//         cost: form.cost ? Number(form.cost) : undefined,
+//       }).unwrap();
+//       toast.success("Health record added! 💉");
+//       onClose();
+//       // Reset form
+//       setForm({
+//         type: "vaccine",
+//         title: "",
+//         date: "",
+//         nextDueDate: "",
+//         vetName: "",
+//         cost: "",
+//         notes: "",
+//       });
+//     } catch (err: any) {
+//       toast.error(err?.data?.message || "Failed to add record");
+//     }
+//   };
+
+//   const SelectedTypeIcon =
+//     TYPES.find((t) => t.value === form.type)?.icon || FileText;
+
+//   return (
+//     <Modal
+//       isOpen={isOpen}
+//       onClose={onClose}
+//       placement="center"
+//       size="lg"
+//       motionProps={{
+//         variants: {
+//           enter: {
+//             y: 0,
+//             opacity: 1,
+//             transition: { duration: 0.5, ease: [0.25, 1, 0.5, 1] },
+//           },
+//           exit: {
+//             y: 20,
+//             opacity: 0,
+//             transition: { duration: 0.2, ease: [0.5, 0, 0.75, 0] },
+//           },
+//         },
+//       }}
+//       classNames={{
+//         backdrop: "bg-black/50 backdrop-blur-sm",
+//         base: "border border-steel-blue/20 dark:border-white/10 bg-white dark:bg-[#0d1020] rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar",
+//       }}
+//     >
+//       <ModalContent>
+//         <ModalHeader className="flex flex-col gap-0 pt-6 px-6 pb-2">
+//           <h2 className="text-base font-bold text-steel-blue dark:text-white/90">
+//             <SelectedTypeIcon
+//               className="inline-block mr-2 mb-1 text-steel-blue dark:text-lime-burst"
+//               size={16}
+//             />
+//             Add Health Record
+//           </h2>
+//           <p className="text-xs font-normal text-gray-500 dark:text-white/50">
+//             Track your pet's medical history, vaccinations, and vet visits
+//           </p>
+//         </ModalHeader>
+
+//         <ModalBody className="pb-6 px-6">
+//           <div className="flex flex-col gap-5">
+//             {/* Type Selection */}
+//             <div>
+//               <label className={labelClass}>Record Type</label>
+//               <div className="grid grid-cols-5 gap-2">
+//                 {TYPES.map((type) => {
+//                   const Icon = type.icon;
+//                   const isSelected = form.type === type.value;
+//                   return (
+//                     <button
+//                       key={type.value}
+//                       type="button"
+//                       onClick={() =>
+//                         setForm((prev) => ({ ...prev, type: type.value }))
+//                       }
+//                       className={`
+//                             flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all duration-200
+//                             ${
+//                               isSelected
+//                                 ? "bg-lime-burst/10 dark:bg-lime-burst/20 border-lime-burst dark:border-lime-burst"
+//                                 : "bg-steel-blue/5 dark:bg-white/5 border-steel-blue/15 dark:border-white/10 hover:bg-steel-blue/10 dark:hover:bg-white/10"
+//                             }
+//                             border
+//                           `}
+//                     >
+//                       <Icon
+//                         size={18}
+//                         className={
+//                           isSelected
+//                             ? "text-lime-burst"
+//                             : "text-steel-blue/60 dark:text-white/50"
+//                         }
+//                       />
+//                       <span
+//                         className={`text-[10px] font-medium ${isSelected ? "text-lime-burst" : "text-steel-blue/60 dark:text-white/50"}`}
+//                       >
+//                         {type.label}
+//                       </span>
+//                     </button>
+//                   );
+//                 })}
+//               </div>
+//             </div>
+
+//             {/* Title */}
+//             <div>
+//               <label className={labelClass}>Title *</label>
+//               <input
+//                 name="title"
+//                 value={form.title}
+//                 onChange={handleChange}
+//                 placeholder="e.g., Rabies Booster, Annual Checkup"
+//                 className={inputClass}
+//               />
+//             </div>
+
+//             {/* Date Fields */}
+//             <div className="grid grid-cols-2 gap-4">
+//               <div>
+//                 <label className={labelClass}>
+//                   <Calendar size={12} className="inline mr-1" />
+//                   Date *
+//                 </label>
+//                 <input
+//                   name="date"
+//                   type="date"
+//                   value={form.date}
+//                   onChange={handleChange}
+//                   className={inputClass}
+//                 />
+//               </div>
+//               <div>
+//                 <label className={labelClass}>
+//                   <Calendar size={12} className="inline mr-1" />
+//                   Next Due Date
+//                 </label>
+//                 <input
+//                   name="nextDueDate"
+//                   type="date"
+//                   value={form.nextDueDate}
+//                   onChange={handleChange}
+//                   className={inputClass}
+//                 />
+//               </div>
+//             </div>
+
+//             {/* Vet Name & Cost */}
+//             <div className="grid grid-cols-2 gap-4">
+//               <div>
+//                 <label className={labelClass}>
+//                   <User size={12} className="inline mr-1" />
+//                   Vet / Clinic Name
+//                 </label>
+//                 <input
+//                   name="vetName"
+//                   value={form.vetName}
+//                   onChange={handleChange}
+//                   placeholder="e.g., Dr. Ahmed"
+//                   className={inputClass}
+//                 />
+//               </div>
+//               <div>
+//                 <label className={labelClass}>
+//                   <DollarSign size={12} className="inline mr-1" />
+//                   Cost (AED)
+//                 </label>
+//                 <input
+//                   name="cost"
+//                   type="number"
+//                   value={form.cost}
+//                   onChange={handleChange}
+//                   placeholder="e.g., 150"
+//                   className={inputClass}
+//                 />
+//               </div>
+//             </div>
+
+//             {/* Notes */}
+//             <div>
+//               <label className={labelClass}>Notes</label>
+//               <textarea
+//                 name="notes"
+//                 value={form.notes}
+//                 onChange={handleChange}
+//                 placeholder="Additional notes about the visit, treatment, or medication..."
+//                 rows={3}
+//                 className={`${inputClass} resize-none`}
+//               />
+//             </div>
+
+//             {/* Submit Button */}
+//             <button
+//               onClick={handleSubmit}
+//               disabled={isLoading}
+//               className="w-full py-3 rounded-xl font-semibold text-sm mt-2 transition-all duration-200 bg-lime-burst hover:bg-lime-burst/90 text-[#0a0e1a] disabled:opacity-50 disabled:cursor-not-allowed"
+//             >
+//               {isLoading ? "Saving..." : "Save Record 💉"}
+//             </button>
+//           </div>
+//         </ModalBody>
+//       </ModalContent>
+//     </Modal>
+//   );
+// }
+
 "use client";
-import { useState } from "react";
-import { useTheme } from "next-themes";
-import { X } from "lucide-react";
+
 import { toast } from "sonner";
 import { useAddHealthRecordMutation } from "@/src/redux/features/pets/petsApi";
+import HealthRecordModal from "./modal/healthRecord/HealthRecordModal";
 
-const TYPES = ["vaccine", "vet-visit", "medication", "grooming", "other"];
+interface AddHealthRecordModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  petId: string;
+}
 
 export default function AddHealthRecordModal({
-  petId,
+  isOpen,
   onClose,
-}: {
-  petId: string;
-  onClose: () => void;
-}) {
-  const { theme } = useTheme();
-  const isDark = theme === "petverse-dark";
+  petId,
+}: AddHealthRecordModalProps) {
   const [addRecord, { isLoading }] = useAddHealthRecordMutation();
 
-  const [form, setForm] = useState({
-    type: "vaccine",
-    title: "",
-    date: "",
-    nextDueDate: "",
-    vetName: "",
-    cost: "",
-    notes: "",
-  });
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = async () => {
-    if (!form.title || !form.date) {
-      toast.error("Title and date are required");
-      return;
-    }
-    try {
-      await addRecord({
-        petId,
-        ...form,
-        cost: form.cost ? Number(form.cost) : undefined,
-      }).unwrap();
-      toast.success("Health record added! 💉");
-      onClose();
-    } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to add record");
-    }
-  };
-
-  const overlay = {
-    position: "fixed" as const,
-    inset: 0,
-    zIndex: 100,
-    background: "rgba(0,0,0,0.6)",
-    backdropFilter: "blur(4px)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "16px",
-  };
-  const modal = {
-    background: isDark ? "#0d1020" : "#ffffff",
-    border: isDark
-      ? "1px solid rgba(255,255,255,0.08)"
-      : "1px solid rgba(70,130,180,0.15)",
-    borderRadius: "20px",
-    width: "100%",
-    maxWidth: "440px",
-    padding: "24px",
-  };
-  const inputStyle = {
-    width: "100%",
-    padding: "9px 12px",
-    borderRadius: "10px",
-    fontSize: "13px",
-    outline: "none",
-    background: isDark ? "rgba(255,255,255,0.05)" : "rgba(70,130,180,0.04)",
-    border: isDark
-      ? "1px solid rgba(255,255,255,0.08)"
-      : "1px solid rgba(70,130,180,0.12)",
-    color: isDark ? "rgba(255,255,255,0.85)" : "#1a1a2e",
-  };
-  const labelStyle = {
-    fontSize: "11px",
-    fontWeight: 500 as const,
-    color: isDark ? "rgba(255,255,255,0.4)" : "rgba(30,30,60,0.5)",
-    marginBottom: "4px",
-    display: "block",
+  const handleSubmit = async (formData: any) => {
+    await addRecord({
+      petId,
+      ...formData,
+      cost: formData.cost ? Number(formData.cost) : undefined,
+    }).unwrap();
+    toast.success("Health record added! 💉");
+    onClose();
   };
 
   return (
-    <div
-      style={overlay}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div style={modal}>
-        <div className="flex items-center justify-between mb-5">
-          <h2
-            className="font-grotesk font-bold text-lg"
-            style={{ color: isDark ? "rgba(255,255,255,0.92)" : "#1a1a2e" }}
-          >
-            Add Health Record
-          </h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{
-              background: isDark
-                ? "rgba(255,255,255,0.06)"
-                : "rgba(70,130,180,0.08)",
-              color: isDark ? "rgba(255,255,255,0.5)" : "#4682B4",
-            }}
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <div>
-            <label style={labelStyle}>Type *</label>
-            <select
-              name="type"
-              value={form.type}
-              onChange={handleChange}
-              style={inputStyle}
-            >
-              {TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label style={labelStyle}>Title *</label>
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              placeholder="e.g. Rabies Booster"
-              style={inputStyle}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label style={labelStyle}>Date *</label>
-              <input
-                name="date"
-                type="date"
-                value={form.date}
-                onChange={handleChange}
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Next Due Date</label>
-              <input
-                name="nextDueDate"
-                type="date"
-                value={form.nextDueDate}
-                onChange={handleChange}
-                style={inputStyle}
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label style={labelStyle}>Vet Name</label>
-              <input
-                name="vetName"
-                value={form.vetName}
-                onChange={handleChange}
-                placeholder="e.g. Dr. Ahmed"
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Cost (AED)</label>
-              <input
-                name="cost"
-                type="number"
-                value={form.cost}
-                onChange={handleChange}
-                placeholder="e.g. 150"
-                style={inputStyle}
-              />
-            </div>
-          </div>
-          <div>
-            <label style={labelStyle}>Notes</label>
-            <textarea
-              name="notes"
-              value={form.notes}
-              onChange={handleChange}
-              placeholder="Optional notes..."
-              rows={2}
-              style={{ ...inputStyle, resize: "none" }}
-            />
-          </div>
-          <button
-            onClick={handleSubmit}
-            disabled={isLoading}
-            className="w-full py-3 rounded-xl font-semibold text-sm mt-1"
-            style={{ background: "#B8FF2E", color: "#0a0e1a" }}
-          >
-            {isLoading ? "Saving..." : "Save Record 💉"}
-          </button>
-        </div>
-      </div>
-    </div>
+    <HealthRecordModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Add Health Record"
+      subtitle="Track your pet's medical history"
+      onSubmit={handleSubmit}
+      isLoading={isLoading}
+      submitLabel="Save Record 💉"
+    />
   );
 }

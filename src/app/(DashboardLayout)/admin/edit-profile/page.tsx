@@ -1,13 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardBody,
-  Avatar,
-  Button,
-  Input,
-  Spinner,
-} from "@nextui-org/react";
+import { Card, CardBody, Avatar, Button, Input, Spinner } from "@heroui/react";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -80,7 +73,7 @@ const AdminEditProfile = () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
       const data = await res.json();
 

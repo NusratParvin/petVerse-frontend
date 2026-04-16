@@ -1,5 +1,5 @@
 "use client";
-import { useDisclosure } from "@nextui-org/react";
+import { useDisclosure } from "@heroui/react";
 import Link from "next/link";
 
 import CreateArticleModal from "./createArticle";

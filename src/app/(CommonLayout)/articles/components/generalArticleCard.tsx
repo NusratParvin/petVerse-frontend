@@ -1,6 +1,6 @@
 import Image from "next/image";
 import NextLink from "next/link";
-import { Chip } from "@nextui-org/react";
+import { Chip } from "@heroui/react";
 
 import { TArticle } from "@/src/types";
 import { useAppSelector } from "@/src/redux/hooks";

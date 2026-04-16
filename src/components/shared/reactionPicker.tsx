@@ -1,38 +1,3 @@
-// import { REACTION_TYPE } from "@/src/types";
-
-// const EmojiReactionDock = ({
-//   onReact,
-// }: {
-//   onReact: (reaction: REACTION_TYPE) => void;
-// }) => {
-//   const emojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
-//   const emojiToEnum: Record<string, REACTION_TYPE> = {
-//     "👍": REACTION_TYPE.LIKE,
-//     "❤️": REACTION_TYPE.LOVE,
-//     "😂": REACTION_TYPE.HAHA,
-//     "😮": REACTION_TYPE.WOW,
-//     "😢": REACTION_TYPE.SAD,
-//     "😡": REACTION_TYPE.ANGRY,
-//   };
-
-//   console.log(reactionSummary);
-
-//   return (
-//     <div className="bg-transparent shadow-none rounded-none flex space-x-1">
-//       {emojis.map((emoji, index) => (
-//         <button
-//           key={index}
-//           onClick={() => onReact(emojiToEnum[emoji])}
-//           className="text-lg hover:scale-125 transition-transform"
-//         >
-//           {emoji}
-//         </button>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default EmojiReactionDock;
 import { REACTION_TYPE } from "@/src/types";
 
 const EmojiReactionDock = ({

@@ -19,7 +19,7 @@ import {
   TableCell,
   Chip,
   Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Check, Eye, Trash, UserCheck, UserX, X } from "lucide-react";
 import { toast } from "sonner"; // Import Sonner toast
 import { TArticle } from "@/src/types";
@@ -40,7 +40,7 @@ const ArticleManagement = () => {
   // Handle View
   const handleView = (articleId: string) => {
     const article = allArticles?.data?.find(
-      (art: TArticle) => art._id === articleId
+      (art: TArticle) => art._id === articleId,
     );
     if (article) {
       setSelectedArticle(article);
@@ -73,7 +73,7 @@ const ArticleManagement = () => {
   // Handle Publish/Unpublish
   const handleUpdatePublish = async (
     articleId: string,
-    isPublished: boolean
+    isPublished: boolean,
   ) => {
     const toastId = toast("Processing...");
     try {
@@ -89,7 +89,7 @@ const ArticleManagement = () => {
         {
           id: toastId,
           className: "text-green-500", // Success text color
-        }
+        },
       );
     } catch (error) {
       toast.error(
@@ -97,11 +97,11 @@ const ArticleManagement = () => {
         {
           id: toastId,
           className: "text-red-500", // Error text color
-        }
+        },
       );
       console.error(
         `Failed to ${isPublished ? "publish" : "unpublish"} article:`,
-        error
+        error,
       );
     }
   };

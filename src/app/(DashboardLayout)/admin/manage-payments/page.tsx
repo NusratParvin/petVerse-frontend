@@ -13,7 +13,7 @@ import {
   TableRow,
   TableCell,
   Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Eye, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { TTransaction } from "@/src/types";
@@ -39,7 +39,7 @@ const TransactionManagement = () => {
   // Handle View
   const handleView = (transactionId: string) => {
     const transaction = allTransactions?.data?.find(
-      (trans: TTransaction) => trans._id === transactionId
+      (trans: TTransaction) => trans._id === transactionId,
     );
     if (transaction) {
       setSelectedTransaction(transaction);
@@ -138,7 +138,7 @@ const TransactionManagement = () => {
                         </div>
                       </TableCell>
                     </TableRow>
-                  )
+                  ),
                 )}
               </TableBody>
             </Table>

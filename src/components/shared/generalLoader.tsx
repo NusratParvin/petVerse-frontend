@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Skeleton, Button } from "@nextui-org/react";
+import { Card, Skeleton, Button } from "@heroui/react";
 
 export default function GeneralLoader() {
   const [isLoaded, setIsLoaded] = React.useState(false);

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Card, CardBody, Button, Avatar, Chip } from "@nextui-org/react";
+import { Card, CardBody, Button, Avatar, Chip } from "@heroui/react";
 import {
   ArrowUp,
   ArrowDown,

@@ -10,19 +10,20 @@ import {
   Select,
   SelectItem,
   Checkbox,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useForm, FieldValues } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 
-import "react-quill/dist/quill.snow.css"; // Import Quill styles
+// import "react-quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
+
 import { useRouter } from "next/navigation";
 
 import { useCreateArticleMutation } from "@/src/redux/features/articles/articlesApi";
 
-// Dynamically import Quill editor for SSR
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 interface CreateArticleModalProps {
   isOpen: boolean;
@@ -139,12 +140,8 @@ const CreateArticleModal = ({
                   fullWidth
                   isInvalid={!!errors.category}
                 >
-                  <SelectItem key="Tip" value="Tip">
-                    Tip
-                  </SelectItem>
-                  <SelectItem key="Story" value="Story">
-                    Story
-                  </SelectItem>
+                  <SelectItem key="Tip">Tip</SelectItem>
+                  <SelectItem key="Story">Story</SelectItem>
                 </Select>
 
                 {/* Image Upload */}

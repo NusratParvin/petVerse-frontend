@@ -4,7 +4,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { TTransaction } from "@/src/types";
 
 interface TransactionViewProps {

@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardHeader, CardFooter, Image } from "@nextui-org/react";
+import { Card, CardHeader, CardFooter, Image } from "@heroui/react";
 import { CalendarIcon, PenIcon } from "lucide-react";
 import Link from "next/link";
 

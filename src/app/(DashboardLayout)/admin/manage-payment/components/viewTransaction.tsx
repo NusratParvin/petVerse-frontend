@@ -9,7 +9,7 @@ import {
   Card,
   CardBody,
   Chip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import {
   DollarSign,
   User,
@@ -140,7 +140,7 @@ export default function AdminTransactionModal({
             onPress={() => {
               console.log(
                 "Additional action for transaction:",
-                transaction._id
+                transaction._id,
               );
             }}
           >

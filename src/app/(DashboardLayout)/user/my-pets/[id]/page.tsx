@@ -1,16 +1,16 @@
 "use client";
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Edit2, Trash2, Plus } from "lucide-react";
+import { ArrowLeft, Edit2, Trash2, Plus, PawPrint } from "lucide-react";
 import { toast } from "sonner";
 import {
   useGetSinglePetQuery,
   useDeletePetMutation,
   useDeleteHealthRecordMutation,
 } from "@/src/redux/features/pets/petsApi";
-import AddHealthRecordModal from "../components/addHealthRecordModal";
 import { recordIcon, speciesEmoji } from "@/src/types";
 import EditPetModal from "../components/editPetModal";
+import AddHealthRecordModal from "../components/addHealthRecordModal";
 
 function getDaysLeft(date: string) {
   const diff = new Date(date).getTime() - Date.now();
@@ -29,13 +29,13 @@ export default function PetProfilePage() {
   const router = useRouter();
   const id = params.id as string;
 
-  const { data, isLoading } = useGetSinglePetQuery(id);
+  const { data: petDetails, isLoading } = useGetSinglePetQuery(id);
   const [deletePet] = useDeletePetMutation();
   const [deleteHealthRecord] = useDeleteHealthRecordMutation();
   const [showAddRecord, setShowAddRecord] = useState(false);
   const [showEditPet, setShowEditPet] = useState(false);
 
-  const pet = data?.data;
+  const pet = petDetails?.data;
 
   const handleDeletePet = async () => {
     if (!confirm(`Delete ${pet?.name}? This cannot be undone.`)) return;
@@ -82,14 +82,17 @@ export default function PetProfilePage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="px-3 py-1 w-full">
       {/* Back button */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 mb-5 text-sm text-gray-500 dark:text-white/40 hover:opacity-80 transition-opacity"
+        className="flex items-center gap-2 mb-2 text-xs font-semibold text-gray-500 dark:text-white/40 hover:text-steel-blue  transition-opacity"
       >
         <ArrowLeft size={14} />
-        My Pets
+        <div className="flex gap-1">
+          My Pets
+          <PawPrint size={14} className="mb-1" />
+        </div>
       </button>
 
       {/* Hero card */}
@@ -125,10 +128,10 @@ export default function PetProfilePage() {
 
         {/* Info */}
         <div className="p-5">
-          <h1 className="font-grotesk text-xl font-bold mb-1 text-gray-900 dark:text-white/92">
+          <h1 className="font-grotesk text-xl font-bold mb-1 text-gray-900 dark:text-white/90">
             {pet.name}
           </h1>
-          <p className="text-sm mb-4 text-gray-500 dark:text-white/35">
+          <p className="text-sm mb-4 text-gray-500 dark:text-white/50">
             {pet.breed || pet.species}
             {pet.gender && ` · ${pet.gender}`}
             {pet.emirate &&
@@ -292,6 +295,7 @@ export default function PetProfilePage() {
         <AddHealthRecordModal
           petId={id}
           onClose={() => setShowAddRecord(false)}
+          isOpen={showAddRecord}
         />
       )}
       {showEditPet && (

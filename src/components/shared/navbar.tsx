@@ -5,15 +5,15 @@ import {
   NavbarMenu,
   NavbarMenuToggle,
   NavbarMenuItem,
-} from "@nextui-org/navbar";
-import { Link } from "@nextui-org/link";
+} from "@heroui/react";
+import { Link } from "@heroui/react";
 import {
   Avatar,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 

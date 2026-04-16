@@ -11,7 +11,7 @@ import {
   CardBody,
   Chip,
   Divider,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import {
   User,
   Mail,

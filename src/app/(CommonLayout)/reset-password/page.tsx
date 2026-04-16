@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation"; // For extracting query parameters
-import { useForm } from "react-hook-form"; // React Hook Form
-import { useRouter } from "next/navigation"; // For redirection after success
-import { Input, Button, Card, Spacer } from "@nextui-org/react"; // NextUI components
-import { toast } from "sonner"; // Toast for notifications
-import { Eye, EyeOff } from "lucide-react"; // Eye icons for visibility toggle
+import { useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { Input, Button, Card, Spacer } from "@heroui/react";
+import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 import { useResetPasswordMutation } from "@/src/redux/features/auth/authApi";
 

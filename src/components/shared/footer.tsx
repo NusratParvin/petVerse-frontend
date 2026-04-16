@@ -1,6 +1,6 @@
 "use client";
 
-import { Input, Button, Link } from "@nextui-org/react";
+import { Input, Button, Link } from "@heroui/react";
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 import Image from "next/image";
 
@@ -18,7 +18,9 @@ const Footer = () => {
             src={logo}
             width={42}
           />
-          <h2 className="text-2xl font-semibold text-customBlue">fishCove</h2>{" "}
+          <h2 className="text-2xl font-semibold text-customBlue">
+            fishCove
+          </h2>{" "}
         </div>
 
         <p className="text-center text-[#000000] mb-12 mt-2 max-w-3xl mx-auto">

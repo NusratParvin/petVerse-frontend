@@ -9,7 +9,7 @@ import {
   Chip,
   Divider,
   Skeleton,
-} from "@nextui-org/react";
+} from "@heroui/react";
 // import { Mail, Edit, Phone, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Edit, Mail, Phone, MapPin, FileText, Users } from "lucide-react";

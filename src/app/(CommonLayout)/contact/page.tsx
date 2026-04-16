@@ -1,4 +1,4 @@
-"use client"; // Ensure this component can use hooks
+"use client";
 import Image from "next/image";
 
 import bg from "@/src/assets/images/StockCake-Cosmic Koi Dance_1727673723.jpg";
