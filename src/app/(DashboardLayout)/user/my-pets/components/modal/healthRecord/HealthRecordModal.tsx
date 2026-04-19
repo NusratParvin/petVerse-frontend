@@ -38,11 +38,12 @@ export default function HealthRecordModal({
       size="lg"
       classNames={{
         backdrop: "bg-black/50 backdrop-blur-sm",
-        base: "border border-steel-blue/20 dark:border-white/10 bg-white dark:bg-[#0d1020] rounded-xl",
+        base: "border border-steel-blue/20 dark:border-white/10 bg-white dark:bg-[#0d1020] rounded-lg max-h-[85vh]  p-4 ",
       }}
     >
       <ModalContent>
-        <ModalHeader className="pt-6 px-6 pb-2">
+        {/* <ModalHeader className="pt-6 px-6 pb-2"> */}
+        <ModalHeader className="flex flex-col gap-0">
           <h2 className="text-base font-bold text-steel-blue dark:text-white/90">
             <CurrentIcon
               className="inline-block mr-2 text-lime-burst"
@@ -53,7 +54,7 @@ export default function HealthRecordModal({
           <p className="text-xs text-gray-500 dark:text-white/50">{subtitle}</p>
         </ModalHeader>
 
-        <ModalBody className="pb-6 px-6">
+        <ModalBody className="pb-6 overflow-y-auto custom-scrollbar">
           <HealthRecordForm
             initialData={initialData}
             onSubmit={onSubmit}

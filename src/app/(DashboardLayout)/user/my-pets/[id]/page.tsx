@@ -1,17 +1,18 @@
 "use client";
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Edit2, Trash2, Plus, PawPrint } from "lucide-react";
+import { ArrowLeft, Edit2, Trash2, Plus, PawPrint, Pen } from "lucide-react";
 import { toast } from "sonner";
 import {
   useGetSinglePetQuery,
   useDeletePetMutation,
   useDeleteHealthRecordMutation,
 } from "@/src/redux/features/pets/petsApi";
-import { recordIcon, speciesEmoji } from "@/src/types";
+import { recordIcon, speciesEmoji, THealthRecord } from "@/src/types";
 import EditPetModal from "../components/editPetModal";
-import AddHealthRecordModal from "../components/addHealthRecordModal";
+import EditHealthRecord from "../components/editHealthRecord";
 
+import AddHealthRecord from "../components/addHealthRecord";
 function getDaysLeft(date: string) {
   const diff = new Date(date).getTime() - Date.now();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
@@ -34,8 +35,18 @@ export default function PetProfilePage() {
   const [deleteHealthRecord] = useDeleteHealthRecordMutation();
   const [showAddRecord, setShowAddRecord] = useState(false);
   const [showEditPet, setShowEditPet] = useState(false);
+  const [showEditRecord, setShowEditRecord] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<THealthRecord | null>(
+    null,
+  );
 
   const pet = petDetails?.data;
+
+  const handleEditHealthRecord = (record: THealthRecord) => {
+    // console.log(record);
+    setSelectedRecord(record);
+    setShowEditRecord(true);
+  };
 
   const handleDeletePet = async () => {
     if (!confirm(`Delete ${pet?.name}? This cannot be undone.`)) return;
@@ -48,7 +59,7 @@ export default function PetProfilePage() {
     }
   };
 
-  const handleDeleteRecord = async (recordId: string) => {
+  const handleDeleteHealthRecord = async (recordId: string) => {
     if (!confirm("Delete this health record?")) return;
     try {
       await deleteHealthRecord({ petId: id, recordId }).unwrap();
@@ -86,17 +97,17 @@ export default function PetProfilePage() {
       {/* Back button */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 mb-2 text-xs font-semibold text-gray-500 dark:text-white/40 hover:text-steel-blue  transition-opacity"
+        className="flex items-center gap-2 mb-2 text-sm font-semibold text-gray-500 dark:text-lime-burst hover:text-steel-blue dark:hover:text-white/90 transition-opacity"
       >
         <ArrowLeft size={14} />
         <div className="flex gap-1">
           My Pets
-          <PawPrint size={14} className="mb-1" />
+          <PawPrint size={15} className="mt-0.5" />
         </div>
       </button>
 
       {/* Hero card */}
-      <div className="rounded-2xl overflow-hidden mb-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10 shadow-sm">
+      <div className="rounded-lg overflow-hidden mb-2 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10 shadow-sm">
         {/* Banner */}
         <div className="h-32 flex items-center justify-center text-6xl relative bg-gradient-to-br from-steel-blue/10 to-steel-blue/5 dark:from-steel-blue/15 dark:to-steel-blue/5">
           {pet.profilePhoto ? (
@@ -166,9 +177,9 @@ export default function PetProfilePage() {
       </div>
 
       {/* Two column */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {/* Health Passport */}
-        <div className="rounded-2xl p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
+        <div className="rounded-lg p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-grotesk font-bold text-sm text-gray-900 dark:text-white/85">
               Health Passport
@@ -189,7 +200,7 @@ export default function PetProfilePage() {
             </div>
           ) : (
             <div className="flex flex-col gap-1">
-              {pet.healthRecords?.map((record: any, idx: number) => {
+              {pet.healthRecords?.map((record: any, index: number) => {
                 const daysLeft = record.nextDueDate
                   ? getDaysLeft(record.nextDueDate)
                   : null;
@@ -197,8 +208,8 @@ export default function PetProfilePage() {
 
                 return (
                   <div
-                    key={record._id || idx}
-                    className="flex gap-3 py-2.5 relative group border-b border-steel-blue/10 dark:border-white/5 last:border-0"
+                    key={record._id}
+                    className="flex gap-3 py-2.5 relative group border-b border-steel-blue/10 dark:border-white/10 "
                   >
                     {/* Timeline dot */}
                     <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 mt-0.5 bg-steel-blue/10 dark:bg-steel-blue/15">
@@ -225,13 +236,21 @@ export default function PetProfilePage() {
                       )}
                     </div>
 
-                    {/* Delete record */}
-                    <button
-                      onClick={() => handleDeleteRecord(record._id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-coral bg-coral/10 dark:bg-coral/20 hover:bg-coral/20 dark:hover:bg-coral/30"
-                    >
-                      <Trash2 size={11} />
-                    </button>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleEditHealthRecord(record)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-green bg-green/10 dark:bg-green/20 hover:bg-green/20 dark:hover:bg-green/30"
+                      >
+                        <Pen size={11} />
+                      </button>
+                      {/* Delete record */}
+                      <button
+                        onClick={() => handleDeleteHealthRecord(record._id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-coral bg-coral/10 dark:bg-coral/20 hover:bg-coral/20 dark:hover:bg-coral/30"
+                      >
+                        <Trash2 size={11} />
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -240,7 +259,7 @@ export default function PetProfilePage() {
         </div>
 
         {/* Pet Details */}
-        <div className="rounded-2xl p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
+        <div className="rounded-lg p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
           <h2 className="font-grotesk font-bold text-sm mb-4 text-gray-900 dark:text-white/85">
             Pet Details
           </h2>
@@ -263,7 +282,7 @@ export default function PetProfilePage() {
                 val: pet.whatsappAlerts ? "On" : "Off",
               },
               { label: "WhatsApp Number", val: pet.whatsappNumber || "—" },
-            ].map((row, idx, arr) => (
+            ].map((row) => (
               <div
                 key={row.label}
                 className="flex justify-between items-center py-2 border-b border-steel-blue/10 dark:border-white/5 last:border-0"
@@ -292,7 +311,7 @@ export default function PetProfilePage() {
 
       {/* Modals */}
       {showAddRecord && (
-        <AddHealthRecordModal
+        <AddHealthRecord
           petId={id}
           onClose={() => setShowAddRecord(false)}
           isOpen={showAddRecord}
@@ -303,6 +322,14 @@ export default function PetProfilePage() {
           pet={pet}
           onClose={() => setShowEditPet(false)}
           isOpen={showEditPet}
+        />
+      )}
+      {showEditRecord && selectedRecord && (
+        <EditHealthRecord
+          isOpen={showEditRecord}
+          onClose={() => setShowEditRecord(false)}
+          petId={id}
+          healthRecord={selectedRecord}
         />
       )}
     </div>
