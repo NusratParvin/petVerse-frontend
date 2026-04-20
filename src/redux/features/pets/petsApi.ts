@@ -65,6 +65,15 @@ export const petsApi = baseApi.injectEndpoints({
       ],
     }),
 
+    // ── get single  health record ──
+    getSingleHealthRecord: builder.query({
+      query: ({ petId, recordId }) => ({
+        url: `/pets/${petId}/health-record/`,
+        method: "GET",
+        body: recordId,
+      }),
+    }),
+
     // ── Update health record ──
     updateHealthRecord: builder.mutation({
       query: ({ petId, recordId, ...updateData }) => ({
@@ -116,6 +125,7 @@ export const {
   useUpdatePetMutation,
   useDeletePetMutation,
   useAddHealthRecordMutation,
+  useGetSingleHealthRecordQuery,
   useUpdateHealthRecordMutation,
   useDeleteHealthRecordMutation,
   useGetUpcomingRemindersQuery,

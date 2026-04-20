@@ -6,9 +6,9 @@ import { useCurrentUser } from "@/src/redux/features/auth/authSlice";
 import { useAppSelector } from "@/src/redux/hooks";
 import { Avatar } from "@heroui/react";
 
-import PetSection from "./petSection";
 import { navItems } from "./menuConstants";
 import MenuSection from "./menuSection";
+import PetSection from "./petSection/petSection";
 
 export default function LeftSidebar() {
   const user = useAppSelector(useCurrentUser);
@@ -59,10 +59,7 @@ export default function LeftSidebar() {
       </nav>
 
       {/* Desktop Sidebar */}
-      <aside
-        className="hidden lg:flex fixed top-0 left-0 h-screen w-[220px] flex-col z-40 overflow-y-auto transition-all duration-500 bg-white dark:bg-bg border-r border-steel-blue/10 dark:border-lime-burst/20 custom-scrollbar"
-        style={{ top: "56px", height: "calc(100vh - 56px)" }}
-      >
+      <aside className="hidden lg:flex fixed top-12   h-[calc(100vh-50px)] left-0   w-[220px] flex-col z-40 overflow-y-auto transition-all duration-500 bg-white dark:bg-bg border-r border-steel-blue/10 dark:border-lime-burst/20 custom-scrollbar ">
         {/* My Pets Section */}
         <PetSection />
 

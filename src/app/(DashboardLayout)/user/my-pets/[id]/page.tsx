@@ -1,18 +1,28 @@
 "use client";
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Edit2, Trash2, Plus, PawPrint, Pen } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit2,
+  Trash2,
+  Plus,
+  PawPrint,
+  Pen,
+  Eye,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   useGetSinglePetQuery,
   useDeletePetMutation,
   useDeleteHealthRecordMutation,
+  useGetSingleHealthRecordQuery,
 } from "@/src/redux/features/pets/petsApi";
 import { recordIcon, speciesEmoji, THealthRecord } from "@/src/types";
 import EditPetModal from "../components/editPetModal";
 import EditHealthRecord from "../components/editHealthRecord";
 
 import AddHealthRecord from "../components/addHealthRecord";
+import ViewHealthRecord from "../components/viewHealthRecord";
 function getDaysLeft(date: string) {
   const diff = new Date(date).getTime() - Date.now();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
@@ -36,16 +46,25 @@ export default function PetProfilePage() {
   const [showAddRecord, setShowAddRecord] = useState(false);
   const [showEditPet, setShowEditPet] = useState(false);
   const [showEditRecord, setShowEditRecord] = useState(false);
+  const [showHealthRecordDetails, setShowHealthRecordDetails] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<THealthRecord | null>(
     null,
   );
 
   const pet = petDetails?.data;
+  console.log(pet);
 
   const handleEditHealthRecord = (record: THealthRecord) => {
     // console.log(record);
     setSelectedRecord(record);
     setShowEditRecord(true);
+  };
+
+  const handleViewHealthRecord = (record: THealthRecord) => {
+    // console.log(record);
+
+    setSelectedRecord(record);
+    setShowHealthRecordDetails(true);
   };
 
   const handleDeletePet = async () => {
@@ -89,7 +108,7 @@ export default function PetProfilePage() {
     if (daysLeft === null) return "";
     if (daysLeft <= 3) return "text-coral dark:text-coral";
     if (daysLeft <= 7) return "text-steel-blue dark:text-steel-blue";
-    return "text-lime-burst dark:text-lime-burst";
+    return "text-green dark:text-lime-burst";
   };
 
   return (
@@ -238,6 +257,12 @@ export default function PetProfilePage() {
 
                     <div className="flex gap-1">
                       <button
+                        onClick={() => handleViewHealthRecord(record)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-teal bg-teal/10 dark:bg-teal/20 hover:bg-teal/20 dark:hover:bg-teal/30"
+                      >
+                        <Eye size={11} />
+                      </button>
+                      <button
                         onClick={() => handleEditHealthRecord(record)}
                         className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-green bg-green/10 dark:bg-green/20 hover:bg-green/20 dark:hover:bg-green/30"
                       >
@@ -329,6 +354,15 @@ export default function PetProfilePage() {
           isOpen={showEditRecord}
           onClose={() => setShowEditRecord(false)}
           petId={id}
+          healthRecord={selectedRecord}
+        />
+      )}
+
+      {showHealthRecordDetails && selectedRecord && (
+        <ViewHealthRecord
+          isOpen={showHealthRecordDetails}
+          onClose={() => setShowHealthRecordDetails(false)}
+          // petId={id}
           healthRecord={selectedRecord}
         />
       )}
