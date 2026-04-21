@@ -14,12 +14,15 @@ interface AddPetModalProps {
 export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
   const [createPet, { isLoading }] = useCreateMyPetMutation();
 
-  const handleSubmit = async (data: any) => {
-    await createPet({
-      ...data,
-      weight: data.weight ? Number(data.weight) : undefined,
-    }).unwrap();
-    toast.success(`${data.name} added successfully! 🐾`);
+  const handleSubmit = async (formData: any) => {
+    const payload = {
+      ...formData,
+      // profilePhoto: formData.imageFile,
+
+      weight: formData.weight ? Number(formData.weight) : undefined,
+    };
+    await createPet(payload).unwrap();
+    toast.success(`${formData.name} added successfully! 🐾`);
   };
 
   return (

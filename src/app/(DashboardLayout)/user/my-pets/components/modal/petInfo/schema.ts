@@ -13,6 +13,7 @@ export const petSchema = z.object({
   isNeutered: z.boolean(),
   whatsappAlerts: z.boolean(),
   whatsappNumber: z.string().optional(),
+  profilePhoto: z.string().optional(),
 });
 
 export type PetFormData = z.infer<typeof petSchema>;
@@ -30,4 +31,5 @@ export const petToFormData = (pet: any): PetFormData => ({
   isNeutered: pet.isNeutered ?? false,
   whatsappAlerts: pet.whatsappAlerts ?? false,
   whatsappNumber: pet.whatsappNumber || "",
+  profilePhoto: pet.profilePhoto || "",
 });

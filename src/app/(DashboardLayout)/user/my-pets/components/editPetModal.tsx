@@ -20,13 +20,17 @@ export default function EditPetModal({
 }: EditPetModalProps) {
   const [updatePet, { isLoading }] = useUpdatePetMutation();
 
-  const handleSubmit = async (data: any) => {
-    await updatePet({
+  const handleSubmit = async (formData: any) => {
+    const payload = {
       id: pet._id,
-      ...data,
-      weight: data.weight ? Number(data.weight) : undefined,
-    }).unwrap();
-    toast.success(`${data.name} updated successfully!  `);
+      ...formData,
+      // profilePhoto: formData.imageFile,
+
+      weight: formData.weight ? Number(formData.weight) : undefined,
+    };
+    console.log(payload);
+    await updatePet(payload).unwrap();
+    toast.success(`${formData.name} updated successfully!  `);
   };
 
   return (

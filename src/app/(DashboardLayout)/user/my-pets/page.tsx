@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Plus, PawPrint } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useGetMyPetsQuery } from "@/src/redux/features/pets/petsApi";
 import AddPetModal from "./components/addPetModal";
 import { Button } from "@heroui/react";

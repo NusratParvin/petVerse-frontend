@@ -52,7 +52,7 @@ export default function PetProfilePage() {
   );
 
   const pet = petDetails?.data;
-  console.log(pet);
+  // console.log(pet);
 
   const handleEditHealthRecord = (record: THealthRecord) => {
     // console.log(record);
@@ -72,7 +72,7 @@ export default function PetProfilePage() {
     try {
       await deletePet(id).unwrap();
       toast.success("Pet deleted");
-      router.push("/user/pets");
+      router.push("/user/my-pets");
     } catch {
       toast.error("Failed to delete pet");
     }

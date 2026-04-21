@@ -209,3 +209,53 @@ export type TPet = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+//vets
+
+export type TSpeciality =
+  | "dogs"
+  | "cats"
+  | "birds"
+  | "fish"
+  | "rabbits"
+  | "reptiles"
+  | "exotic"
+  | "small-animals"
+  | "emergency"
+  | "surgery"
+  | "dental"
+  | "dermatology"
+  | "ophthalmology"
+  | "nutrition";
+
+export type TVet = {
+  _id: string;
+  name: string;
+  clinicName: string;
+  emirate: TEmirate;
+  area: string;
+  address: string;
+  phone: string;
+  whatsapp?: string;
+  email?: string;
+  website?: string;
+  coverPhoto?: string;
+  photos?: string[];
+  specialities: TSpeciality[];
+  workingHours: { day: string; open: string; close: string; closed: boolean }[];
+  serviceRates: { service: string; priceFrom: number; priceTo: number }[];
+  rating: number;
+  reviewCount: number;
+  about?: string;
+  googleMapsUrl?: string;
+  isClaimed: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TVetFilters = {
+  emirate?: TEmirate;
+  speciality?: TSpeciality;
+  search?: string;
+};

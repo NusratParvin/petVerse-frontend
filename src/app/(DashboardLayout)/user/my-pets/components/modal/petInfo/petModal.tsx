@@ -31,7 +31,7 @@ export default function PetModal({
       isOpen={isOpen}
       onClose={onClose}
       placement="center"
-      size="lg"
+      size="2xl"
       motionProps={{
         variants: {
           enter: {

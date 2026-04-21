@@ -29,6 +29,7 @@ const baseApi = createApi({
     "Friends",
     "Pages",
     "Pets",
+    "Vets",
   ],
   endpoints: () => ({}),
 });
