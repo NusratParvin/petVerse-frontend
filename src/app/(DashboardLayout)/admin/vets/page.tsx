@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+
 import {
   useGetVetsQuery,
   useCreateVetMutation,
   useUpdateVetMutation,
   useDeleteVetMutation,
-  TVet,
-} from "@/redux/features/vets/vetsApi";
+} from "@/src/redux/features/vets/vetsApi";
+import { TVet } from "@/src/types";
 
 const EMIRATES = [
   { value: "dubai", label: "Dubai" },
@@ -455,7 +456,7 @@ function VetFormModal({
 }
 
 export default function AdminVetsPage() {
-  const { data: vets, isLoading } = useGetVetsQuery();
+  const { data: vets, isLoading } = useGetVetsQuery(undefined);
   const [createVet, { isLoading: creating }] = useCreateVetMutation();
   const [updateVet, { isLoading: updating }] = useUpdateVetMutation();
   const [deleteVet] = useDeleteVetMutation();
@@ -557,7 +558,7 @@ export default function AdminVetsPage() {
                     </td>
                   </tr>
                 ))
-              : vets?.map((vet) => (
+              : vets?.map((vet: TVet) => (
                   <tr
                     key={vet._id}
                     className="border-b border-white/5 hover:bg-white/3 transition-colors"

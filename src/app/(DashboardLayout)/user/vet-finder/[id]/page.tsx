@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useGetSingleVetQuery } from "@/redux/features/vets/vetsApi";
+import { useGetSingleVetQuery } from "@/src/redux/features/vets/vetsApi";
 
 const SPECIALITY_EMOJI: Record<string, string> = {
   dogs: "🐕",
