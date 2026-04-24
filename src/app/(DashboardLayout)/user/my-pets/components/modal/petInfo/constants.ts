@@ -23,6 +23,6 @@ export const EMIRATES: TEmirate[] = [
 export const inputClass =
   "w-full px-3 py-1.5 rounded-lg text-xs bg-steel-blue/5 dark:bg-white/5 border border-steel-blue/15 dark:border-white/10 focus:outline-none focus:ring-1 focus:ring-steel-blue/50 text-gray-900 dark:text-white/90 placeholder-gray-400 dark:placeholder-white/30";
 export const labelClass =
-  "text-[11px] font-medium text-gray-500 dark:text-white/40 mb-1 block";
+  "text-[11px] font-medium text-gray-500 dark:text-white/70 mb-1 block";
 export const selectClass =
   "w-full px-3 py-1.5 rounded-lg text-xs bg-steel-blue/5 dark:bg-white/5 border border-steel-blue/15 dark:border-white/10 focus:outline-none focus:ring-1 focus:ring-steel-blue/50 text-gray-900 dark:text-white/90 cursor-pointer bg-none";

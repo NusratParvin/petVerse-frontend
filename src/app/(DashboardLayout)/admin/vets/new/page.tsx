@@ -58,13 +58,13 @@ export default function NewVetPage() {
         </div>
         <button
           onClick={() => router.back()}
-          className="text-gray-500 hover:text-gray-700 dark:text-white/60 dark:hover:text-white transition-colors"
+          className="text-sm  text-gray-500 hover:text-gray-700 dark:text-white/60 dark:hover:text-white transition-colors"
         >
           ← Back
         </button>
       </div>
 
-      <div className="bg-gray-50 dark:bg-[#0a1628]/50 rounded-none shadow-lg overflow-hidden">
+      <div className="bg-gray-100 dark:bg-[#0a1628]/50 rounded-none shadow-lg overflow-hidden">
         <VetForm
           initial={DEFAULT_FORM}
           onSubmit={handleSubmit}
