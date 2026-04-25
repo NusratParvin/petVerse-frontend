@@ -26,7 +26,8 @@ const DEFAULT_FORM = {
     close: "18:00",
     closed: false,
   })),
-  serviceRates: [{ service: "Consultation", priceFrom: 150, priceTo: 300 }],
+  // serviceRates: [{ service: "Consultation", priceFrom: 150, priceTo: 300 }],
+  priceRange: { basePrice: 150, maxPrice: 300 },
   rating: 4.5,
   reviewCount: 0,
 };
@@ -37,7 +38,20 @@ export default function NewVetPage() {
 
   const handleSubmit = async (formData: typeof DEFAULT_FORM) => {
     try {
-      await createVet(formData).unwrap();
+      // console.log(formData);
+
+      const transformedData = {
+        ...formData,
+        priceRange: {
+          basePrice: Number(formData.priceRange?.basePrice) || 0,
+          maxPrice: Number(formData.priceRange?.maxPrice) || 0,
+        },
+        rating: Number(formData.rating),
+        reviewCount: Number(formData.reviewCount),
+      };
+      console.log(transformedData);
+
+      await createVet(transformedData).unwrap();
       toast.success("Vet clinic added successfully!");
       router.push("/admin/vets");
     } catch (err: any) {

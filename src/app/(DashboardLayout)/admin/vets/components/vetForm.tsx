@@ -378,7 +378,7 @@
 
 "use client";
 
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { EMIRATES, VET_SPECIALITIES } from "@/src/constant";
 import {
   inputClass,
@@ -398,6 +398,11 @@ type ServiceRate = {
   priceTo: number;
 };
 
+type PriceRange = {
+  basePrice: number;
+  maxPrice: number;
+};
+
 type VetFormData = {
   name: string;
   clinicName: string;
@@ -413,11 +418,9 @@ type VetFormData = {
   googleMapsUrl: string;
   specialities: string[];
   workingHours: WorkingHour[];
-  serviceRates: ServiceRate[];
+  priceRange: PriceRange;
   rating: number;
   reviewCount: number;
-  basePrice?: number;
-  maxPrice?: number;
 };
 
 interface VetFormProps {
@@ -443,14 +446,14 @@ export default function VetForm({
   });
 
   // For dynamic arrays
-  const {
-    fields: rateFields,
-    append,
-    remove,
-  } = useFieldArray({
-    control,
-    name: "serviceRates",
-  });
+  // const {
+  //   fields: rateFields,
+  //   append,
+  //   remove,
+  // } = useFieldArray({
+  //   control,
+  //   name: "serviceRates",
+  // });
 
   const specialities = watch("specialities");
 
@@ -462,9 +465,9 @@ export default function VetForm({
     setValue("specialities", updated);
   };
 
-  const addRate = () => {
-    append({ service: "", priceFrom: 0, priceTo: 0 });
-  };
+  // const addRate = () => {
+  //   append({ service: "", priceFrom: 0, priceTo: 0 });
+  // };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-6 flex flex-col gap-5">
@@ -652,9 +655,9 @@ export default function VetForm({
               key={s}
               type="button"
               onClick={() => toggleSpeciality(s)}
-              className={`text-xs px-3 py-1 rounded-xl border transition-all ${
+              className={`text-xs px-3 py-1 rounded-xl border  transition-all ${
                 specialities?.includes(s)
-                  ? "bg-steel-blue border-steel-blue text-steel-blue"
+                  ? "bg-steel-blue/30 border-steel-blue text-steel-blue "
                   : "bg-steel-blue/10 dark:bg-lime-burst/30 border-white/10 text-gray-500 dark:text-white/80 hover:border-white/30"
               }`}
             >
@@ -752,43 +755,43 @@ export default function VetForm({
       </div> */}
       <div>
         <label className={labelClass}>Price Range (AED)</label>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-[10px] text-gray-500 dark:text-white/40 mb-1 block">
-              From
-            </label>
-            <input
-              type="number"
-              {...register("basePrice", { valueAsNumber: true })}
-              className={inputClass}
-              placeholder="e.g., 50"
-            />
-            <p className="text-[9px] text-steel-blue/60 dark:text-white/40 mt-0.5">
-              Minimum consultation fee
-            </p>
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* From */}
+          <div className="flex-1">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] text-gray-600 dark:text-white/40">
+                From
+              </label>
+              <input
+                type="number"
+                {...register("priceRange.basePrice", { valueAsNumber: true })}
+                className={inputClass}
+                placeholder="e.g., 50"
+              />
+              <p className="text-[9px] text-steel-blue/60 dark:text-white/40">
+                Minimum consultation fee
+              </p>
+            </div>
           </div>
-          <div>
-            <label className="text-[10px] text-gray-500 dark:text-white/40 mb-1 block">
-              Up to
-            </label>
-            <input
-              type="number"
-              {...register("maxPrice", { valueAsNumber: true })}
-              className={inputClass}
-              placeholder="e.g., 500"
-            />
-            <p className="text-[9px] text-steel-blue/60 dark:text-white/40 mt-0.5">
-              Maximum consultation fee
-            </p>
+
+          {/* Up to */}
+          <div className="flex-1">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] text-gray-600 dark:text-white/40">
+                Up to
+              </label>
+              <input
+                type="number"
+                {...register("priceRange.maxPrice", { valueAsNumber: true })}
+                className={inputClass}
+                placeholder="e.g., 500"
+              />
+              <p className="text-[9px] text-steel-blue/60 dark:text-white/40">
+                Maximum consultation fee
+              </p>
+            </div>
           </div>
         </div>
-
-        {/* Price preview */}
-        {(watch("basePrice") || watch("maxPrice")) && (
-          <div className="mt-2 text-[10px] text-lime-burst dark:text-lime-burst/80 font-medium">
-            💰 {watch("basePrice") || "?"} AED - {watch("maxPrice") || "?"} AED
-          </div>
-        )}
       </div>
       {/* Submit Buttons */}
       <div className="flex gap-3 pt-4 border-t border-white/10 mb-8">
