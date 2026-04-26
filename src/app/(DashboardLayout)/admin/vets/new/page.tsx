@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { useCreateVetMutation } from "@/src/redux/features/vets/vetsApi";
 import VetForm from "../components/vetForm";
 import { DAYS } from "@/src/constant";
+import { Button } from "@heroui/react";
+import { ArrowLeft } from "lucide-react";
 
 const DEFAULT_FORM = {
   name: "",
@@ -29,6 +31,7 @@ const DEFAULT_FORM = {
   // serviceRates: [{ service: "Consultation", priceFrom: 150, priceTo: 300 }],
   priceRange: { basePrice: 150, maxPrice: 300 },
   rating: 4.5,
+  emergency: false,
   reviewCount: 0,
 };
 
@@ -60,29 +63,36 @@ export default function NewVetPage() {
   };
 
   return (
-    <div className="px-4 py-2 w-full mx-auto">
-      <div className="flex justify-between items-center gap-4 mb-3">
+    <div className="px-4 sm:px-6 py-4 sm:py-6 w-full mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-base font-bold text-gray-900 dark:text-white/80">
-            Add Vet Clinic
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white/90">
+            Add Veterinary Clinic
           </h1>
-          <p className="text-xs text-gray-500 dark:text-white/40">
-            Enter clinic details below
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-white/40 mt-0.5 sm:mt-1">
+            Enter clinic details to add to directory
           </p>
         </div>
-        <button
-          onClick={() => router.back()}
-          className="text-sm  text-gray-500 hover:text-gray-700 dark:text-white/60 dark:hover:text-white transition-colors"
+
+        <Button
+          variant="light"
+          size="sm"
+          startContent={<ArrowLeft size={16} />}
+          onPress={() => router.back()}
+          className="text-gray-500 dark:text-white/60 w-fit"
         >
-          ← Back
-        </button>
+          Back
+        </Button>
       </div>
 
-      <div className="bg-gray-100 dark:bg-[#0a1628]/50 rounded-none shadow-lg overflow-hidden">
+      {/* Form Card */}
+      <div className="bg-white dark:bg-[#0a1628]/50 rounded-xl sm:rounded-2xl shadow-lg border border-steel-blue/20 dark:border-white/10 overflow-hidden">
         <VetForm
-          initial={DEFAULT_FORM}
+          // initial={DEFAULT_FORM}
           onSubmit={handleSubmit}
           isLoading={isLoading}
+          isEdit={false}
         />
       </div>
     </div>

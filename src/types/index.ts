@@ -228,9 +228,21 @@ export type TSpeciality =
   | "ophthalmology"
   | "nutrition";
 
+export type TPriceRange = {
+  basePrice: number;
+  maxPrice: number;
+};
+
+export type TWorkingHour = {
+  day: string;
+  open: string;
+  close: string;
+  closed: boolean;
+};
+
 export type TVet = {
   _id: string;
-  name: string;
+  name?: string;
   clinicName: string;
   emirate: TEmirate;
   area: string;
@@ -241,17 +253,18 @@ export type TVet = {
   website?: string;
   coverPhoto?: string;
   photos?: string[];
-  specialities: TSpeciality[];
-  workingHours: { day: string; open: string; close: string; closed: boolean }[];
-  serviceRates: { service: string; priceFrom: number; priceTo: number }[];
-  rating: number;
-  reviewCount: number;
   about?: string;
   googleMapsUrl?: string;
-  isClaimed: boolean;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
+  specialities: TSpeciality[];
+  workingHours: TWorkingHour[];
+  priceRange: TPriceRange;
+  rating: number;
+  reviewCount: number;
+  emergency: boolean;
+  isClaimed?: boolean;
+  isDeleted?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type TVetFilters = {

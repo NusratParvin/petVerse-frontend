@@ -78,7 +78,7 @@ export default function EditVetPage() {
     googleMapsUrl: vet.googleMapsUrl || "",
     specialities: vet.specialities,
     workingHours: vet.workingHours || [],
-    serviceRates: vet.serviceRates || [],
+    // serviceRates: vet.serviceRates || [],
     rating: vet.rating,
     reviewCount: vet.reviewCount,
   };

@@ -1,11 +1,12 @@
 // "use client";
 
-// import { useState } from "react";
+// import { useForm } from "react-hook-form";
 // import { EMIRATES, VET_SPECIALITIES } from "@/src/constant";
 // import {
 //   inputClass,
 //   labelClass,
 // } from "../../../user/my-pets/components/modal/petInfo/constants";
+// import { TVet } from "@/src/types";
 
 // type WorkingHour = {
 //   day: string;
@@ -18,6 +19,11 @@
 //   service: string;
 //   priceFrom: number;
 //   priceTo: number;
+// };
+
+// type PriceRange = {
+//   basePrice: number;
+//   maxPrice: number;
 // };
 
 // type VetFormData = {
@@ -35,221 +41,233 @@
 //   googleMapsUrl: string;
 //   specialities: string[];
 //   workingHours: WorkingHour[];
-//   serviceRates: ServiceRate[];
+//   priceRange: PriceRange;
 //   rating: number;
 //   reviewCount: number;
 // };
 
 // interface VetFormProps {
-//   initial: VetFormData;
+//   // initial: VetFormData;
+//   initial?: Partial<TVet>;
 //   onSubmit: (data: VetFormData) => Promise<void>;
 //   isLoading: boolean;
+//   isEdit: boolean;
 // }
 
 // export default function VetForm({
 //   initial,
 //   onSubmit,
 //   isLoading,
+//   isEdit = false,
 // }: VetFormProps) {
-//   const [form, setForm] = useState<VetFormData>(initial);
+//   const {
+//     register,
+//     control,
+//     handleSubmit,
+//     watch,
+//     setValue,
+//     formState: { errors },
+//   } = useForm<VetFormData>({
+//     defaultValues: initial,
+//   });
 
-//   const toggleSpeciality = (s: string) => {
-//     setForm((f) => ({
-//       ...f,
-//       specialities: f.specialities.includes(s)
-//         ? f.specialities.filter((x) => x !== s)
-//         : [...f.specialities, s],
-//     }));
+//   // For dynamic arrays
+//   // const {
+//   //   fields: rateFields,
+//   //   append,
+//   //   remove,
+//   // } = useFieldArray({
+//   //   control,
+//   //   name: "serviceRates",
+//   // });
+
+//   const specialities = watch("specialities");
+
+//   const toggleSpeciality = (speciality: string) => {
+//     const current = specialities || [];
+//     const updated = current.includes(speciality)
+//       ? current.filter((s) => s !== speciality)
+//       : [...current, speciality];
+//     setValue("specialities", updated);
 //   };
 
-//   const updateHours = (
-//     index: number,
-//     field: keyof WorkingHour,
-//     value: string | boolean,
-//   ) => {
-//     setForm((f) => {
-//       const updated = [...f.workingHours];
-//       updated[index] = { ...updated[index], [field]: value };
-//       return { ...f, workingHours: updated };
-//     });
-//   };
-
-//   const updateRate = (
-//     index: number,
-//     field: keyof ServiceRate,
-//     value: string | number,
-//   ) => {
-//     setForm((f) => {
-//       const updated = [...f.serviceRates];
-//       updated[index] = {
-//         ...updated[index],
-//         [field]: field === "service" ? (value as string) : Number(value),
-//       };
-//       return { ...f, serviceRates: updated };
-//     });
-//   };
-
-//   const addRate = () =>
-//     setForm((f) => ({
-//       ...f,
-//       serviceRates: [
-//         ...f.serviceRates,
-//         { service: "", priceFrom: 0, priceTo: 0 },
-//       ],
-//     }));
-
-//   const removeRate = (index: number) =>
-//     setForm((f) => ({
-//       ...f,
-//       serviceRates: f.serviceRates.filter((_, i) => i !== index),
-//     }));
+//   // const addRate = () => {
+//   //   append({ service: "", priceFrom: 0, priceTo: 0 });
+//   // };
 
 //   return (
-//     <div className="p-6 flex flex-col gap-5">
-//       {/* Basic Info - Same as before */}
+//     <form onSubmit={handleSubmit(onSubmit)} className="p-6 flex flex-col gap-5">
+//       {/* Basic Info */}
 //       <div className="grid grid-cols-2 gap-3">
 //         <div className="col-span-2">
 //           <label className={labelClass}>Clinic Name *</label>
 //           <input
-//             value={form.clinicName}
-//             onChange={(e) => setForm({ ...form, clinicName: e.target.value })}
+//             {...register("clinicName", { required: "Clinic name is required" })}
 //             className={inputClass}
 //             placeholder="e.g. German Vet Clinic"
 //           />
+//           {errors.clinicName && (
+//             <p className="text-red-500 text-[10px] mt-1">
+//               {errors.clinicName.message}
+//             </p>
+//           )}
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>Doctor Name *</label>
 //           <input
-//             value={form.name}
-//             onChange={(e) => setForm({ ...form, name: e.target.value })}
+//             {...register("name", { required: "Doctor name is required" })}
 //             className={inputClass}
 //             placeholder="Dr. Ahmed..."
 //           />
+//           {errors.name && (
+//             <p className="text-red-500 text-[10px] mt-1">
+//               {errors.name.message}
+//             </p>
+//           )}
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>Emirate *</label>
 //           <select
-//             value={form.emirate}
-//             onChange={(e) => setForm({ ...form, emirate: e.target.value })}
+//             {...register("emirate", { required: "Emirate is required" })}
 //             className={inputClass}
 //           >
+//             <option value="">Select Emirate</option>
 //             {EMIRATES.map((e) => (
-//               <option
-//                 key={e.value}
-//                 value={e.value}
-//                 className="dark:text-gray-800 dark:bg-steel-blue/30 text-[11px]"
-//               >
+//               <option key={e.value} value={e.value}>
 //                 {e.label}
 //               </option>
 //             ))}
 //           </select>
+//           {errors.emirate && (
+//             <p className="text-red-500 text-[10px] mt-1">
+//               {errors.emirate.message}
+//             </p>
+//           )}
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>Area *</label>
 //           <input
-//             value={form.area}
-//             onChange={(e) => setForm({ ...form, area: e.target.value })}
+//             {...register("area", { required: "Area is required" })}
 //             className={inputClass}
 //             placeholder="Jumeirah"
 //           />
+//           {errors.area && (
+//             <p className="text-red-500 text-[10px] mt-1">
+//               {errors.area.message}
+//             </p>
+//           )}
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>Phone *</label>
 //           <input
-//             value={form.phone}
-//             onChange={(e) => setForm({ ...form, phone: e.target.value })}
+//             {...register("phone", { required: "Phone number is required" })}
 //             className={inputClass}
 //             placeholder="+971 4 ..."
 //           />
+//           {errors.phone && (
+//             <p className="text-red-500 text-[10px] mt-1">
+//               {errors.phone.message}
+//             </p>
+//           )}
 //         </div>
+
 //         <div className="col-span-2">
 //           <label className={labelClass}>Address *</label>
 //           <input
-//             value={form.address}
-//             onChange={(e) => setForm({ ...form, address: e.target.value })}
+//             {...register("address", { required: "Address is required" })}
 //             className={inputClass}
 //             placeholder="Full address"
 //           />
+//           {errors.address && (
+//             <p className="text-red-500 text-[10px] mt-1">
+//               {errors.address.message}
+//             </p>
+//           )}
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>WhatsApp</label>
 //           <input
-//             value={form.whatsapp}
-//             onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+//             {...register("whatsapp")}
 //             className={inputClass}
 //             placeholder="+971 50 ..."
 //           />
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>Email</label>
 //           <input
-//             value={form.email}
-//             onChange={(e) => setForm({ ...form, email: e.target.value })}
+//             {...register("email", {
+//               pattern: {
+//                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+//                 message: "Invalid email address",
+//               },
+//             })}
 //             className={inputClass}
 //             placeholder="info@clinic.com"
 //           />
+//           {errors.email && (
+//             <p className="text-red-500 text-[10px] mt-1">
+//               {errors.email.message}
+//             </p>
+//           )}
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>Website</label>
 //           <input
-//             value={form.website}
-//             onChange={(e) => setForm({ ...form, website: e.target.value })}
+//             {...register("website")}
 //             className={inputClass}
 //             placeholder="https://..."
 //           />
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>Cover Photo URL</label>
 //           <input
-//             value={form.coverPhoto}
-//             onChange={(e) => setForm({ ...form, coverPhoto: e.target.value })}
+//             {...register("coverPhoto")}
 //             className={inputClass}
 //             placeholder="Cloudinary URL"
 //           />
 //         </div>
+
 //         <div className="col-span-2">
 //           <label className={labelClass}>Google Maps URL</label>
 //           <input
-//             value={form.googleMapsUrl}
-//             onChange={(e) =>
-//               setForm({ ...form, googleMapsUrl: e.target.value })
-//             }
+//             {...register("googleMapsUrl")}
 //             className={inputClass}
 //             placeholder="https://maps.google.com/..."
 //           />
 //         </div>
+
 //         <div className="col-span-2">
 //           <label className={labelClass}>About</label>
 //           <textarea
-//             value={form.about}
-//             onChange={(e) => setForm({ ...form, about: e.target.value })}
+//             {...register("about")}
 //             className={`${inputClass} resize-none h-20`}
 //             placeholder="Clinic description..."
 //           />
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>Rating (0-5)</label>
 //           <input
 //             type="number"
-//             min={0}
-//             max={5}
-//             step={0.1}
-//             value={form.rating}
-//             onChange={(e) =>
-//               setForm({ ...form, rating: parseFloat(e.target.value) })
-//             }
+//             step="0.1"
+//             {...register("rating", { min: 0, max: 5 })}
 //             className={inputClass}
 //           />
 //         </div>
+
 //         <div>
 //           <label className={labelClass}>Review Count</label>
 //           <input
 //             type="number"
-//             min={0}
-//             value={form.reviewCount}
-//             onChange={(e) =>
-//               setForm({ ...form, reviewCount: parseInt(e.target.value) })
-//             }
+//             {...register("reviewCount", { min: 0 })}
 //             className={inputClass}
 //           />
 //         </div>
@@ -257,49 +275,55 @@
 //       {/* Specialities */}
 //       <div>
 //         <label className={labelClass}>Specialities *</label>
-//         <div className="flex flex-wrap gap-2">
+//         <div className="flex flex-wrap gap-2 mt-2">
 //           {VET_SPECIALITIES.map((s) => (
 //             <button
 //               key={s}
 //               type="button"
 //               onClick={() => toggleSpeciality(s)}
-//               className={`text-xs px-3 py-1 rounded-full border transition-all ${form.specialities.includes(s) ? "bg-[#4682B4]/30 border-[#4682B4] text-[#4682B4]" : "bg-white/5 border-white/10 text-white/40 hover:border-white/30"}`}
+//               className={`text-xs px-3 py-1 rounded-xl border  transition-all ${
+//                 specialities?.includes(s)
+//                   ? "bg-steel-blue/30 border-steel-blue text-steel-blue "
+//                   : "bg-steel-blue/10 dark:bg-lime-burst/30 border-white/10 text-gray-500 dark:text-white/80 hover:border-white/30"
+//               }`}
 //             >
 //               {s}
 //             </button>
 //           ))}
 //         </div>
+//         {errors.specialities && (
+//           <p className="text-red-500 text-[10px] mt-1">
+//             {errors.specialities.message}
+//           </p>
+//         )}
 //       </div>
 //       {/* Working Hours */}
 //       <div>
 //         <label className={labelClass}>Working Hours</label>
 //         <div className="flex flex-col gap-2 md:w-1/2 w-full mt-3 ms-3">
-//           {form.workingHours.map((h, i) => (
+//           {initial?.workingHours?.map((h, i) => (
 //             <div key={h.day} className="flex items-center gap-2 text-sm">
-//               <span className="text-steel-blue  dark:text-lime-burst font-semibold  w-20 text-xs">
+//               <span className="text-steel-blue dark:text-lime-burst font-semibold w-20 text-xs">
 //                 {h.day.slice(0, 3)}
 //               </span>
 //               <input
 //                 type="time"
-//                 value={h.open}
-//                 disabled={h.closed}
-//                 onChange={(e) => updateHours(i, "open", e.target.value)}
-//                 className={`${inputClass} w-28 text-xs ${h.closed ? "opacity-30" : ""}`}
+//                 {...register(`workingHours.${i}.open`)}
+//                 disabled={watch(`workingHours.${i}.closed`)}
+//                 className={`${inputClass} w-28 text-xs`}
 //               />
 //               <span className="dark:text-white/70 text-gray-500">–</span>
 //               <input
 //                 type="time"
-//                 value={h.close}
-//                 disabled={h.closed}
-//                 onChange={(e) => updateHours(i, "close", e.target.value)}
-//                 className={`${inputClass} w-28 text-xs ${h.closed ? "opacity-30" : ""}`}
+//                 {...register(`workingHours.${i}.close`)}
+//                 disabled={watch(`workingHours.${i}.closed`)}
+//                 className={`${inputClass} w-28 text-xs`}
 //               />
 //               <label className="flex items-center gap-1 dark:text-white/70 text-gray-500 text-xs cursor-pointer">
 //                 <input
 //                   type="checkbox"
-//                   checked={h.closed}
-//                   onChange={(e) => updateHours(i, "closed", e.target.checked)}
-//                   className="accent-[#FF4D6D]"
+//                   {...register(`workingHours.${i}.closed`)}
+//                   className="accent-coral"
 //                 />
 //                 Closed
 //               </label>
@@ -308,82 +332,128 @@
 //         </div>
 //       </div>
 //       {/* Service Rates */}
-//       <div>
+//       {/* //service fee per service */}
+//       {/* <div>
 //         <div className="flex items-center justify-between mb-2">
 //           <label className={labelClass}>Service Rates</label>
 //           <button
 //             type="button"
 //             onClick={addRate}
-//             className="text-[#4682B4] text-xs hover:underline"
+//             className="text-steel-blue text-xs hover:underline"
 //           >
 //             + Add
 //           </button>
 //         </div>
 //         <div className="flex flex-col gap-2">
-//           {form.serviceRates.map((r, i) => (
-//             <div key={i} className="flex gap-2 items-center">
+//           {rateFields.map((field, i) => (
+//             <div key={field.id} className="flex gap-2 items-center">
 //               <input
-//                 value={r.service}
-//                 onChange={(e) => updateRate(i, "service", e.target.value)}
+//                 {...register(`serviceRates.${i}.service`)}
 //                 className={`${inputClass} flex-1`}
 //                 placeholder="Service name"
 //               />
 //               <input
 //                 type="number"
-//                 value={r.priceFrom}
-//                 onChange={(e) => updateRate(i, "priceFrom", e.target.value)}
+//                 {...register(`serviceRates.${i}.priceFrom`, {
+//                   valueAsNumber: true,
+//                 })}
 //                 className={`${inputClass} w-20`}
 //                 placeholder="From"
 //               />
 //               <input
 //                 type="number"
-//                 value={r.priceTo}
-//                 onChange={(e) => updateRate(i, "priceTo", e.target.value)}
+//                 {...register(`serviceRates.${i}.priceTo`, {
+//                   valueAsNumber: true,
+//                 })}
 //                 className={`${inputClass} w-20`}
 //                 placeholder="To"
 //               />
 //               <button
 //                 type="button"
-//                 onClick={() => removeRate(i)}
-//                 className="text-[#FF4D6D] hover:opacity-80 text-sm px-1"
+//                 onClick={() => remove(i)}
+//                 className="text-coral hover:opacity-80 text-sm px-1"
 //               >
 //                 ✕
 //               </button>
 //             </div>
 //           ))}
 //         </div>
-//       </div>
-//       {/* </div> */}
+//       </div> */}
+//       <div>
+//         <label className={labelClass}>Price Range (AED)</label>
+//         <div className="flex flex-col sm:flex-row gap-4">
+//           {/* From */}
+//           <div className="flex-1">
+//             <div className="flex flex-col gap-1.5">
+//               <label className="text-[11px] text-gray-600 dark:text-white/40">
+//                 From
+//               </label>
+//               <input
+//                 type="number"
+//                 {...register("priceRange.basePrice", { valueAsNumber: true })}
+//                 className={inputClass}
+//                 placeholder="e.g., 50"
+//               />
+//               <p className="text-[9px] text-steel-blue/60 dark:text-white/40">
+//                 Minimum consultation fee
+//               </p>
+//             </div>
+//           </div>
 
+//           {/* Up to */}
+//           <div className="flex-1">
+//             <div className="flex flex-col gap-1.5">
+//               <label className="text-[11px] text-gray-600 dark:text-white/40">
+//                 Up to
+//               </label>
+//               <input
+//                 type="number"
+//                 {...register("priceRange.maxPrice", { valueAsNumber: true })}
+//                 className={inputClass}
+//                 placeholder="e.g., 500"
+//               />
+//               <p className="text-[9px] text-steel-blue/60 dark:text-white/40">
+//                 Maximum consultation fee
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
 //       {/* Submit Buttons */}
-//       <div className="flex gap-3 pt-4 border-t border-white/10">
+//       <div className="flex gap-3 pt-4 border-t border-white/10 mb-8">
 //         <button
 //           type="button"
 //           onClick={() => window.history.back()}
-//           className="flex-1 py-2.5 rounded-xl border border-white/20 text-white/60 font-bold text-sm hover:bg-white/5 transition-colors"
+//           className="flex-1 py-2.5 rounded-xl border font-bold text-sm transition-all duration-200
+//     border-steel-blue/30 dark:border-white/20
+//     text-gray-700 dark:text-white/80
+//     hover:bg-steel-blue/5 dark:hover:bg-white/10
+//     bg-white dark:bg-transparent"
 //         >
 //           Cancel
 //         </button>
 //         <button
-//           onClick={() => onSubmit(form)}
+//           type="submit"
 //           disabled={isLoading}
 //           className="flex-1 py-2.5 rounded-xl bg-lime-burst text-gray-900 font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
 //         >
 //           {isLoading ? "Saving..." : "Save Clinic"}
 //         </button>
 //       </div>
-//     </div>
+//     </form>
 //   );
 // }
-
 "use client";
 
 import { useForm } from "react-hook-form";
-import { EMIRATES, VET_SPECIALITIES } from "@/src/constant";
+import { EMIRATES, VET_SPECIALITIES, DAYS } from "@/src/constant";
 import {
   inputClass,
   labelClass,
 } from "../../../user/my-pets/components/modal/petInfo/constants";
+import { TVet } from "@/src/types";
+import { useState } from "react";
+import { X, Upload, Image as ImageIcon, Plus } from "lucide-react";
 
 type WorkingHour = {
   day: string;
@@ -392,19 +462,12 @@ type WorkingHour = {
   closed: boolean;
 };
 
-type ServiceRate = {
-  service: string;
-  priceFrom: number;
-  priceTo: number;
-};
-
 type PriceRange = {
   basePrice: number;
   maxPrice: number;
 };
 
 type VetFormData = {
-  name: string;
   clinicName: string;
   emirate: string;
   area: string;
@@ -414,6 +477,7 @@ type VetFormData = {
   email: string;
   website: string;
   coverPhoto: string;
+  photos: string[];
   about: string;
   googleMapsUrl: string;
   specialities: string[];
@@ -421,41 +485,71 @@ type VetFormData = {
   priceRange: PriceRange;
   rating: number;
   reviewCount: number;
+  emergency: boolean;
 };
 
 interface VetFormProps {
-  initial: VetFormData;
-  onSubmit: (data: VetFormData) => Promise<void>;
+  initial?: Partial<TVet>;
+  onSubmit: (data: any) => Promise<void>;
   isLoading: boolean;
+  isEdit: boolean;
 }
 
 export default function VetForm({
   initial,
   onSubmit,
   isLoading,
+  isEdit = false,
 }: VetFormProps) {
+  const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+
+  const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+  // Default working hours
+  const defaultWorkingHours = DAYS.map((day) => ({
+    day,
+    open: "09:00",
+    close: "18:00",
+    closed: false,
+  }));
+
   const {
     register,
-    control,
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<VetFormData>({
-    defaultValues: initial,
+    defaultValues: {
+      clinicName: initial?.clinicName || "",
+      emirate: initial?.emirate || "",
+      area: initial?.area || "",
+      address: initial?.address || "",
+      phone: initial?.phone || "",
+      whatsapp: initial?.whatsapp || "",
+      email: initial?.email || "",
+      website: initial?.website || "",
+      coverPhoto: initial?.coverPhoto || "",
+      photos: initial?.photos || [],
+      about: initial?.about || "",
+      googleMapsUrl: initial?.googleMapsUrl || "",
+      specialities: initial?.specialities || [],
+      workingHours: initial?.workingHours || defaultWorkingHours,
+      priceRange: initial?.priceRange || { basePrice: 0, maxPrice: 0 },
+      rating: initial?.rating || 0.0,
+      reviewCount: initial?.reviewCount || 0,
+      emergency: initial?.emergency || false,
+    },
   });
 
-  // For dynamic arrays
-  // const {
-  //   fields: rateFields,
-  //   append,
-  //   remove,
-  // } = useFieldArray({
-  //   control,
-  //   name: "serviceRates",
-  // });
-
   const specialities = watch("specialities");
+  const workingHours = watch("workingHours");
+  const photos = watch("photos");
 
   const toggleSpeciality = (speciality: string) => {
     const current = specialities || [];
@@ -465,14 +559,88 @@ export default function VetForm({
     setValue("specialities", updated);
   };
 
-  // const addRate = () => {
-  //   append({ service: "", priceFrom: 0, priceTo: 0 });
-  // };
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET as string);
+
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+      const data = await res.json();
+      setImagePreview(data.secure_url);
+      setValue("coverPhoto", data.secure_url);
+    } catch (error) {
+      console.error("Upload failed:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleGalleryUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setIsUploadingGallery(true);
+
+    const uploadPromises = files.map(async (file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", UPLOAD_PRESET as string);
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+      const data = await res.json();
+      return data.secure_url;
+    });
+
+    try {
+      const uploadedUrls = await Promise.all(uploadPromises);
+      const currentPhotos = getValues("photos") || [];
+      const updatedPhotos = [...currentPhotos, ...uploadedUrls];
+      setValue("photos", updatedPhotos);
+      setGalleryPreviews(updatedPhotos);
+    } catch (error) {
+      console.error("Gallery upload failed:", error);
+    } finally {
+      setIsUploadingGallery(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImagePreview("");
+    setValue("coverPhoto", "");
+  };
+
+  const handleRemoveGalleryImage = (index: number) => {
+    const currentPhotos = getValues("photos") || [];
+    const updatedPhotos = currentPhotos.filter((_, i) => i !== index);
+    setValue("photos", updatedPhotos);
+    setGalleryPreviews(updatedPhotos);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-6 flex flex-col gap-5">
       {/* Basic Info */}
       <div className="grid grid-cols-2 gap-3">
+        {/* Clinic Name   */}
         <div className="col-span-2">
           <label className={labelClass}>Clinic Name *</label>
           <input
@@ -487,20 +655,7 @@ export default function VetForm({
           )}
         </div>
 
-        <div>
-          <label className={labelClass}>Doctor Name *</label>
-          <input
-            {...register("name", { required: "Doctor name is required" })}
-            className={inputClass}
-            placeholder="Dr. Ahmed..."
-          />
-          {errors.name && (
-            <p className="text-red-500 text-[10px] mt-1">
-              {errors.name.message}
-            </p>
-          )}
-        </div>
-
+        {/* Emirate */}
         <div>
           <label className={labelClass}>Emirate *</label>
           <select
@@ -521,6 +676,7 @@ export default function VetForm({
           )}
         </div>
 
+        {/* Area */}
         <div>
           <label className={labelClass}>Area *</label>
           <input
@@ -535,20 +691,7 @@ export default function VetForm({
           )}
         </div>
 
-        <div>
-          <label className={labelClass}>Phone *</label>
-          <input
-            {...register("phone", { required: "Phone number is required" })}
-            className={inputClass}
-            placeholder="+971 4 ..."
-          />
-          {errors.phone && (
-            <p className="text-red-500 text-[10px] mt-1">
-              {errors.phone.message}
-            </p>
-          )}
-        </div>
-
+        {/* Address   */}
         <div className="col-span-2">
           <label className={labelClass}>Address *</label>
           <input
@@ -563,15 +706,7 @@ export default function VetForm({
           )}
         </div>
 
-        <div>
-          <label className={labelClass}>WhatsApp</label>
-          <input
-            {...register("whatsapp")}
-            className={inputClass}
-            placeholder="+971 50 ..."
-          />
-        </div>
-
+        {/* Email */}
         <div>
           <label className={labelClass}>Email</label>
           <input
@@ -591,6 +726,7 @@ export default function VetForm({
           )}
         </div>
 
+        {/* Website */}
         <div>
           <label className={labelClass}>Website</label>
           <input
@@ -600,15 +736,51 @@ export default function VetForm({
           />
         </div>
 
-        <div>
-          <label className={labelClass}>Cover Photo URL</label>
-          <input
-            {...register("coverPhoto")}
-            className={inputClass}
-            placeholder="Cloudinary URL"
-          />
+        {/* Phone, emergency */}
+        <div className="col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Phone */}
+            <div>
+              <label className={labelClass}>Phone *</label>
+              <input
+                {...register("phone", { required: "Phone number is required" })}
+                className={inputClass}
+                placeholder="+971 4 ..."
+              />
+              {errors.phone && (
+                <p className="text-red-500 text-[10px] mt-1">
+                  {errors.phone.message}
+                </p>
+              )}
+            </div>
+
+            {/* WhatsApp */}
+            <div>
+              <label className={labelClass}>WhatsApp</label>
+              <input
+                {...register("whatsapp")}
+                className={inputClass}
+                placeholder="+971 50 ..."
+              />
+            </div>
+
+            {/* Emergency Field */}
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 cursor-pointer pb-2">
+                <input
+                  type="checkbox"
+                  {...register("emergency")}
+                  className="w-4 h-4 accent-coral"
+                />
+                <span className="text-xs text-gray-700 dark:text-white/70 whitespace-nowrap">
+                  24/7 Emergency
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
 
+        {/* Google Maps URL   */}
         <div className="col-span-2">
           <label className={labelClass}>Google Maps URL</label>
           <input
@@ -618,6 +790,7 @@ export default function VetForm({
           />
         </div>
 
+        {/* About   */}
         <div className="col-span-2">
           <label className={labelClass}>About</label>
           <textarea
@@ -627,6 +800,7 @@ export default function VetForm({
           />
         </div>
 
+        {/* Rating */}
         <div>
           <label className={labelClass}>Rating (0-5)</label>
           <input
@@ -637,6 +811,7 @@ export default function VetForm({
           />
         </div>
 
+        {/* Review Count */}
         <div>
           <label className={labelClass}>Review Count</label>
           <input
@@ -645,7 +820,106 @@ export default function VetForm({
             className={inputClass}
           />
         </div>
+
+        {/* Cover Photo Upload   */}
+        <div className="col-span-2">
+          <label className={labelClass}>Cover Photo</label>
+          <div className="mt-2">
+            {imagePreview || watch("coverPhoto") ? (
+              <div className="relative inline-block">
+                <img
+                  src={imagePreview || watch("coverPhoto")}
+                  alt="Cover preview"
+                  className="w-32 h-32 rounded-lg object-cover border-2 border-steel-blue/30"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-steel-blue/30 dark:border-white/20 rounded-lg cursor-pointer hover:border-steel-blue/50 dark:hover:border-lime-burst/50 transition-colors bg-steel-blue/5 dark:bg-white/5">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <Upload
+                    size={24}
+                    className="text-steel-blue dark:text-white/50 mb-2"
+                  />
+                  <p className="text-[10px] text-steel-blue dark:text-white/50 text-center px-2">
+                    Upload cover
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  disabled={isUploading}
+                />
+              </label>
+            )}
+            {isUploading && (
+              <p className="text-xs text-steel-blue mt-2">Uploading...</p>
+            )}
+          </div>
+        </div>
+
+        {/* Gallery Photos Upload   */}
+        <div className="col-span-2">
+          <label className={labelClass}>Gallery Photos</label>
+          <div className="mt-2">
+            <div className="flex flex-wrap gap-3">
+              {(photos || []).map((photo, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={photo}
+                    alt={`Gallery ${index + 1}`}
+                    className="w-24 h-24 rounded-lg object-cover border border-steel-blue/30"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveGalleryImage(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+
+              <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-steel-blue/30 dark:border-white/20 rounded-lg cursor-pointer hover:border-steel-blue/50 dark:hover:border-lime-burst/50 transition-colors bg-steel-blue/5 dark:bg-white/5">
+                <div className="flex flex-col items-center justify-center">
+                  <Plus
+                    size={20}
+                    className="text-steel-blue dark:text-white/50"
+                  />
+                  <p className="text-[9px] text-steel-blue dark:text-white/50 mt-1">
+                    Add photo
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleGalleryUpload}
+                  className="hidden"
+                  disabled={isUploadingGallery}
+                />
+              </label>
+            </div>
+            {isUploadingGallery && (
+              <p className="text-xs text-steel-blue mt-2">
+                Uploading photos...
+              </p>
+            )}
+            <p className="text-[9px] text-steel-blue/60 dark:text-white/40 mt-2">
+              Add photos of your clinic interior, staff, or facilities
+            </p>
+          </div>
+        </div>
       </div>
+
       {/* Specialities */}
       <div>
         <label className={labelClass}>Specialities *</label>
@@ -671,11 +945,12 @@ export default function VetForm({
           </p>
         )}
       </div>
+
       {/* Working Hours */}
       <div>
         <label className={labelClass}>Working Hours</label>
         <div className="flex flex-col gap-2 md:w-1/2 w-full mt-3 ms-3">
-          {initial.workingHours.map((h, i) => (
+          {workingHours?.map((h, i) => (
             <div key={h.day} className="flex items-center gap-2 text-sm">
               <span className="text-steel-blue dark:text-lime-burst font-semibold w-20 text-xs">
                 {h.day.slice(0, 3)}
@@ -705,58 +980,11 @@ export default function VetForm({
           ))}
         </div>
       </div>
-      {/* Service Rates */}
-      {/* //service fee per service */}
-      {/* <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className={labelClass}>Service Rates</label>
-          <button
-            type="button"
-            onClick={addRate}
-            className="text-steel-blue text-xs hover:underline"
-          >
-            + Add
-          </button>
-        </div>
-        <div className="flex flex-col gap-2">
-          {rateFields.map((field, i) => (
-            <div key={field.id} className="flex gap-2 items-center">
-              <input
-                {...register(`serviceRates.${i}.service`)}
-                className={`${inputClass} flex-1`}
-                placeholder="Service name"
-              />
-              <input
-                type="number"
-                {...register(`serviceRates.${i}.priceFrom`, {
-                  valueAsNumber: true,
-                })}
-                className={`${inputClass} w-20`}
-                placeholder="From"
-              />
-              <input
-                type="number"
-                {...register(`serviceRates.${i}.priceTo`, {
-                  valueAsNumber: true,
-                })}
-                className={`${inputClass} w-20`}
-                placeholder="To"
-              />
-              <button
-                type="button"
-                onClick={() => remove(i)}
-                className="text-coral hover:opacity-80 text-sm px-1"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
-        </div>
-      </div> */}
+
+      {/* Price Range */}
       <div>
         <label className={labelClass}>Price Range (AED)</label>
         <div className="flex flex-col sm:flex-row gap-4">
-          {/* From */}
           <div className="flex-1">
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] text-gray-600 dark:text-white/40">
@@ -774,7 +1002,6 @@ export default function VetForm({
             </div>
           </div>
 
-          {/* Up to */}
           <div className="flex-1">
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] text-gray-600 dark:text-white/40">
@@ -793,16 +1020,17 @@ export default function VetForm({
           </div>
         </div>
       </div>
+
       {/* Submit Buttons */}
       <div className="flex gap-3 pt-4 border-t border-white/10 mb-8">
         <button
           type="button"
           onClick={() => window.history.back()}
           className="flex-1 py-2.5 rounded-xl border font-bold text-sm transition-all duration-200
-    border-steel-blue/30 dark:border-white/20 
-    text-gray-700 dark:text-white/80 
-    hover:bg-steel-blue/5 dark:hover:bg-white/10
-    bg-white dark:bg-transparent"
+            border-steel-blue/30 dark:border-white/20 
+            text-gray-700 dark:text-white/80 
+            hover:bg-steel-blue/5 dark:hover:bg-white/10
+            bg-white dark:bg-transparent"
         >
           Cancel
         </button>

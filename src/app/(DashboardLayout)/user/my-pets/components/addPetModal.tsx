@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateMyPetMutation } from "@/src/redux/features/pets/petsApi";
 import PetModal from "./modal/petInfo/petModal";

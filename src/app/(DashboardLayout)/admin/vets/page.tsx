@@ -1,299 +1,6 @@
-// "use client";
-
-// import { useState } from "react";
-
-// import {
-//   useGetVetsQuery,
-//   useCreateVetMutation,
-//   useUpdateVetMutation,
-//   useDeleteVetMutation,
-// } from "@/src/redux/features/vets/vetsApi";
-// import { TVet } from "@/src/types";
-// import { DAYS } from "@/src/constant";
-// import VetForm from "./components/vetForm";
-
-// const DEFAULT_FORM = {
-//   name: "",
-//   clinicName: "",
-//   emirate: "dubai",
-//   area: "",
-//   address: "",
-//   phone: "",
-//   whatsapp: "",
-//   email: "",
-//   website: "",
-//   coverPhoto: "",
-//   about: "",
-//   googleMapsUrl: "",
-//   specialities: [] as string[],
-//   workingHours: DAYS.map((day) => ({
-//     day,
-//     open: "09:00",
-//     close: "18:00",
-//     closed: false,
-//   })),
-//   serviceRates: [{ service: "Consultation", priceFrom: 150, priceTo: 300 }],
-//   rating: 4.5,
-//   reviewCount: 0,
-// };
-
-// type FormState = typeof DEFAULT_FORM;
-
-// const inputClass =
-//   "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-[#4682B4]/60 transition-all placeholder:text-white/30";
-
-// export default function AdminVetsPage() {
-//   const { data: vets, isLoading } = useGetVetsQuery(undefined);
-//   const [createVet, { isLoading: creating }] = useCreateVetMutation();
-//   const [updateVet, { isLoading: updating }] = useUpdateVetMutation();
-//   const [deleteVet] = useDeleteVetMutation();
-
-//   const [showModal, setShowModal] = useState(false);
-//   const [editingVet, setEditingVet] = useState<TVet | null>(null);
-//   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-//   const handleSave = async (form: FormState) => {
-//     try {
-//       if (editingVet) {
-//         await updateVet({
-//           id: editingVet._id,
-//           body: form as Partial<TVet>,
-//         }).unwrap();
-//       } else {
-//         await createVet(form as Partial<TVet>).unwrap();
-//       }
-//       setShowModal(false);
-//       setEditingVet(null);
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   };
-
-//   const handleDelete = async (id: string) => {
-//     await deleteVet(id).unwrap();
-//     setDeleteConfirm(null);
-//   };
-
-//   const openEdit = (vet: TVet) => {
-//     setEditingVet(vet);
-//     setShowModal(true);
-//   };
-
-//   const formatEmirate = (e: string) =>
-//     e
-//       .split("-")
-//       .map((w) => w[0].toUpperCase() + w.slice(1))
-//       .join(" ");
-
-//   return (
-//     <div className="p-6">
-//       {/* Header */}
-//       <div className="flex items-center justify-between mb-6">
-//         <div>
-//           <h1
-//             className="text-white text-2xl font-bold"
-//             style={{ fontFamily: "Space Grotesk, sans-serif" }}
-//           >
-//             Vet Clinics
-//           </h1>
-//           <p className="text-white/40 text-sm mt-1">
-//             {vets?.length ?? 0} clinics in database
-//           </p>
-//         </div>
-//         <button
-//           onClick={() => {
-//             setEditingVet(null);
-//             setShowModal(true);
-//           }}
-//           className="bg-[#B8FF2E] text-[#020812] font-bold text-sm px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
-//         >
-//           + Add Clinic
-//         </button>
-//       </div>
-
-//       {/* Table */}
-//       <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-//         <table className="w-full">
-//           <thead>
-//             <tr className="border-b border-white/10">
-//               <th className="text-left text-white/40 text-xs font-medium px-5 py-3">
-//                 Clinic
-//               </th>
-//               <th className="text-left text-white/40 text-xs font-medium px-4 py-3">
-//                 Emirate
-//               </th>
-//               <th className="text-left text-white/40 text-xs font-medium px-4 py-3">
-//                 Specialities
-//               </th>
-//               <th className="text-left text-white/40 text-xs font-medium px-4 py-3">
-//                 Rating
-//               </th>
-//               <th className="text-left text-white/40 text-xs font-medium px-4 py-3">
-//                 Status
-//               </th>
-//               <th className="text-right text-white/40 text-xs font-medium px-5 py-3">
-//                 Actions
-//               </th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {isLoading
-//               ? Array.from({ length: 5 }).map((_, i) => (
-//                   <tr key={i} className="border-b border-white/5">
-//                     <td colSpan={6} className="px-5 py-4">
-//                       <div className="h-4 rounded bg-white/5 animate-pulse" />
-//                     </td>
-//                   </tr>
-//                 ))
-//               : vets?.map((vet: TVet) => (
-//                   <tr
-//                     key={vet._id}
-//                     className="border-b border-white/5 hover:bg-white/3 transition-colors"
-//                   >
-//                     <td className="px-5 py-4">
-//                       <div className="flex items-center gap-3">
-//                         {vet.coverPhoto && (
-//                           <img
-//                             src={vet.coverPhoto}
-//                             alt=""
-//                             className="w-9 h-9 rounded-lg object-cover opacity-80"
-//                           />
-//                         )}
-//                         <div>
-//                           <p className="text-white text-sm font-medium">
-//                             {vet.clinicName}
-//                           </p>
-//                           <p className="text-white/40 text-xs">{vet.name}</p>
-//                         </div>
-//                       </div>
-//                     </td>
-//                     <td className="px-4 py-4 text-white/60 text-sm">
-//                       {formatEmirate(vet.emirate)}
-//                     </td>
-//                     <td className="px-4 py-4">
-//                       <div className="flex flex-wrap gap-1">
-//                         {vet.specialities.slice(0, 2).map((s) => (
-//                           <span
-//                             key={s}
-//                             className="text-[10px] bg-[#4682B4]/15 border border-[#4682B4]/25 text-[#4682B4] px-1.5 py-0.5 rounded-full capitalize"
-//                           >
-//                             {s}
-//                           </span>
-//                         ))}
-//                         {vet.specialities.length > 2 && (
-//                           <span className="text-[10px] text-white/30">
-//                             +{vet.specialities.length - 2}
-//                           </span>
-//                         )}
-//                       </div>
-//                     </td>
-//                     <td className="px-4 py-4">
-//                       <span className="text-[#F5D020] text-sm">
-//                         ★ {vet.rating.toFixed(1)}
-//                       </span>
-//                     </td>
-//                     <td className="px-4 py-4">
-//                       {vet.isClaimed ? (
-//                         <span className="text-[10px] bg-[#00E5CC]/15 border border-[#00E5CC]/30 text-[#00E5CC] px-2 py-0.5 rounded-full">
-//                           Claimed
-//                         </span>
-//                       ) : (
-//                         <span className="text-[10px] bg-white/5 border border-white/10 text-white/40 px-2 py-0.5 rounded-full">
-//                           Unclaimed
-//                         </span>
-//                       )}
-//                     </td>
-//                     <td className="px-5 py-4">
-//                       <div className="flex items-center justify-end gap-2">
-//                         <button
-//                           onClick={() => openEdit(vet)}
-//                           className="text-xs text-[#4682B4] hover:underline"
-//                         >
-//                           Edit
-//                         </button>
-//                         <button
-//                           onClick={() => setDeleteConfirm(vet._id)}
-//                           className="text-xs text-[#FF4D6D] hover:underline"
-//                         >
-//                           Delete
-//                         </button>
-//                       </div>
-//                     </td>
-//                   </tr>
-//                 ))}
-//           </tbody>
-//         </table>
-
-//       </div>
-
-//        <div>
-//           {/* Add/Edit Modal */}
-//           <VetForm
-//             initial={
-//               editingVet
-//                 ? {
-//                     name: editingVet.name,
-//                     clinicName: editingVet.clinicName,
-//                     emirate: editingVet.emirate,
-//                     area: editingVet.area,
-//                     address: editingVet.address,
-//                     phone: editingVet.phone,
-//                     whatsapp: editingVet.whatsapp || "",
-//                     email: editingVet.email || "",
-//                     website: editingVet.website || "",
-//                     coverPhoto: editingVet.coverPhoto || "",
-//                     about: editingVet.about || "",
-//                     googleMapsUrl: editingVet.googleMapsUrl || "",
-//                     specialities: editingVet.specialities,
-//                     workingHours: editingVet.workingHours?.length
-//                       ? editingVet.workingHours
-//                       : DEFAULT_FORM.workingHours,
-//                     serviceRates: editingVet.serviceRates?.length
-//                       ? editingVet.serviceRates
-//                       : DEFAULT_FORM.serviceRates,
-//                     rating: editingVet.rating,
-//                     reviewCount: editingVet.reviewCount,
-//                   }
-//                 : DEFAULT_FORM
-//             }
-//             onSave={handleSave}
-//             loading={creating || updating}
-//           />
-//         </div>
-
-//       {/* Delete Confirm */}
-//       {deleteConfirm && (
-//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-//           <div className="bg-[#0a1628] border border-white/10 rounded-2xl p-6 max-w-sm w-full mx-4">
-//             <h3 className="text-white font-bold mb-2">Delete Clinic?</h3>
-//             <p className="text-white/50 text-sm mb-5">
-//               This will soft-delete the clinic and remove it from the public
-//               listing.
-//             </p>
-//             <div className="flex gap-3">
-//               <button
-//                 onClick={() => setDeleteConfirm(null)}
-//                 className="flex-1 py-2.5 border border-white/10 rounded-xl text-white/60 text-sm hover:bg-white/5"
-//               >
-//                 Cancel
-//               </button>
-//               <button
-//                 onClick={() => handleDelete(deleteConfirm)}
-//                 className="flex-1 py-2.5 bg-[#FF4D6D] rounded-xl text-white font-bold text-sm hover:opacity-90"
-//               >
-//                 Delete
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -301,18 +8,101 @@ import {
   useDeleteVetMutation,
 } from "@/src/redux/features/vets/vetsApi";
 import { TVet } from "@/src/types";
-import { format } from "date-fns";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableColumn,
+  TableRow,
+  TableCell,
+  Button,
+  Chip,
+  Avatar,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Pagination,
+  Input,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@heroui/react";
+import { toast } from "sonner";
+import { SearchIcon, ChevronDownIcon, PlusIcon } from "lucide-react";
+
+const statusOptions = [
+  { name: "Claimed", uid: "claimed" },
+  { name: "Unclaimed", uid: "unclaimed" },
+];
+
+const emirateOptions = [
+  { name: "Dubai", uid: "dubai" },
+  { name: "Abu Dhabi", uid: "abu-dhabi" },
+  { name: "Sharjah", uid: "sharjah" },
+  { name: "Ajman", uid: "ajman" },
+  { name: "Ras Al Khaimah", uid: "ras-al-khaimah" },
+  { name: "Fujairah", uid: "fujairah" },
+  { name: "Umm Al Quwain", uid: "umm-al-quwain" },
+];
 
 export default function AdminVetsPage() {
   const router = useRouter();
-  const { data: vets, isLoading, isError, error } = useGetVetsQuery(undefined);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filterValue, setFilterValue] = useState("");
+  const [statusFilter, setStatusFilter] = useState<Set<string>>(new Set([]));
+  const [emirateFilter, setEmirateFilter] = useState<Set<string>>(new Set([]));
+  const [sortDescriptor, setSortDescriptor] = useState({
+    column: "clinicName",
+    direction: "ascending" as "ascending" | "descending",
+  });
+
   const [deleteVet] = useDeleteVetMutation();
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleDelete = async (id: string) => {
-    await deleteVet(id).unwrap();
-    setDeleteConfirm(null);
-  };
+  // Build query params for backend pagination
+  const queryParams = useMemo(() => {
+    const params: any = {
+      page,
+      limit: rowsPerPage,
+      sortBy: sortDescriptor.column,
+      sortOrder: sortDescriptor.direction,
+    };
+
+    if (filterValue) {
+      params.search = filterValue;
+    }
+
+    if (statusFilter.size > 0) {
+      params.status = Array.from(statusFilter).join(",");
+    }
+
+    if (emirateFilter.size > 0) {
+      params.emirate = Array.from(emirateFilter).join(",");
+    }
+
+    return params;
+  }, [
+    page,
+    rowsPerPage,
+    filterValue,
+    statusFilter,
+    emirateFilter,
+    sortDescriptor,
+  ]);
+
+  const { data: vetInfo, isLoading, isFetching } = useGetVetsQuery(queryParams);
+
+  const vets = vetInfo || [];
+  console.log(vetInfo);
+  // const total = data?.total || 0;
+  const total = 10;
+  const pages = Math.ceil(total / rowsPerPage) || 1;
 
   const formatEmirate = (e: string) =>
     e
@@ -320,10 +110,172 @@ export default function AdminVetsPage() {
       .map((w) => w[0].toUpperCase() + w.slice(1))
       .join(" ");
 
-  // Loading State
-  if (isLoading) {
+  const handleDelete = async () => {
+    if (!deleteConfirm) return;
+    try {
+      await deleteVet(deleteConfirm).unwrap();
+      toast.success("Clinic deleted successfully");
+      setDeleteConfirm(null);
+      onClose();
+      // Refresh current page
+      setPage(1);
+    } catch {
+      toast.error("Failed to delete clinic");
+    }
+  };
+
+  const onSearchChange = useCallback((value: string) => {
+    setFilterValue(value);
+    setPage(1);
+  }, []);
+
+  const onClear = useCallback(() => {
+    setFilterValue("");
+    setPage(1);
+  }, []);
+
+  const onRowsPerPageChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setRowsPerPage(Number(e.target.value));
+      setPage(1);
+    },
+    [],
+  );
+
+  const topContent = useMemo(() => {
     return (
-      <div className="p-6">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap justify-between gap-3 items-end">
+          <Input
+            isClearable
+            className="w-full sm:max-w-[280px]"
+            placeholder="Search by clinic name..."
+            startContent={<SearchIcon className="text-default-300" />}
+            value={filterValue}
+            onClear={onClear}
+            onValueChange={onSearchChange}
+          />
+          <div className="flex gap-3 flex-wrap">
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  variant="flat"
+                  endContent={<ChevronDownIcon className="text-small" />}
+                >
+                  Status
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Status filter"
+                closeOnSelect={false}
+                selectedKeys={statusFilter}
+                selectionMode="multiple"
+                onSelectionChange={(keys) =>
+                  setStatusFilter(keys as Set<string>)
+                }
+              >
+                {statusOptions.map((status) => (
+                  <DropdownItem key={status.uid} className="capitalize">
+                    {status.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  variant="flat"
+                  endContent={<ChevronDownIcon className="text-small" />}
+                >
+                  Emirate
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Emirate filter"
+                closeOnSelect={false}
+                selectedKeys={emirateFilter}
+                selectionMode="multiple"
+                onSelectionChange={(keys) =>
+                  setEmirateFilter(keys as Set<string>)
+                }
+              >
+                {emirateOptions.map((emirate) => (
+                  <DropdownItem key={emirate.uid} className="capitalize">
+                    {emirate.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+
+            <Button
+              as={Link}
+              href="/admin/vets/new"
+              color="primary"
+              className="bg-lime-burst text-gray-900 font-bold"
+              startContent={<PlusIcon />}
+            >
+              Add Clinic
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <span className="text-default-400 text-small">
+            Total {total} clinic{total !== 1 ? "s" : ""}
+          </span>
+          <label className="flex items-center text-default-400 text-small gap-2">
+            Rows per page:
+            <select
+              className="bg-transparent outline-none text-default-400 text-small"
+              onChange={onRowsPerPageChange}
+              value={rowsPerPage}
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    );
+  }, [
+    filterValue,
+    statusFilter,
+    emirateFilter,
+    rowsPerPage,
+    total,
+    onSearchChange,
+    onClear,
+    onRowsPerPageChange,
+  ]);
+
+  const bottomContent = useMemo(() => {
+    return (
+      <div className="py-2 px-2 flex justify-center items-center">
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          total={pages}
+          onChange={setPage}
+          classNames={{
+            cursor: "bg-lime-burst text-gray-900",
+          }}
+        />
+      </div>
+    );
+  }, [page, pages]);
+
+  // Loading State
+  if (isLoading && page === 1) {
+    return (
+      <div className="p-4 sm:p-6">
         <div className="animate-pulse">
           <div className="h-8 w-48 bg-steel-blue/20 dark:bg-white/10 rounded mb-2" />
           <div className="h-4 w-32 bg-steel-blue/10 dark:bg-white/5 rounded mb-6" />
@@ -340,39 +292,34 @@ export default function AdminVetsPage() {
     );
   }
 
-  // Error State
-  if (isError) {
-    return (
-      <div className="p-6">
-        <div className="rounded-2xl border border-pv-coral/30 bg-pv-coral/5 p-8 text-center">
-          <p className="text-pv-coral font-medium">Failed to load clinics</p>
-          <p className="text-pv-coral/70 text-sm mt-1">
-            "Please try again later"
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Empty State
-  if (!vets?.length) {
+  if (
+    !vets?.length &&
+    !isLoading &&
+    !filterValue &&
+    statusFilter.size === 0 &&
+    emirateFilter.size === 0
+  ) {
     return (
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Vet Clinics
             </h1>
-            <p className="text-sm mt-1 text-gray-500 dark:text-white/40">
+            <p className="text-xs sm:text-sm mt-1 text-gray-500 dark:text-white/40">
               0 clinics in database
             </p>
           </div>
-          <Link
+          <Button
+            as={Link}
             href="/admin/vets/new"
-            className="bg-lime-burst text-gray-900 font-bold text-sm px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+            color="primary"
+            className="bg-lime-burst text-gray-900 font-bold"
+            startContent={<PlusIcon />}
           >
-            + Add Clinic
-          </Link>
+            Add Clinic
+          </Button>
         </div>
         <div className="rounded-2xl border border-steel-blue/20 dark:border-white/10 bg-white dark:bg-white/5 p-12 text-center">
           <div className="text-5xl mb-3">🏥</div>
@@ -389,161 +336,151 @@ export default function AdminVetsPage() {
 
   // Success State - Show Table
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Vet Clinics
-          </h1>
-          <p className="text-sm mt-1 text-gray-500 dark:text-white/40">
-            {vets.length} clinic{vets.length !== 1 ? "s" : ""} in database
-          </p>
-        </div>
-        <Link
-          href="/admin/vets/new"
-          className="bg-lime-burst text-gray-900 font-bold text-sm px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
-        >
-          + Add Clinic
-        </Link>
-      </div>
+    <div className="p-4 sm:p-6">
+      <Table
+        aria-label="Vet clinics table with pagination"
+        isHeaderSticky
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
+        topContent={topContent}
+        topContentPlacement="outside"
+        classNames={{
+          base: "rounded-2xl border border-steel-blue/20 dark:border-white/10",
+          table: "min-w-[800px]",
+          th: "text-left text-gray-500 dark:text-white/40 text-xs font-medium px-5 py-3 bg-transparent border-b border-steel-blue/15 dark:border-white/10",
+          td: "px-5 py-4 border-b border-steel-blue/10 dark:border-white/5",
+          tr: "hover:bg-steel-blue/5 dark:hover:bg-white/5 transition-colors",
+        }}
+        sortDescriptor={sortDescriptor}
+        onSortChange={setSortDescriptor}
+      >
+        <TableHeader>
+          <TableColumn key="clinicName" allowsSorting>
+            Clinic
+          </TableColumn>
+          <TableColumn key="emirate" allowsSorting>
+            Emirate
+          </TableColumn>
+          <TableColumn key="specialities">Specialities</TableColumn>
+          <TableColumn key="rating" allowsSorting>
+            Rating
+          </TableColumn>
 
-      {/* Table */}
-      <div className="rounded-2xl border border-steel-blue/20 dark:border-white/10 bg-white dark:bg-white/5 overflow-hidden overflow-x-auto">
-        <table className="w-full min-w-[600px]">
-          <thead>
-            <tr className="border-b border-steel-blue/15 dark:border-white/10">
-              <th className="text-left text-gray-500 dark:text-white/40 text-xs font-medium px-5 py-3">
-                Clinic
-              </th>
-              <th className="text-left text-gray-500 dark:text-white/40 text-xs font-medium px-4 py-3">
-                Emirate
-              </th>
-              <th className="text-left text-gray-500 dark:text-white/40 text-xs font-medium px-4 py-3">
-                Specialities
-              </th>
-              <th className="text-left text-gray-500 dark:text-white/40 text-xs font-medium px-4 py-3">
-                Rating
-              </th>
-              <th className="text-left text-gray-500 dark:text-white/40 text-xs font-medium px-4 py-3">
-                Status
-              </th>
-              <th className="text-right text-gray-500 dark:text-white/40 text-xs font-medium px-5 py-3">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {vets?.map((vet: TVet) => (
-              <tr
-                key={vet._id}
-                className="border-b border-steel-blue/10 dark:border-white/5 hover:bg-steel-blue/5 dark:hover:bg-white/5 transition-colors"
-              >
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    {vet.coverPhoto && (
-                      <img
-                        src={vet.coverPhoto}
-                        alt=""
-                        className="w-9 h-9 rounded-lg object-cover opacity-80"
-                      />
-                    )}
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {vet.clinicName}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-white/40">
-                        {vet.name}
-                      </p>
-                    </div>
+          <TableColumn key="actions" align="end">
+            Actions
+          </TableColumn>
+        </TableHeader>
+        <TableBody
+          items={vets}
+          loadingContent={<div className="text-center py-4">Loading...</div>}
+          isLoading={isFetching}
+        >
+          {(vet: TVet) => (
+            <TableRow key={vet._id}>
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <Avatar
+                    src={vet.coverPhoto}
+                    name={vet.clinicName}
+                    size="sm"
+                    radius="lg"
+                    className="w-9 h-9"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {vet.clinicName}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-white/40">
+                      {vet.name}
+                    </p>
                   </div>
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-600 dark:text-white/60">
-                  {formatEmirate(vet.emirate)}
-                </td>
-                <td className="px-4 py-4">
-                  <div className="flex flex-wrap gap-1">
-                    {vet.specialities.slice(0, 2).map((s) => (
-                      <span
-                        key={s}
-                        className="text-[10px] bg-steel-blue/15 border border-steel-blue/25 text-steel-blue px-1.5 py-0.5 rounded-full capitalize"
-                      >
-                        {s}
-                      </span>
-                    ))}
-                    {vet.specialities.length > 2 && (
-                      <span className="text-[10px] text-gray-400 dark:text-white/30">
-                        +{vet.specialities.length - 2}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-4 py-4">
-                  <span className="text-pv-yellow text-sm">
-                    ★ {vet.rating.toFixed(1)}
-                  </span>
-                </td>
-                <td className="px-4 py-4">
-                  {vet.isClaimed ? (
-                    <span className="text-[10px] bg-pv-teal/15 border border-pv-teal/30 text-pv-teal px-2 py-0.5 rounded-full">
-                      Claimed
-                    </span>
-                  ) : (
-                    <span className="text-[10px] bg-white/5 border border-steel-blue/20 dark:border-white/10 text-gray-500 dark:text-white/40 px-2 py-0.5 rounded-full">
-                      Unclaimed
+                </div>
+              </TableCell>
+              <TableCell className="text-sm text-gray-600 dark:text-white/60">
+                {formatEmirate(vet.emirate)}
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {vet.specialities?.slice(0, 2).map((s) => (
+                    <Chip
+                      key={s}
+                      size="sm"
+                      className="text-[10px] bg-steel-blue/15 border border-steel-blue/25 text-steel-blue px-1.5 py-0.5 rounded-full capitalize"
+                    >
+                      {s}
+                    </Chip>
+                  ))}
+                  {vet.specialities?.length > 2 && (
+                    <span className="text-[10px] text-gray-400 dark:text-white/30">
+                      +{vet.specialities.length - 2}
                     </span>
                   )}
-                </td>
-                <td className="px-5 py-4">
-                  <div className="flex items-center justify-end gap-2">
-                    <Link
-                      href={`/admin/vets/${vet._id}`}
-                      className="text-xs text-steel-blue hover:underline"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => setDeleteConfirm(vet._id)}
-                      className="text-xs text-pv-coral hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <span className="text-pv-yellow text-sm">
+                  ★ {vet.rating?.toFixed(1) || "N/A"}
+                </span>
+              </TableCell>
 
-      {/* Delete Confirm Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#0a1628] border border-steel-blue/20 dark:border-white/10 rounded-2xl p-6 max-w-sm w-full mx-4">
-            <h3 className="text-gray-900 dark:text-white font-bold mb-2">
-              Delete Clinic?
-            </h3>
-            <p className="text-gray-500 dark:text-white/50 text-sm mb-5">
-              This will soft-delete the clinic and remove it from the public
-              listing.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="flex-1 py-2.5 border border-steel-blue/20 dark:border-white/10 rounded-xl text-gray-600 dark:text-white/60 text-sm hover:bg-steel-blue/5 dark:hover:bg-white/5"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirm)}
-                className="flex-1 py-2.5 bg-pv-coral rounded-xl text-white font-bold text-sm hover:opacity-90"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <TableCell>
+                <div className="flex items-center justify-end gap-2">
+                  <Button
+                    as={Link}
+                    href={`/admin/vets/${vet._id}`}
+                    size="sm"
+                    variant="light"
+                    className="text-steel-blue min-w-0 px-2"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="light"
+                    color="danger"
+                    className="text-pv-coral min-w-0 px-2"
+                    onPress={() => {
+                      setDeleteConfirm(vet._id);
+                      onOpen();
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      {/* HeroUI Delete Confirmation Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} placement="center">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <h3 className="text-gray-900 dark:text-white font-bold text-lg">
+                  Delete Clinic?
+                </h3>
+              </ModalHeader>
+              <ModalBody>
+                <p className="text-gray-500 dark:text-white/50 text-sm">
+                  This will permanently delete this clinic from the directory.
+                  This action cannot be undone.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="light" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button color="danger" onPress={handleDelete}>
+                  Delete
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
