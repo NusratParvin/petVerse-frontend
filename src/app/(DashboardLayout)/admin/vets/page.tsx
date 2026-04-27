@@ -103,7 +103,7 @@ export default function AdminVetsPage() {
   // const total = data?.total || 0;
   const total = 10;
   const pages = Math.ceil(total / rowsPerPage) || 1;
-
+  console.log(rowsPerPage, pages);
   const formatEmirate = (e: string) =>
     e
       .split("-")
