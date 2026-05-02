@@ -1,44 +1,62 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  useGetVetsQuery,
-  useDeleteVetMutation,
-} from "@/src/redux/features/vets/vetsApi";
-import { TVet } from "@/src/types";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   Table,
   TableHeader,
-  TableBody,
   TableColumn,
+  TableBody,
   TableRow,
   TableCell,
+  Input,
   Button,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
   Chip,
-  Avatar,
+  User,
+  Pagination,
+  Spinner,
+  useDisclosure,
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  useDisclosure,
-  Pagination,
-  Input,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
 } from "@heroui/react";
-import { toast } from "sonner";
-import { SearchIcon, ChevronDownIcon, PlusIcon } from "lucide-react";
+import {
+  useDeleteVetMutation,
+  useGetVetsQuery,
+} from "@/src/redux/features/vets/vetsApi";
+import { TVet } from "@/src/types";
+import { ChevronDown, EllipsisVertical, Plus, Search } from "lucide-react";
 
-const statusOptions = [
-  { name: "Claimed", uid: "claimed" },
-  { name: "Unclaimed", uid: "unclaimed" },
+// API Response type
+interface ApiResponse {
+  data: TVet[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
+
+// Column definitions for the table
+const columns = [
+  { name: "CLINIC", uid: "clinicName", sortable: true },
+  { name: "CONTACT PERSON", uid: "name", sortable: true },
+  { name: "LOCATION", uid: "location" },
+  { name: "EMIRATE", uid: "emirate", sortable: true },
+  { name: "SPECIALITIES", uid: "specialities" },
+  { name: "PRICE RANGE", uid: "priceRange" },
+  { name: "EMERGENCY", uid: "emergency", sortable: true },
+  { name: "RATING", uid: "rating", sortable: true },
+  { name: "ACTIONS", uid: "actions" },
 ];
 
+// Emirate options for filtering
 const emirateOptions = [
   { name: "Dubai", uid: "dubai" },
   { name: "Abu Dhabi", uid: "abu-dhabi" },
@@ -49,80 +67,366 @@ const emirateOptions = [
   { name: "Umm Al Quwain", uid: "umm-al-quwain" },
 ];
 
-export default function AdminVetsPage() {
-  const router = useRouter();
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+// Speciality options for filtering
+const specialityOptions = [
+  { name: "Dogs", uid: "dogs" },
+  { name: "Cats", uid: "cats" },
+  { name: "Birds", uid: "birds" },
+  { name: "Fish", uid: "fish" },
+  { name: "Rabbits", uid: "rabbits" },
+  { name: "Reptiles", uid: "reptiles" },
+  { name: "Exotic", uid: "exotic" },
+  { name: "Small Animals", uid: "small-animals" },
+  { name: "Emergency", uid: "emergency" },
+  { name: "Surgery", uid: "surgery" },
+  { name: "Dental", uid: "dental" },
+  { name: "Dermatology", uid: "dermatology" },
+  { name: "Ophthalmology", uid: "ophthalmology" },
+  { name: "Nutrition", uid: "nutrition" },
+];
+
+const INITIAL_VISIBLE_COLUMNS = [
+  "clinicName",
+  "location",
+  "specialities",
+  "emergency",
+  "rating",
+  "actions",
+];
+
+// Helper functions
+function capitalize(s: string) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
+}
+
+function formatEmirate(emirate: string) {
+  const emirateMap: Record<string, string> = {
+    dubai: "Dubai",
+    "abu-dhabi": "Abu Dhabi",
+    sharjah: "Sharjah",
+    ajman: "Ajman",
+    "ras-al-khaimah": "Ras Al Khaimah",
+    fujairah: "Fujairah",
+    "umm-al-quwain": "Umm Al Quwain",
+  };
+  return emirateMap[emirate] || capitalize(emirate);
+}
+
+function formatPriceRange(priceRange: { basePrice: number; maxPrice: number }) {
+  if (!priceRange) return "N/A";
+  const { basePrice, maxPrice } = priceRange;
+  if (basePrice === maxPrice) {
+    return `$${basePrice}`;
+  }
+  return `$${basePrice} - $${maxPrice}`;
+}
+
+function getEmirateColor(emirate: string) {
+  const colorMap: Record<string, string> = {
+    dubai: "primary",
+    "abu-dhabi": "success",
+    sharjah: "warning",
+    ajman: "secondary",
+    "ras-al-khaimah": "danger",
+    fujairah: "default",
+    "umm-al-quwain": "default",
+  };
+  return colorMap[emirate] || "default";
+}
+
+const StarIcon = ({ filled = false, ...props }) => {
+  return (
+    <svg
+      aria-hidden="true"
+      fill={filled ? "currentColor" : "none"}
+      focusable="false"
+      height="1em"
+      role="presentation"
+      viewBox="0 0 24 24"
+      width="1em"
+      {...props}
+    >
+      <path
+        d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z"
+        fill={filled ? "currentColor" : "none"}
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+};
+
+export default function VetsPage() {
   const [filterValue, setFilterValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState<Set<string>>(new Set([]));
-  const [emirateFilter, setEmirateFilter] = useState<Set<string>>(new Set([]));
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set([]));
+  const [visibleColumns, setVisibleColumns] = useState(
+    new Set(INITIAL_VISIBLE_COLUMNS),
+  );
+  const [emirateFilter, setEmirateFilter] = useState<Set<string>>(new Set());
+  const [specialityFilter, setSpecialityFilter] = useState<Set<string>>(
+    new Set(),
+  );
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "clinicName",
     direction: "ascending" as "ascending" | "descending",
   });
-
-  const [deleteVet] = useDeleteVetMutation();
+  const [page, setPage] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Build query params for backend pagination
+  // Build query params for RTK Query
   const queryParams = useMemo(() => {
-    const params: any = {
-      page,
-      limit: rowsPerPage,
+    const params: Record<string, unknown> = {
+      page: page.toString(),
+      limit: rowsPerPage.toString(),
       sortBy: sortDescriptor.column,
-      sortOrder: sortDescriptor.direction,
+      sortOrder: sortDescriptor.direction === "ascending" ? "asc" : "desc",
     };
 
     if (filterValue) {
       params.search = filterValue;
     }
 
-    if (statusFilter.size > 0) {
-      params.status = Array.from(statusFilter).join(",");
-    }
-
     if (emirateFilter.size > 0) {
       params.emirate = Array.from(emirateFilter).join(",");
+    }
+
+    if (specialityFilter.size > 0) {
+      params.speciality = Array.from(specialityFilter)[0];
     }
 
     return params;
   }, [
     page,
     rowsPerPage,
-    filterValue,
-    statusFilter,
-    emirateFilter,
     sortDescriptor,
+    filterValue,
+    emirateFilter,
+    specialityFilter,
   ]);
 
-  const { data: vetInfo, isLoading, isFetching } = useGetVetsQuery(queryParams);
+  // RTK Query hooks - fix: handle both possible response structures
+  const {
+    data: vetResponse,
+    isLoading,
+    isFetching,
+  } = useGetVetsQuery(queryParams);
+  const [deleteVet, { isLoading: isDeleting }] = useDeleteVetMutation();
 
-  const vets = vetInfo || [];
-  console.log(vetInfo);
-  // const total = data?.total || 0;
-  const total = 10;
-  const pages = Math.ceil(total / rowsPerPage) || 1;
-  console.log(rowsPerPage, pages);
-  const formatEmirate = (e: string) =>
-    e
-      .split("-")
-      .map((w) => w[0].toUpperCase() + w.slice(1))
-      .join(" ");
+  // Handle both response formats: direct array OR object with data/meta
+  const vets = React.useMemo(() => {
+    if (!vetResponse) return [];
+    // If response has data property (ApiResponse format)
+    if (Array.isArray(vetResponse)) return vetResponse;
+    // If response is the ApiResponse object
+    if (vetResponse.data && Array.isArray(vetResponse.data))
+      return vetResponse.data;
+    return [];
+  }, [vetResponse]);
+
+  const total = React.useMemo(() => {
+    if (!vetResponse) return 0;
+    // If response has meta with total
+    if (vetResponse.meta?.total) return vetResponse.meta.total;
+    // If response is an array, use its length
+    if (Array.isArray(vetResponse)) return vetResponse.length;
+    return 0;
+  }, [vetResponse]);
+
+  const pages = React.useMemo(() => {
+    if (!vetResponse) return 1;
+    // If response has meta with pages
+    if (vetResponse.meta?.pages) return vetResponse.meta.pages;
+    // Calculate pages based on total and rowsPerPage
+    return Math.ceil(total / rowsPerPage) || 1;
+  }, [vetResponse, total, rowsPerPage]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [filterValue, emirateFilter, specialityFilter]);
+
+  const headerColumns = useMemo(() => {
+    return columns.filter((column) =>
+      Array.from(visibleColumns).includes(column.uid),
+    );
+  }, [visibleColumns]);
 
   const handleDelete = async () => {
-    if (!deleteConfirm) return;
-    try {
-      await deleteVet(deleteConfirm).unwrap();
-      toast.success("Clinic deleted successfully");
-      setDeleteConfirm(null);
-      onClose();
-      // Refresh current page
-      setPage(1);
-    } catch {
-      toast.error("Failed to delete clinic");
+    if (deleteConfirm) {
+      try {
+        await deleteVet(deleteConfirm).unwrap();
+        setDeleteConfirm(null);
+        onClose();
+      } catch (error) {
+        console.error("Failed to delete vet:", error);
+      }
     }
   };
+
+  const handleEdit = (vet: TVet) => {
+    // Navigate to edit page or open edit modal
+    console.log("Edit vet:", vet);
+  };
+
+  const handleView = (vet: TVet) => {
+    // Navigate to view page or open view modal
+    console.log("View vet:", vet);
+  };
+
+  const handleAddNew = () => {
+    // Navigate to add new page or open add modal
+    console.log("Add new vet");
+  };
+
+  const renderCell = useCallback(
+    (vet: TVet, columnKey: string | number) => {
+      switch (columnKey) {
+        case "clinicName":
+          return (
+            <User
+              avatarProps={{
+                radius: "lg",
+                src:
+                  vet.coverPhoto ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(vet.clinicName)}&background=0D8F81&color=fff`,
+              }}
+              description={vet.area}
+              name={vet.clinicName}
+            />
+          );
+        case "name":
+          return vet.name || "—";
+        case "location":
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-small">{vet.area}</p>
+              <p className="text-tiny text-default-400 truncate max-w-[200px]">
+                {vet.address}
+              </p>
+            </div>
+          );
+        case "emirate":
+          return (
+            <Chip
+              className="capitalize"
+              color={getEmirateColor(vet.emirate) as any}
+              size="sm"
+              variant="flat"
+            >
+              {formatEmirate(vet.emirate)}
+            </Chip>
+          );
+        case "specialities":
+          return (
+            <div className="flex flex-wrap gap-1 max-w-[200px]">
+              {vet.specialities?.slice(0, 2).map((spec) => (
+                <Chip
+                  key={spec}
+                  size="sm"
+                  variant="flat"
+                  className="capitalize text-xs"
+                >
+                  {spec.replace("-", " ")}
+                </Chip>
+              ))}
+              {vet.specialities && vet.specialities.length > 2 && (
+                <Chip size="sm" variant="flat" className="text-xs">
+                  +{vet.specialities.length - 2}
+                </Chip>
+              )}
+            </div>
+          );
+        case "priceRange":
+          return (
+            <span className="text-small font-medium">
+              {formatPriceRange(vet.priceRange)}
+            </span>
+          );
+        case "emergency":
+          return (
+            <Chip
+              className="capitalize"
+              color={vet.emergency ? "danger" : "default"}
+              size="sm"
+              variant={vet.emergency ? "solid" : "flat"}
+            >
+              {vet.emergency ? "24/7" : "No"}
+            </Chip>
+          );
+        case "rating":
+          return (
+            <div className="flex items-center gap-1">
+              <StarIcon filled={true} className="text-warning" />
+              <span className="text-small font-semibold">
+                {vet.rating?.toFixed(1) || "0"}
+              </span>
+              <span className="text-tiny text-default-400">
+                ({vet.reviewCount || 0})
+              </span>
+            </div>
+          );
+        case "actions":
+          return (
+            <div className="relative flex justify-end items-center gap-2">
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button isIconOnly size="sm" variant="light">
+                    <EllipsisVertical className="text-default-300" />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu>
+                  <DropdownItem key="view" onPress={() => handleView(vet)}>
+                    View Details
+                  </DropdownItem>
+                  <DropdownItem key="edit" onPress={() => handleEdit(vet)}>
+                    Edit Clinic
+                  </DropdownItem>
+                  <DropdownItem
+                    key="delete"
+                    className="text-danger"
+                    color="danger"
+                    onPress={() => {
+                      setDeleteConfirm(vet._id);
+                      onOpen();
+                    }}
+                  >
+                    Delete
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          );
+        default:
+          return vet[columnKey as keyof TVet] as React.ReactNode;
+      }
+    },
+    [onOpen],
+  );
+
+  const onNextPage = useCallback(() => {
+    if (page < pages) {
+      setPage(page + 1);
+    }
+  }, [page, pages]);
+
+  const onPreviousPage = useCallback(() => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  }, [page]);
+
+  const onRowsPerPageChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setRowsPerPage(Number(e.target.value));
+      setPage(1);
+    },
+    [],
+  );
 
   const onSearchChange = useCallback((value: string) => {
     setFilterValue(value);
@@ -134,67 +438,37 @@ export default function AdminVetsPage() {
     setPage(1);
   }, []);
 
-  const onRowsPerPageChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setRowsPerPage(Number(e.target.value));
-      setPage(1);
-    },
-    [],
-  );
-
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap justify-between gap-3 items-end">
+      <div className="flex flex-col gap-1 pt-4 text-xs">
+        <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
-            className="w-full sm:max-w-[280px]"
-            placeholder="Search by clinic name..."
-            startContent={<SearchIcon className="text-default-300" />}
+            className="w-full sm:max-w-[44%] text-xs focus:ring-0 focus:ring-transparent"
+            size="sm"
+            placeholder="Search by clinic, doctor, or area..."
+            startContent={<Search size={14} />}
             value={filterValue}
             onClear={onClear}
             onValueChange={onSearchChange}
           />
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex gap-3">
+            {/* Emirate Filter Dropdown */}
             <Dropdown>
-              <DropdownTrigger>
+              <DropdownTrigger className="hidden sm:flex">
                 <Button
+                  endContent={<ChevronDown size={14} />}
                   variant="flat"
-                  endContent={<ChevronDownIcon className="text-small" />}
+                  size="sm"
                 >
-                  Status
+                  {emirateFilter.size > 0
+                    ? `Emirates (${emirateFilter.size})`
+                    : "Emirate"}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
-                disallowEmptySelection
-                aria-label="Status filter"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={(keys) =>
-                  setStatusFilter(keys as Set<string>)
-                }
-              >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {status.name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-
-            <Dropdown>
-              <DropdownTrigger>
-                <Button
-                  variant="flat"
-                  endContent={<ChevronDownIcon className="text-small" />}
-                >
-                  Emirate
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Emirate filter"
+                disallowEmptySelection={false}
+                aria-label="Emirate Filter"
                 closeOnSelect={false}
                 selectedKeys={emirateFilter}
                 selectionMode="multiple"
@@ -210,26 +484,85 @@ export default function AdminVetsPage() {
               </DropdownMenu>
             </Dropdown>
 
+            {/* Speciality Filter Dropdown */}
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDown size={14} />}
+                  variant="flat"
+                  size="sm"
+                >
+                  {specialityFilter.size > 0
+                    ? `Specialities (${specialityFilter.size})`
+                    : "Speciality"}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection={false}
+                aria-label="Speciality Filter"
+                closeOnSelect={false}
+                selectedKeys={specialityFilter}
+                selectionMode="multiple"
+                onSelectionChange={(keys) =>
+                  setSpecialityFilter(keys as Set<string>)
+                }
+              >
+                {specialityOptions.map((speciality) => (
+                  <DropdownItem key={speciality.uid} className="capitalize">
+                    {speciality.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+
+            {/* Columns Dropdown */}
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDown size={14} />}
+                  variant="flat"
+                  size="sm"
+                >
+                  Columns
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={visibleColumns}
+                selectionMode="multiple"
+                onSelectionChange={(keys) =>
+                  setVisibleColumns(keys as Set<string>)
+                }
+              >
+                {columns.map((column) => (
+                  <DropdownItem key={column.uid} className="capitalize">
+                    {capitalize(column.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+
             <Button
-              as={Link}
-              href="/admin/vets/new"
-              color="primary"
-              className="bg-lime-burst text-gray-900 font-bold"
-              startContent={<PlusIcon />}
+              // color="primary"
+              className="bg-steel-blue text-white dark:bg-lime-burst/70"
+              size="sm"
+              endContent={<Plus size={14} />}
+              onPress={handleAddNew}
             >
-              Add Clinic
+              Add New Vet
             </Button>
           </div>
         </div>
-
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total {total} clinic{total !== 1 ? "s" : ""}
+        <div className="flex justify-between items-center text-xs">
+          <span className="text-default-400">
+            Total {total} veterinary clinics
           </span>
-          <label className="flex items-center text-default-400 text-small gap-2">
+          <label className="flex items-center text-default-400  ">
             Rows per page:
             <select
-              className="bg-transparent outline-none text-default-400 text-small"
+              className="bg-transparent outline-none text-default-400 text-xs ml-2"
               onChange={onRowsPerPageChange}
               value={rowsPerPage}
             >
@@ -244,18 +577,22 @@ export default function AdminVetsPage() {
     );
   }, [
     filterValue,
-    statusFilter,
     emirateFilter,
+    specialityFilter,
+    visibleColumns,
     rowsPerPage,
     total,
     onSearchChange,
-    onClear,
-    onRowsPerPageChange,
   ]);
 
   const bottomContent = useMemo(() => {
     return (
-      <div className="py-2 px-2 flex justify-center items-center">
+      <div className="py-2 px-2 flex justify-between items-center">
+        <span className="w-[30%] text-small text-default-400">
+          {selectedKeys.size === total && total > 0
+            ? "All items selected"
+            : `${selectedKeys.size} of ${total} selected`}
+        </span>
         <Pagination
           isCompact
           showControls
@@ -264,223 +601,106 @@ export default function AdminVetsPage() {
           page={page}
           total={pages}
           onChange={setPage}
-          classNames={{
-            cursor: "bg-lime-burst text-gray-900",
-          }}
         />
-      </div>
-    );
-  }, [page, pages]);
-
-  // Loading State
-  if (isLoading && page === 1) {
-    return (
-      <div className="p-4 sm:p-6">
-        <div className="animate-pulse">
-          <div className="h-8 w-48 bg-steel-blue/20 dark:bg-white/10 rounded mb-2" />
-          <div className="h-4 w-32 bg-steel-blue/10 dark:bg-white/5 rounded mb-6" />
-          <div className="space-y-2">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div
-                key={i}
-                className="h-16 bg-steel-blue/5 dark:bg-white/5 rounded"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Empty State
-  if (
-    !vets?.length &&
-    !isLoading &&
-    !filterValue &&
-    statusFilter.size === 0 &&
-    emirateFilter.size === 0
-  ) {
-    return (
-      <div className="p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-              Vet Clinics
-            </h1>
-            <p className="text-xs sm:text-sm mt-1 text-gray-500 dark:text-white/40">
-              0 clinics in database
-            </p>
-          </div>
+        <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
-            as={Link}
-            href="/admin/vets/new"
-            color="primary"
-            className="bg-lime-burst text-gray-900 font-bold"
-            startContent={<PlusIcon />}
+            isDisabled={pages === 1}
+            size="sm"
+            variant="flat"
+            onPress={onPreviousPage}
           >
-            Add Clinic
+            Previous
+          </Button>
+          <Button
+            isDisabled={pages === 1}
+            size="sm"
+            variant="flat"
+            onPress={onNextPage}
+          >
+            Next
           </Button>
         </div>
-        <div className="rounded-2xl border border-steel-blue/20 dark:border-white/10 bg-white dark:bg-white/5 p-12 text-center">
-          <div className="text-5xl mb-3">🏥</div>
-          <p className="text-gray-600 dark:text-white/60 text-sm">
-            No vet clinics yet
-          </p>
-          <p className="text-gray-400 dark:text-white/30 text-xs mt-1">
-            Click "Add Clinic" to get started
-          </p>
-        </div>
       </div>
     );
-  }
+  }, [selectedKeys, total, page, pages, onPreviousPage, onNextPage]);
 
-  // Success State - Show Table
+  const loadingState = isLoading || isFetching ? "loading" : "idle";
+
   return (
-    <div className="p-4 sm:p-6">
-      <Table
-        aria-label="Vet clinics table with pagination"
-        isHeaderSticky
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        topContent={topContent}
-        topContentPlacement="outside"
-        classNames={{
-          base: "rounded-2xl border border-steel-blue/20 dark:border-white/10",
-          table: "min-w-[800px]",
-          th: "text-left text-gray-500 dark:text-white/40 text-xs font-medium px-5 py-3 bg-transparent border-b border-steel-blue/15 dark:border-white/10",
-          td: "px-5 py-4 border-b border-steel-blue/10 dark:border-white/5",
-          tr: "hover:bg-steel-blue/5 dark:hover:bg-white/5 transition-colors",
-        }}
-        sortDescriptor={sortDescriptor}
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader>
-          <TableColumn key="clinicName" allowsSorting>
-            Clinic
-          </TableColumn>
-          <TableColumn key="emirate" allowsSorting>
-            Emirate
-          </TableColumn>
-          <TableColumn key="specialities">Specialities</TableColumn>
-          <TableColumn key="rating" allowsSorting>
-            Rating
-          </TableColumn>
-
-          <TableColumn key="actions" align="end">
-            Actions
-          </TableColumn>
-        </TableHeader>
-        <TableBody
-          items={vets}
-          loadingContent={<div className="text-center py-4">Loading...</div>}
-          isLoading={isFetching}
+    <>
+      <div className="px-4 border-0 border-transparent ">
+        <Table
+          isHeaderSticky
+          aria-label="Veterinary clinics table"
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
+          classNames={{
+            wrapper: "max-h-[600px]",
+          }}
+          selectedKeys={selectedKeys}
+          selectionMode="multiple"
+          sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          topContentPlacement="outside"
+          onSelectionChange={(keys) => setSelectedKeys(keys as Set<string>)}
+          onSortChange={(descriptor) => setSortDescriptor(descriptor as any)}
         >
-          {(vet: TVet) => (
-            <TableRow key={vet._id}>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar
-                    src={vet.coverPhoto}
-                    name={vet.clinicName}
-                    size="sm"
-                    radius="lg"
-                    className="w-9 h-9"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {vet.clinicName}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-white/40">
-                      {vet.name}
-                    </p>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell className="text-sm text-gray-600 dark:text-white/60">
-                {formatEmirate(vet.emirate)}
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {vet.specialities?.slice(0, 2).map((s) => (
-                    <Chip
-                      key={s}
-                      size="sm"
-                      className="text-[10px] bg-steel-blue/15 border border-steel-blue/25 text-steel-blue px-1.5 py-0.5 rounded-full capitalize"
-                    >
-                      {s}
-                    </Chip>
-                  ))}
-                  {vet.specialities?.length > 2 && (
-                    <span className="text-[10px] text-gray-400 dark:text-white/30">
-                      +{vet.specialities.length - 2}
-                    </span>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell>
-                <span className="text-pv-yellow text-sm">
-                  ★ {vet.rating?.toFixed(1) || "N/A"}
-                </span>
-              </TableCell>
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                align={column.uid === "actions" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody
+            emptyContent={
+              loadingState === "loading"
+                ? "Loading..."
+                : "No veterinary clinics found"
+            }
+            items={vets}
+            loadingContent={<Spinner />}
+            loadingState={loadingState}
+          >
+            {(item) => (
+              <TableRow key={item._id}>
+                {(columnKey) => (
+                  <TableCell>{renderCell(item, columnKey)}</TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>{" "}
+      </div>
 
-              <TableCell>
-                <div className="flex items-center justify-end gap-2">
-                  <Button
-                    as={Link}
-                    href={`/admin/vets/${vet._id}`}
-                    size="sm"
-                    variant="light"
-                    className="text-steel-blue min-w-0 px-2"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="light"
-                    color="danger"
-                    className="text-pv-coral min-w-0 px-2"
-                    onPress={() => {
-                      setDeleteConfirm(vet._id);
-                      onOpen();
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-
-      {/* HeroUI Delete Confirmation Modal */}
-      <Modal isOpen={isOpen} onClose={onClose} placement="center">
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                <h3 className="text-gray-900 dark:text-white font-bold text-lg">
-                  Delete Clinic?
-                </h3>
-              </ModalHeader>
-              <ModalBody>
-                <p className="text-gray-500 dark:text-white/50 text-sm">
-                  This will permanently delete this clinic from the directory.
-                  This action cannot be undone.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <Button variant="light" onPress={onClose}>
-                  Cancel
-                </Button>
-                <Button color="danger" onPress={handleDelete}>
-                  Delete
-                </Button>
-              </ModalFooter>
-            </>
-          )}
+          <ModalHeader>Confirm Delete</ModalHeader>
+          <ModalBody>
+            <p>Are you sure you want to delete this veterinary clinic?</p>
+            <p className="text-danger text-small">
+              This action cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={onClose}>
+              Cancel
+            </Button>
+            <Button
+              color="danger"
+              onPress={handleDelete}
+              isLoading={isDeleting}
+            >
+              Delete
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </>
   );
 }
