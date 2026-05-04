@@ -31,17 +31,11 @@ import {
 } from "@/src/redux/features/vets/vetsApi";
 import { TVet } from "@/src/types";
 import { ChevronDown, EllipsisVertical, Plus, Search } from "lucide-react";
-
-// API Response type
-interface ApiResponse {
-  data: TVet[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    pages: number;
-  };
-}
+import { StarIcon } from "./components/starIcon";
+import {
+  DeleteConfirmModal,
+  useDeleteModal,
+} from "../../components/modal/deleteConfirmModal.tsx";
 
 // Column definitions for the table
 const columns = [
@@ -134,30 +128,6 @@ function getEmirateColor(emirate: string) {
   return colorMap[emirate] || "default";
 }
 
-const StarIcon = ({ filled = false, ...props }) => {
-  return (
-    <svg
-      aria-hidden="true"
-      fill={filled ? "currentColor" : "none"}
-      focusable="false"
-      height="1em"
-      role="presentation"
-      viewBox="0 0 24 24"
-      width="1em"
-      {...props}
-    >
-      <path
-        d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z"
-        fill={filled ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.5"
-      />
-    </svg>
-  );
-};
-
 export default function VetsPage() {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set([]));
@@ -175,8 +145,6 @@ export default function VetsPage() {
   });
   const [page, setPage] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Build query params for RTK Query
   const queryParams = useMemo(() => {
@@ -209,7 +177,6 @@ export default function VetsPage() {
     specialityFilter,
   ]);
 
-  // RTK Query hooks - fix: handle both possible response structures
   const {
     data: vetResponse,
     isLoading,
@@ -217,33 +184,14 @@ export default function VetsPage() {
   } = useGetVetsQuery(queryParams);
   const [deleteVet, { isLoading: isDeleting }] = useDeleteVetMutation();
 
-  // Handle both response formats: direct array OR object with data/meta
-  const vets = React.useMemo(() => {
-    if (!vetResponse) return [];
-    // If response has data property (ApiResponse format)
-    if (Array.isArray(vetResponse)) return vetResponse;
-    // If response is the ApiResponse object
-    if (vetResponse.data && Array.isArray(vetResponse.data))
-      return vetResponse.data;
-    return [];
-  }, [vetResponse]);
+  const { isOpen, itemToDelete, openDeleteModal, closeDeleteModal } =
+    useDeleteModal();
 
-  const total = React.useMemo(() => {
-    if (!vetResponse) return 0;
-    // If response has meta with total
-    if (vetResponse.meta?.total) return vetResponse.meta.total;
-    // If response is an array, use its length
-    if (Array.isArray(vetResponse)) return vetResponse.length;
-    return 0;
-  }, [vetResponse]);
+  console.log(vetResponse);
 
-  const pages = React.useMemo(() => {
-    if (!vetResponse) return 1;
-    // If response has meta with pages
-    if (vetResponse.meta?.pages) return vetResponse.meta.pages;
-    // Calculate pages based on total and rowsPerPage
-    return Math.ceil(total / rowsPerPage) || 1;
-  }, [vetResponse, total, rowsPerPage]);
+  const vets = vetResponse?.data || [];
+  const total = vetResponse?.meta?.total || 0;
+  const pages = vetResponse?.meta?.pages || 1;
 
   // Reset page when filters change
   useEffect(() => {
@@ -257,13 +205,14 @@ export default function VetsPage() {
   }, [visibleColumns]);
 
   const handleDelete = async () => {
-    if (deleteConfirm) {
+    if (itemToDelete?.id) {
       try {
-        await deleteVet(deleteConfirm).unwrap();
-        setDeleteConfirm(null);
-        onClose();
+        await deleteVet(itemToDelete.id).unwrap();
+        closeDeleteModal();
+        //  success toast
       } catch (error) {
         console.error("Failed to delete vet:", error);
+        //   error toast
       }
     }
   };
@@ -386,7 +335,7 @@ export default function VetsPage() {
                   <DropdownItem key="edit" onPress={() => handleEdit(vet)}>
                     Edit Clinic
                   </DropdownItem>
-                  <DropdownItem
+                  {/* <DropdownItem
                     key="delete"
                     className="text-danger"
                     color="danger"
@@ -394,6 +343,14 @@ export default function VetsPage() {
                       setDeleteConfirm(vet._id);
                       onOpen();
                     }}
+                  > */}
+                  <DropdownItem
+                    key="delete"
+                    className="text-danger"
+                    color="danger"
+                    onPress={() =>
+                      openDeleteModal(vet._id, vet.clinicName, "vet clinic")
+                    }
                   >
                     Delete
                   </DropdownItem>
@@ -405,7 +362,7 @@ export default function VetsPage() {
           return vet[columnKey as keyof TVet] as React.ReactNode;
       }
     },
-    [onOpen],
+    [openDeleteModal],
   );
 
   const onNextPage = useCallback(() => {
@@ -666,7 +623,7 @@ export default function VetsPage() {
             loadingContent={<Spinner />}
             loadingState={loadingState}
           >
-            {(item) => (
+            {(item: TVet) => (
               <TableRow key={item._id}>
                 {(columnKey) => (
                   <TableCell>{renderCell(item, columnKey)}</TableCell>
@@ -677,30 +634,14 @@ export default function VetsPage() {
         </Table>{" "}
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalContent>
-          <ModalHeader>Confirm Delete</ModalHeader>
-          <ModalBody>
-            <p>Are you sure you want to delete this veterinary clinic?</p>
-            <p className="text-danger text-small">
-              This action cannot be undone.
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="light" onPress={onClose}>
-              Cancel
-            </Button>
-            <Button
-              color="danger"
-              onPress={handleDelete}
-              isLoading={isDeleting}
-            >
-              Delete
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <DeleteConfirmModal
+        isOpen={isOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        entityName={itemToDelete?.name}
+        entityType={itemToDelete?.type || "vet clinic"}
+        isLoading={isDeleting}
+      />
     </>
   );
 }

@@ -1,15 +1,14 @@
-import { TVet, TVetFilters } from "@/src/types";
+import { ApiResponse, TVet } from "@/src/types";
 import baseApi from "../../api/baseApi";
 
 const vetsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getVets: builder.query({
+    getVets: builder.query<ApiResponse, Record<string, unknown>>({
       query: (filters) => ({
         url: "/vets",
         params: filters || {},
       }),
       providesTags: ["Vets"],
-      transformResponse: (res: { data: TVet[] }) => res.data,
     }),
 
     getSingleVet: builder.query({

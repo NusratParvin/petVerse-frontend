@@ -272,3 +272,13 @@ export type TVetFilters = {
   speciality?: TSpeciality;
   search?: string;
 };
+// API Response type
+export interface ApiResponse {
+  data: TVet[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
