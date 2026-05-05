@@ -1,17 +1,22 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import {
   useGetSingleVetQuery,
   useUpdateVetMutation,
 } from "@/src/redux/features/vets/vetsApi";
 import VetForm from "../components/vetForm";
+import { Button } from "@heroui/react";
+import { Pencil } from "lucide-react";
+import VetDetailsView from "../components/vetDetailsView";
 
-export default function EditVetPage() {
+export default function VetDetailsPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const id = params.id as string;
+  const mode = searchParams.get("mode") || "view";
 
   const {
     data: vet,
@@ -30,9 +35,21 @@ export default function EditVetPage() {
     }
   };
 
+  const handleEditClick = () => {
+    router.push(`/admin/vets/${id}?mode=edit`);
+  };
+
+  const handleBack = () => {
+    if (mode === "edit") {
+      router.push(`/admin/vets/${id}?mode=view`);
+    } else {
+      router.back();
+    }
+  };
+
   if (isLoadingVet) {
     return (
-      <div className="p-6 max-w-4xl mx-auto">
+      <div className="p-6 max-w-full mx-auto">
         <div className="animate-pulse">
           <div className="h-8 w-48 bg-white/10 rounded mb-2" />
           <div className="h-4 w-32 bg-white/5 rounded mb-6" />
@@ -62,7 +79,7 @@ export default function EditVetPage() {
     );
   }
 
-  // Transform vet data to form format
+  // Transform vet data to form format for edit mode
   const initialFormData = {
     name: vet.name,
     clinicName: vet.clinicName,
@@ -78,34 +95,60 @@ export default function EditVetPage() {
     googleMapsUrl: vet.googleMapsUrl || "",
     specialities: vet.specialities,
     workingHours: vet.workingHours || [],
-    // serviceRates: vet.serviceRates || [],
+    priceRange: vet.priceRange,
     rating: vet.rating,
     reviewCount: vet.reviewCount,
   };
 
+  const isEditMode = mode === "edit";
+
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex items-center gap-4 mb-6">
-        <button
-          onClick={() => router.back()}
-          className="text-white/60 hover:text-white"
-        >
-          ← Back
-        </button>
-        <div>
-          <h1 className="text-white text-2xl font-bold">Edit Vet Clinic</h1>
-          <p className="text-white/40 text-sm mt-1">
-            Update {vet.clinicName} details
-          </p>
+    <div className="p-3 sm:p-3 max-w-full mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <button
+            onClick={handleBack}
+            className="text-default-500 hover:text-default-700 dark:text-default-400 dark:hover:text-default-200 transition-colors"
+          >
+            ← Back
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+              {isEditMode ? "Edit Vet Clinic" : "View Vet Clinic"}
+            </h1>
+            <p className="text-xs sm:text-sm text-default-500 mt-1">
+              {isEditMode
+                ? `Update ${vet.clinicName} details`
+                : `Viewing ${vet.clinicName} details`}
+            </p>
+          </div>
         </div>
+
+        {/* Show Edit button only in view mode */}
+        {!isEditMode && (
+          <Button
+            size="sm"
+            variant="flat"
+            startContent={<Pencil size={16} />}
+            onPress={handleEditClick}
+            className="bg-steel-blue/10 dark:bg-lime-burst/10 text-steel-blue dark:text-lime-burst hover:bg-steel-blue/20 dark:hover:bg-lime-burst/20 transition-all w-full sm:w-auto"
+          >
+            Edit Clinic
+          </Button>
+        )}
       </div>
 
-      <div className="bg-[#0a1628] border border-white/10 rounded-2xl overflow-hidden">
-        <VetForm
-          initial={initialFormData}
-          onSubmit={handleSubmit}
-          isLoading={isUpdating}
-        />
+      <div className="bg-default-50 dark:bg-default-100/5 border border-divider rounded-2xl overflow-hidden p-4 sm:p-6">
+        {isEditMode ? (
+          <VetForm
+            initial={initialFormData}
+            onSubmit={handleSubmit}
+            isLoading={isUpdating}
+            isEdit={true}
+          />
+        ) : (
+          <VetDetailsView vet={vet} />
+        )}
       </div>
     </div>
   );

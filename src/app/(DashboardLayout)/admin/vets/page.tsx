@@ -36,6 +36,13 @@ import {
   DeleteConfirmModal,
   useDeleteModal,
 } from "../../components/modal/deleteConfirmModal.tsx";
+import { useRouter } from "next/navigation";
+import {
+  capitalize,
+  formatEmirate,
+  formatPriceRange,
+  getEmirateColor,
+} from "./components/utils";
 
 // Column definitions for the table
 const columns = [
@@ -88,46 +95,6 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
 ];
 
-// Helper functions
-function capitalize(s: string) {
-  return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
-}
-
-function formatEmirate(emirate: string) {
-  const emirateMap: Record<string, string> = {
-    dubai: "Dubai",
-    "abu-dhabi": "Abu Dhabi",
-    sharjah: "Sharjah",
-    ajman: "Ajman",
-    "ras-al-khaimah": "Ras Al Khaimah",
-    fujairah: "Fujairah",
-    "umm-al-quwain": "Umm Al Quwain",
-  };
-  return emirateMap[emirate] || capitalize(emirate);
-}
-
-function formatPriceRange(priceRange: { basePrice: number; maxPrice: number }) {
-  if (!priceRange) return "N/A";
-  const { basePrice, maxPrice } = priceRange;
-  if (basePrice === maxPrice) {
-    return `$${basePrice}`;
-  }
-  return `$${basePrice} - $${maxPrice}`;
-}
-
-function getEmirateColor(emirate: string) {
-  const colorMap: Record<string, string> = {
-    dubai: "primary",
-    "abu-dhabi": "success",
-    sharjah: "warning",
-    ajman: "secondary",
-    "ras-al-khaimah": "danger",
-    fujairah: "default",
-    "umm-al-quwain": "default",
-  };
-  return colorMap[emirate] || "default";
-}
-
 export default function VetsPage() {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set([]));
@@ -145,6 +112,7 @@ export default function VetsPage() {
   });
   const [page, setPage] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const router = useRouter();
 
   // Build query params for RTK Query
   const queryParams = useMemo(() => {
@@ -187,8 +155,8 @@ export default function VetsPage() {
   const { isOpen, itemToDelete, openDeleteModal, closeDeleteModal } =
     useDeleteModal();
 
-  console.log(vetResponse);
-
+  // console.log(vetResponse);
+  console.log(selectedKeys);
   const vets = vetResponse?.data || [];
   const total = vetResponse?.meta?.total || 0;
   const pages = vetResponse?.meta?.pages || 1;
@@ -218,13 +186,11 @@ export default function VetsPage() {
   };
 
   const handleEdit = (vet: TVet) => {
-    // Navigate to edit page or open edit modal
-    console.log("Edit vet:", vet);
+    router.push(`/admin/vets/${vet._id}?mode=edit`);
   };
 
   const handleView = (vet: TVet) => {
-    // Navigate to view page or open view modal
-    console.log("View vet:", vet);
+    router.push(`/admin/vets/${vet._id}?mode=view`);
   };
 
   const handleAddNew = () => {
