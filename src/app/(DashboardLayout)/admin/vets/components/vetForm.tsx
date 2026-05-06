@@ -1,12 +1,14 @@
 // "use client";
 
 // import { useForm } from "react-hook-form";
-// import { EMIRATES, VET_SPECIALITIES } from "@/src/constant";
+// import { EMIRATES, VET_SPECIALITIES, DAYS } from "@/src/constant";
 // import {
 //   inputClass,
 //   labelClass,
 // } from "../../../user/my-pets/components/modal/petInfo/constants";
 // import { TVet } from "@/src/types";
+// import { useState } from "react";
+// import { X, Upload, Image as ImageIcon, Plus } from "lucide-react";
 
 // type WorkingHour = {
 //   day: string;
@@ -15,19 +17,12 @@
 //   closed: boolean;
 // };
 
-// type ServiceRate = {
-//   service: string;
-//   priceFrom: number;
-//   priceTo: number;
-// };
-
 // type PriceRange = {
 //   basePrice: number;
 //   maxPrice: number;
 // };
 
 // type VetFormData = {
-//   name: string;
 //   clinicName: string;
 //   emirate: string;
 //   area: string;
@@ -37,6 +32,7 @@
 //   email: string;
 //   website: string;
 //   coverPhoto: string;
+//   photos: string[];
 //   about: string;
 //   googleMapsUrl: string;
 //   specialities: string[];
@@ -44,12 +40,12 @@
 //   priceRange: PriceRange;
 //   rating: number;
 //   reviewCount: number;
+//   emergency: boolean;
 // };
 
 // interface VetFormProps {
-//   // initial: VetFormData;
 //   initial?: Partial<TVet>;
-//   onSubmit: (data: VetFormData) => Promise<void>;
+//   onSubmit: (data: any) => Promise<void>;
 //   isLoading: boolean;
 //   isEdit: boolean;
 // }
@@ -60,28 +56,55 @@
 //   isLoading,
 //   isEdit = false,
 // }: VetFormProps) {
+//   const [isUploading, setIsUploading] = useState(false);
+//   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+//   const [imagePreview, setImagePreview] = useState<string>("");
+//   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+
+//   const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+//   const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+//   // Default working hours
+//   const defaultWorkingHours = DAYS.map((day) => ({
+//     day,
+//     open: "09:00",
+//     close: "18:00",
+//     closed: false,
+//   }));
+
 //   const {
 //     register,
-//     control,
 //     handleSubmit,
 //     watch,
 //     setValue,
+//     getValues,
 //     formState: { errors },
 //   } = useForm<VetFormData>({
-//     defaultValues: initial,
+//     defaultValues: {
+//       clinicName: initial?.clinicName || "",
+//       emirate: initial?.emirate || "",
+//       area: initial?.area || "",
+//       address: initial?.address || "",
+//       phone: initial?.phone || "",
+//       whatsapp: initial?.whatsapp || "",
+//       email: initial?.email || "",
+//       website: initial?.website || "",
+//       coverPhoto: initial?.coverPhoto || "",
+//       photos: initial?.photos || [],
+//       about: initial?.about || "",
+//       googleMapsUrl: initial?.googleMapsUrl || "",
+//       specialities: initial?.specialities || [],
+//       workingHours: initial?.workingHours || defaultWorkingHours,
+//       priceRange: initial?.priceRange || { basePrice: 0, maxPrice: 0 },
+//       rating: initial?.rating || 0.0,
+//       reviewCount: initial?.reviewCount || 0,
+//       emergency: initial?.emergency || false,
+//     },
 //   });
 
-//   // For dynamic arrays
-//   // const {
-//   //   fields: rateFields,
-//   //   append,
-//   //   remove,
-//   // } = useFieldArray({
-//   //   control,
-//   //   name: "serviceRates",
-//   // });
-
 //   const specialities = watch("specialities");
+//   const workingHours = watch("workingHours");
+//   const photos = watch("photos");
 
 //   const toggleSpeciality = (speciality: string) => {
 //     const current = specialities || [];
@@ -91,14 +114,88 @@
 //     setValue("specialities", updated);
 //   };
 
-//   // const addRate = () => {
-//   //   append({ service: "", priceFrom: 0, priceTo: 0 });
-//   // };
+//   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const file = e.target.files?.[0];
+//     if (!file) return;
+
+//     setIsUploading(true);
+
+//     const formData = new FormData();
+//     formData.append("file", file);
+//     formData.append("upload_preset", UPLOAD_PRESET as string);
+
+//     try {
+//       const res = await fetch(
+//         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+//         {
+//           method: "POST",
+//           body: formData,
+//         },
+//       );
+//       const data = await res.json();
+//       setImagePreview(data.secure_url);
+//       setValue("coverPhoto", data.secure_url);
+//     } catch (error) {
+//       console.error("Upload failed:", error);
+//     } finally {
+//       setIsUploading(false);
+//     }
+//   };
+
+//   const handleGalleryUpload = async (
+//     e: React.ChangeEvent<HTMLInputElement>,
+//   ) => {
+//     const files = Array.from(e.target.files || []);
+//     if (files.length === 0) return;
+
+//     setIsUploadingGallery(true);
+
+//     const uploadPromises = files.map(async (file) => {
+//       const formData = new FormData();
+//       formData.append("file", file);
+//       formData.append("upload_preset", UPLOAD_PRESET as string);
+
+//       const res = await fetch(
+//         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+//         {
+//           method: "POST",
+//           body: formData,
+//         },
+//       );
+//       const data = await res.json();
+//       return data.secure_url;
+//     });
+
+//     try {
+//       const uploadedUrls = await Promise.all(uploadPromises);
+//       const currentPhotos = getValues("photos") || [];
+//       const updatedPhotos = [...currentPhotos, ...uploadedUrls];
+//       setValue("photos", updatedPhotos);
+//       setGalleryPreviews(updatedPhotos);
+//     } catch (error) {
+//       console.error("Gallery upload failed:", error);
+//     } finally {
+//       setIsUploadingGallery(false);
+//     }
+//   };
+
+//   const handleRemoveImage = () => {
+//     setImagePreview("");
+//     setValue("coverPhoto", "");
+//   };
+
+//   const handleRemoveGalleryImage = (index: number) => {
+//     const currentPhotos = getValues("photos") || [];
+//     const updatedPhotos = currentPhotos.filter((_, i) => i !== index);
+//     setValue("photos", updatedPhotos);
+//     setGalleryPreviews(updatedPhotos);
+//   };
 
 //   return (
 //     <form onSubmit={handleSubmit(onSubmit)} className="p-6 flex flex-col gap-5">
 //       {/* Basic Info */}
 //       <div className="grid grid-cols-2 gap-3">
+//         {/* Clinic Name   */}
 //         <div className="col-span-2">
 //           <label className={labelClass}>Clinic Name *</label>
 //           <input
@@ -113,20 +210,7 @@
 //           )}
 //         </div>
 
-//         <div>
-//           <label className={labelClass}>Doctor Name *</label>
-//           <input
-//             {...register("name", { required: "Doctor name is required" })}
-//             className={inputClass}
-//             placeholder="Dr. Ahmed..."
-//           />
-//           {errors.name && (
-//             <p className="text-red-500 text-[10px] mt-1">
-//               {errors.name.message}
-//             </p>
-//           )}
-//         </div>
-
+//         {/* Emirate */}
 //         <div>
 //           <label className={labelClass}>Emirate *</label>
 //           <select
@@ -147,6 +231,7 @@
 //           )}
 //         </div>
 
+//         {/* Area */}
 //         <div>
 //           <label className={labelClass}>Area *</label>
 //           <input
@@ -161,20 +246,7 @@
 //           )}
 //         </div>
 
-//         <div>
-//           <label className={labelClass}>Phone *</label>
-//           <input
-//             {...register("phone", { required: "Phone number is required" })}
-//             className={inputClass}
-//             placeholder="+971 4 ..."
-//           />
-//           {errors.phone && (
-//             <p className="text-red-500 text-[10px] mt-1">
-//               {errors.phone.message}
-//             </p>
-//           )}
-//         </div>
-
+//         {/* Address   */}
 //         <div className="col-span-2">
 //           <label className={labelClass}>Address *</label>
 //           <input
@@ -189,15 +261,7 @@
 //           )}
 //         </div>
 
-//         <div>
-//           <label className={labelClass}>WhatsApp</label>
-//           <input
-//             {...register("whatsapp")}
-//             className={inputClass}
-//             placeholder="+971 50 ..."
-//           />
-//         </div>
-
+//         {/* Email */}
 //         <div>
 //           <label className={labelClass}>Email</label>
 //           <input
@@ -217,6 +281,7 @@
 //           )}
 //         </div>
 
+//         {/* Website */}
 //         <div>
 //           <label className={labelClass}>Website</label>
 //           <input
@@ -226,15 +291,51 @@
 //           />
 //         </div>
 
-//         <div>
-//           <label className={labelClass}>Cover Photo URL</label>
-//           <input
-//             {...register("coverPhoto")}
-//             className={inputClass}
-//             placeholder="Cloudinary URL"
-//           />
+//         {/* Phone, emergency */}
+//         <div className="col-span-2">
+//           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+//             {/* Phone */}
+//             <div>
+//               <label className={labelClass}>Phone *</label>
+//               <input
+//                 {...register("phone", { required: "Phone number is required" })}
+//                 className={inputClass}
+//                 placeholder="+971 4 ..."
+//               />
+//               {errors.phone && (
+//                 <p className="text-red-500 text-[10px] mt-1">
+//                   {errors.phone.message}
+//                 </p>
+//               )}
+//             </div>
+
+//             {/* WhatsApp */}
+//             <div>
+//               <label className={labelClass}>WhatsApp</label>
+//               <input
+//                 {...register("whatsapp")}
+//                 className={inputClass}
+//                 placeholder="+971 50 ..."
+//               />
+//             </div>
+
+//             {/* Emergency Field */}
+//             <div className="flex items-end">
+//               <label className="flex items-center gap-2 cursor-pointer pb-2">
+//                 <input
+//                   type="checkbox"
+//                   {...register("emergency")}
+//                   className="w-4 h-4 accent-coral"
+//                 />
+//                 <span className="text-xs text-gray-700 dark:text-white/70 whitespace-nowrap">
+//                   24/7 Emergency
+//                 </span>
+//               </label>
+//             </div>
+//           </div>
 //         </div>
 
+//         {/* Google Maps URL   */}
 //         <div className="col-span-2">
 //           <label className={labelClass}>Google Maps URL</label>
 //           <input
@@ -244,6 +345,7 @@
 //           />
 //         </div>
 
+//         {/* About   */}
 //         <div className="col-span-2">
 //           <label className={labelClass}>About</label>
 //           <textarea
@@ -253,6 +355,7 @@
 //           />
 //         </div>
 
+//         {/* Rating */}
 //         <div>
 //           <label className={labelClass}>Rating (0-5)</label>
 //           <input
@@ -263,6 +366,7 @@
 //           />
 //         </div>
 
+//         {/* Review Count */}
 //         <div>
 //           <label className={labelClass}>Review Count</label>
 //           <input
@@ -271,7 +375,106 @@
 //             className={inputClass}
 //           />
 //         </div>
+
+//         {/* Cover Photo Upload   */}
+//         <div className="col-span-2">
+//           <label className={labelClass}>Cover Photo</label>
+//           <div className="mt-2">
+//             {imagePreview || watch("coverPhoto") ? (
+//               <div className="relative inline-block">
+//                 <img
+//                   src={imagePreview || watch("coverPhoto")}
+//                   alt="Cover preview"
+//                   className="w-32 h-32 rounded-lg object-cover border-2 border-steel-blue/30"
+//                 />
+//                 <button
+//                   type="button"
+//                   onClick={handleRemoveImage}
+//                   className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+//                 >
+//                   <X size={14} />
+//                 </button>
+//               </div>
+//             ) : (
+//               <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-steel-blue/30 dark:border-white/20 rounded-lg cursor-pointer hover:border-steel-blue/50 dark:hover:border-lime-burst/50 transition-colors bg-steel-blue/5 dark:bg-white/5">
+//                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
+//                   <Upload
+//                     size={24}
+//                     className="text-steel-blue dark:text-white/50 mb-2"
+//                   />
+//                   <p className="text-[10px] text-steel-blue dark:text-white/50 text-center px-2">
+//                     Upload cover
+//                   </p>
+//                 </div>
+//                 <input
+//                   type="file"
+//                   accept="image/*"
+//                   onChange={handleImageChange}
+//                   className="hidden"
+//                   disabled={isUploading}
+//                 />
+//               </label>
+//             )}
+//             {isUploading && (
+//               <p className="text-xs text-steel-blue mt-2">Uploading...</p>
+//             )}
+//           </div>
+//         </div>
+
+//         {/* Gallery Photos Upload   */}
+//         <div className="col-span-2">
+//           <label className={labelClass}>Gallery Photos</label>
+//           <div className="mt-2">
+//             <div className="flex flex-wrap gap-3">
+//               {(photos || []).map((photo, index) => (
+//                 <div key={index} className="relative">
+//                   <img
+//                     src={photo}
+//                     alt={`Gallery ${index + 1}`}
+//                     className="w-24 h-24 rounded-lg object-cover border border-steel-blue/30"
+//                   />
+//                   <button
+//                     type="button"
+//                     onClick={() => handleRemoveGalleryImage(index)}
+//                     className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+//                   >
+//                     <X size={12} />
+//                   </button>
+//                 </div>
+//               ))}
+
+//               <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-steel-blue/30 dark:border-white/20 rounded-lg cursor-pointer hover:border-steel-blue/50 dark:hover:border-lime-burst/50 transition-colors bg-steel-blue/5 dark:bg-white/5">
+//                 <div className="flex flex-col items-center justify-center">
+//                   <Plus
+//                     size={20}
+//                     className="text-steel-blue dark:text-white/50"
+//                   />
+//                   <p className="text-[9px] text-steel-blue dark:text-white/50 mt-1">
+//                     Add photo
+//                   </p>
+//                 </div>
+//                 <input
+//                   type="file"
+//                   accept="image/*"
+//                   multiple
+//                   onChange={handleGalleryUpload}
+//                   className="hidden"
+//                   disabled={isUploadingGallery}
+//                 />
+//               </label>
+//             </div>
+//             {isUploadingGallery && (
+//               <p className="text-xs text-steel-blue mt-2">
+//                 Uploading photos...
+//               </p>
+//             )}
+//             <p className="text-[9px] text-steel-blue/60 dark:text-white/40 mt-2">
+//               Add photos of your clinic interior, staff, or facilities
+//             </p>
+//           </div>
+//         </div>
 //       </div>
+
 //       {/* Specialities */}
 //       <div>
 //         <label className={labelClass}>Specialities *</label>
@@ -297,11 +500,12 @@
 //           </p>
 //         )}
 //       </div>
+
 //       {/* Working Hours */}
 //       <div>
 //         <label className={labelClass}>Working Hours</label>
 //         <div className="flex flex-col gap-2 md:w-1/2 w-full mt-3 ms-3">
-//           {initial?.workingHours?.map((h, i) => (
+//           {workingHours?.map((h, i) => (
 //             <div key={h.day} className="flex items-center gap-2 text-sm">
 //               <span className="text-steel-blue dark:text-lime-burst font-semibold w-20 text-xs">
 //                 {h.day.slice(0, 3)}
@@ -331,58 +535,11 @@
 //           ))}
 //         </div>
 //       </div>
-//       {/* Service Rates */}
-//       {/* //service fee per service */}
-//       {/* <div>
-//         <div className="flex items-center justify-between mb-2">
-//           <label className={labelClass}>Service Rates</label>
-//           <button
-//             type="button"
-//             onClick={addRate}
-//             className="text-steel-blue text-xs hover:underline"
-//           >
-//             + Add
-//           </button>
-//         </div>
-//         <div className="flex flex-col gap-2">
-//           {rateFields.map((field, i) => (
-//             <div key={field.id} className="flex gap-2 items-center">
-//               <input
-//                 {...register(`serviceRates.${i}.service`)}
-//                 className={`${inputClass} flex-1`}
-//                 placeholder="Service name"
-//               />
-//               <input
-//                 type="number"
-//                 {...register(`serviceRates.${i}.priceFrom`, {
-//                   valueAsNumber: true,
-//                 })}
-//                 className={`${inputClass} w-20`}
-//                 placeholder="From"
-//               />
-//               <input
-//                 type="number"
-//                 {...register(`serviceRates.${i}.priceTo`, {
-//                   valueAsNumber: true,
-//                 })}
-//                 className={`${inputClass} w-20`}
-//                 placeholder="To"
-//               />
-//               <button
-//                 type="button"
-//                 onClick={() => remove(i)}
-//                 className="text-coral hover:opacity-80 text-sm px-1"
-//               >
-//                 ✕
-//               </button>
-//             </div>
-//           ))}
-//         </div>
-//       </div> */}
+
+//       {/* Price Range */}
 //       <div>
 //         <label className={labelClass}>Price Range (AED)</label>
 //         <div className="flex flex-col sm:flex-row gap-4">
-//           {/* From */}
 //           <div className="flex-1">
 //             <div className="flex flex-col gap-1.5">
 //               <label className="text-[11px] text-gray-600 dark:text-white/40">
@@ -400,7 +557,6 @@
 //             </div>
 //           </div>
 
-//           {/* Up to */}
 //           <div className="flex-1">
 //             <div className="flex flex-col gap-1.5">
 //               <label className="text-[11px] text-gray-600 dark:text-white/40">
@@ -419,16 +575,17 @@
 //           </div>
 //         </div>
 //       </div>
+
 //       {/* Submit Buttons */}
 //       <div className="flex gap-3 pt-4 border-t border-white/10 mb-8">
 //         <button
 //           type="button"
 //           onClick={() => window.history.back()}
 //           className="flex-1 py-2.5 rounded-xl border font-bold text-sm transition-all duration-200
-//     border-steel-blue/30 dark:border-white/20
-//     text-gray-700 dark:text-white/80
-//     hover:bg-steel-blue/5 dark:hover:bg-white/10
-//     bg-white dark:bg-transparent"
+//             border-steel-blue/30 dark:border-white/20
+//             text-gray-700 dark:text-white/80
+//             hover:bg-steel-blue/5 dark:hover:bg-white/10
+//             bg-white dark:bg-transparent"
 //         >
 //           Cancel
 //         </button>
@@ -445,6 +602,7 @@
 // }
 "use client";
 
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { EMIRATES, VET_SPECIALITIES, DAYS } from "@/src/constant";
 import {
@@ -452,8 +610,7 @@ import {
   labelClass,
 } from "../../../user/my-pets/components/modal/petInfo/constants";
 import { TVet } from "@/src/types";
-import { useState } from "react";
-import { X, Upload, Image as ImageIcon, Plus } from "lucide-react";
+import { X, Upload, Plus } from "lucide-react";
 
 type WorkingHour = {
   day: string;
@@ -490,11 +647,72 @@ type VetFormData = {
 
 interface VetFormProps {
   initial?: Partial<TVet>;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: Partial<VetFormData>) => Promise<void>;
   isLoading: boolean;
-  isEdit: boolean;
+  isEdit?: boolean;
 }
 
+// ---------------------------------------------------------------------------
+// Helper: recursively extract only the fields that RHF marked as dirty.
+// For arrays (workingHours, photos, specialities) we send the whole array
+// if any element changed — a partial array update would be ambiguous on the backend.
+// ---------------------------------------------------------------------------
+const getDirtyValues = (dirtyFields: any, allValues: any): any => {
+  if (dirtyFields === true) return allValues;
+
+  if (Array.isArray(dirtyFields)) {
+    // If at least one item in the array is dirty, return the full array
+    const hasChanges = dirtyFields.some(Boolean);
+    return hasChanges ? allValues : undefined;
+  }
+
+  if (typeof dirtyFields === "object" && dirtyFields !== null) {
+    const result: any = {};
+    for (const key of Object.keys(dirtyFields)) {
+      const value = getDirtyValues(dirtyFields[key], allValues[key]);
+      if (value !== undefined) result[key] = value;
+    }
+    return Object.keys(result).length > 0 ? result : undefined;
+  }
+
+  return allValues;
+};
+
+// ---------------------------------------------------------------------------
+// Default working hours used both for create and as fallback in edit
+// ---------------------------------------------------------------------------
+const buildDefaultWorkingHours = () =>
+  DAYS.map((day) => ({
+    day,
+    open: "09:00",
+    close: "18:00",
+    closed: false,
+  }));
+
+const buildDefaultValues = (initial?: Partial<TVet>): VetFormData => ({
+  clinicName: initial?.clinicName ?? "",
+  emirate: initial?.emirate ?? "",
+  area: initial?.area ?? "",
+  address: initial?.address ?? "",
+  phone: initial?.phone ?? "",
+  whatsapp: initial?.whatsapp ?? "",
+  email: initial?.email ?? "",
+  website: initial?.website ?? "",
+  coverPhoto: initial?.coverPhoto ?? "",
+  photos: initial?.photos ?? [],
+  about: initial?.about ?? "",
+  googleMapsUrl: initial?.googleMapsUrl ?? "",
+  specialities: initial?.specialities ?? [],
+  workingHours: initial?.workingHours ?? buildDefaultWorkingHours(),
+  priceRange: initial?.priceRange ?? { basePrice: 0, maxPrice: 0 },
+  rating: initial?.rating ?? 0,
+  reviewCount: initial?.reviewCount ?? 0,
+  emergency: initial?.emergency ?? false,
+});
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 export default function VetForm({
   initial,
   onSubmit,
@@ -503,19 +721,9 @@ export default function VetForm({
 }: VetFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string>("");
-  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
 
   const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-  // Default working hours
-  const defaultWorkingHours = DAYS.map((day) => ({
-    day,
-    open: "09:00",
-    close: "18:00",
-    closed: false,
-  }));
 
   const {
     register,
@@ -523,63 +731,65 @@ export default function VetForm({
     watch,
     setValue,
     getValues,
-    formState: { errors },
+    reset,
+    formState: { errors, dirtyFields },
   } = useForm<VetFormData>({
-    defaultValues: {
-      clinicName: initial?.clinicName || "",
-      emirate: initial?.emirate || "",
-      area: initial?.area || "",
-      address: initial?.address || "",
-      phone: initial?.phone || "",
-      whatsapp: initial?.whatsapp || "",
-      email: initial?.email || "",
-      website: initial?.website || "",
-      coverPhoto: initial?.coverPhoto || "",
-      photos: initial?.photos || [],
-      about: initial?.about || "",
-      googleMapsUrl: initial?.googleMapsUrl || "",
-      specialities: initial?.specialities || [],
-      workingHours: initial?.workingHours || defaultWorkingHours,
-      priceRange: initial?.priceRange || { basePrice: 0, maxPrice: 0 },
-      rating: initial?.rating || 0.0,
-      reviewCount: initial?.reviewCount || 0,
-      emergency: initial?.emergency || false,
-    },
+    defaultValues: buildDefaultValues(initial),
+  });
+
+  // When editing, reset AFTER the initial data arrives so RHF has a clean
+  // baseline to compare against. Without this, every field looks dirty.
+  useEffect(() => {
+    if (isEdit && initial) {
+      reset(buildDefaultValues(initial));
+    }
+  }, [isEdit, initial, reset]);
+
+  // ---------------------------------------------------------------------------
+  // Submit handler — sends only changed fields in edit mode, everything in create
+  // ---------------------------------------------------------------------------
+  const handleFormSubmit = handleSubmit((allValues) => {
+    if (isEdit) {
+      const changed = getDirtyValues(dirtyFields, allValues);
+      if (!changed || Object.keys(changed).length === 0) {
+        console.log("Nothing changed, skipping submit.");
+        return;
+      }
+      onSubmit(changed);
+    } else {
+      onSubmit(allValues);
+    }
   });
 
   const specialities = watch("specialities");
   const workingHours = watch("workingHours");
   const photos = watch("photos");
+  const coverPhoto = watch("coverPhoto");
 
+  // Specialities toggle
   const toggleSpeciality = (speciality: string) => {
-    const current = specialities || [];
+    const current = specialities ?? [];
     const updated = current.includes(speciality)
       ? current.filter((s) => s !== speciality)
       : [...current, speciality];
-    setValue("specialities", updated);
+    setValue("specialities", updated, { shouldDirty: true });
   };
 
+  // Cover photo upload
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setIsUploading(true);
-
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", UPLOAD_PRESET as string);
-
     try {
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
-        {
-          method: "POST",
-          body: formData,
-        },
+        { method: "POST", body: formData },
       );
       const data = await res.json();
-      setImagePreview(data.secure_url);
-      setValue("coverPhoto", data.secure_url);
+      setValue("coverPhoto", data.secure_url, { shouldDirty: true });
     } catch (error) {
       console.error("Upload failed:", error);
     } finally {
@@ -587,36 +797,33 @@ export default function VetForm({
     }
   };
 
+  const handleRemoveImage = () => {
+    setValue("coverPhoto", "", { shouldDirty: true });
+  };
+
+  // Gallery upload
+
   const handleGalleryUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-
     setIsUploadingGallery(true);
-
     const uploadPromises = files.map(async (file) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", UPLOAD_PRESET as string);
-
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
-        {
-          method: "POST",
-          body: formData,
-        },
+        { method: "POST", body: formData },
       );
       const data = await res.json();
-      return data.secure_url;
+      return data.secure_url as string;
     });
-
     try {
       const uploadedUrls = await Promise.all(uploadPromises);
-      const currentPhotos = getValues("photos") || [];
-      const updatedPhotos = [...currentPhotos, ...uploadedUrls];
-      setValue("photos", updatedPhotos);
-      setGalleryPreviews(updatedPhotos);
+      const updated = [...(getValues("photos") ?? []), ...uploadedUrls];
+      setValue("photos", updated, { shouldDirty: true });
     } catch (error) {
       console.error("Gallery upload failed:", error);
     } finally {
@@ -624,23 +831,16 @@ export default function VetForm({
     }
   };
 
-  const handleRemoveImage = () => {
-    setImagePreview("");
-    setValue("coverPhoto", "");
-  };
-
   const handleRemoveGalleryImage = (index: number) => {
-    const currentPhotos = getValues("photos") || [];
-    const updatedPhotos = currentPhotos.filter((_, i) => i !== index);
-    setValue("photos", updatedPhotos);
-    setGalleryPreviews(updatedPhotos);
+    const updated = (getValues("photos") ?? []).filter((_, i) => i !== index);
+    setValue("photos", updated, { shouldDirty: true });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-6 flex flex-col gap-5">
-      {/* Basic Info */}
+    <form onSubmit={handleFormSubmit} className="p-6 flex flex-col gap-5">
+      {/*   Basic Info      */}
       <div className="grid grid-cols-2 gap-3">
-        {/* Clinic Name   */}
+        {/* Clinic Name */}
         <div className="col-span-2">
           <label className={labelClass}>Clinic Name *</label>
           <input
@@ -691,7 +891,7 @@ export default function VetForm({
           )}
         </div>
 
-        {/* Address   */}
+        {/* Address */}
         <div className="col-span-2">
           <label className={labelClass}>Address *</label>
           <input
@@ -736,10 +936,9 @@ export default function VetForm({
           />
         </div>
 
-        {/* Phone, emergency */}
+        {/* Phone / WhatsApp / Emergency */}
         <div className="col-span-2">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Phone */}
             <div>
               <label className={labelClass}>Phone *</label>
               <input
@@ -753,8 +952,6 @@ export default function VetForm({
                 </p>
               )}
             </div>
-
-            {/* WhatsApp */}
             <div>
               <label className={labelClass}>WhatsApp</label>
               <input
@@ -763,8 +960,6 @@ export default function VetForm({
                 placeholder="+971 50 ..."
               />
             </div>
-
-            {/* Emergency Field */}
             <div className="flex items-end">
               <label className="flex items-center gap-2 cursor-pointer pb-2">
                 <input
@@ -780,7 +975,7 @@ export default function VetForm({
           </div>
         </div>
 
-        {/* Google Maps URL   */}
+        {/* Google Maps URL */}
         <div className="col-span-2">
           <label className={labelClass}>Google Maps URL</label>
           <input
@@ -790,7 +985,7 @@ export default function VetForm({
           />
         </div>
 
-        {/* About   */}
+        {/* About */}
         <div className="col-span-2">
           <label className={labelClass}>About</label>
           <textarea
@@ -806,7 +1001,7 @@ export default function VetForm({
           <input
             type="number"
             step="0.1"
-            {...register("rating", { min: 0, max: 5 })}
+            {...register("rating", { valueAsNumber: true, min: 0, max: 5 })}
             className={inputClass}
           />
         </div>
@@ -816,19 +1011,19 @@ export default function VetForm({
           <label className={labelClass}>Review Count</label>
           <input
             type="number"
-            {...register("reviewCount", { min: 0 })}
+            {...register("reviewCount", { valueAsNumber: true, min: 0 })}
             className={inputClass}
           />
         </div>
 
-        {/* Cover Photo Upload   */}
+        {/*   Cover Photo   ─ */}
         <div className="col-span-2">
           <label className={labelClass}>Cover Photo</label>
           <div className="mt-2">
-            {imagePreview || watch("coverPhoto") ? (
+            {coverPhoto ? (
               <div className="relative inline-block">
                 <img
-                  src={imagePreview || watch("coverPhoto")}
+                  src={coverPhoto}
                   alt="Cover preview"
                   className="w-32 h-32 rounded-lg object-cover border-2 border-steel-blue/30"
                 />
@@ -866,12 +1061,12 @@ export default function VetForm({
           </div>
         </div>
 
-        {/* Gallery Photos Upload   */}
+        {/*   Gallery Photos   */}
         <div className="col-span-2">
           <label className={labelClass}>Gallery Photos</label>
           <div className="mt-2">
             <div className="flex flex-wrap gap-3">
-              {(photos || []).map((photo, index) => (
+              {(photos ?? []).map((photo, index) => (
                 <div key={index} className="relative">
                   <img
                     src={photo}
@@ -920,7 +1115,7 @@ export default function VetForm({
         </div>
       </div>
 
-      {/* Specialities */}
+      {/*   Specialities */}
       <div>
         <label className={labelClass}>Specialities *</label>
         <div className="flex flex-wrap gap-2 mt-2">
@@ -929,9 +1124,9 @@ export default function VetForm({
               key={s}
               type="button"
               onClick={() => toggleSpeciality(s)}
-              className={`text-xs px-3 py-1 rounded-xl border  transition-all ${
+              className={`text-xs px-3 py-1 rounded-xl border transition-all ${
                 specialities?.includes(s)
-                  ? "bg-steel-blue/30 border-steel-blue text-steel-blue "
+                  ? "bg-steel-blue/30 border-steel-blue text-steel-blue"
                   : "bg-steel-blue/10 dark:bg-lime-burst/30 border-white/10 text-gray-500 dark:text-white/80 hover:border-white/30"
               }`}
             >
@@ -946,7 +1141,7 @@ export default function VetForm({
         )}
       </div>
 
-      {/* Working Hours */}
+      {/*   Working Hours */}
       <div>
         <label className={labelClass}>Working Hours</label>
         <div className="flex flex-col gap-2 md:w-1/2 w-full mt-3 ms-3">
@@ -981,54 +1176,49 @@ export default function VetForm({
         </div>
       </div>
 
-      {/* Price Range */}
+      {/*   Price Range      */}
       <div>
         <label className={labelClass}>Price Range (AED)</label>
         <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] text-gray-600 dark:text-white/40">
-                From
-              </label>
-              <input
-                type="number"
-                {...register("priceRange.basePrice", { valueAsNumber: true })}
-                className={inputClass}
-                placeholder="e.g., 50"
-              />
-              <p className="text-[9px] text-steel-blue/60 dark:text-white/40">
-                Minimum consultation fee
-              </p>
-            </div>
+          <div className="flex-1 flex flex-col gap-1.5">
+            <label className="text-[11px] text-gray-600 dark:text-white/40">
+              From
+            </label>
+            <input
+              type="number"
+              {...register("priceRange.basePrice", { valueAsNumber: true })}
+              className={inputClass}
+              placeholder="e.g., 50"
+            />
+            <p className="text-[9px] text-steel-blue/60 dark:text-white/40">
+              Minimum consultation fee
+            </p>
           </div>
-
-          <div className="flex-1">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] text-gray-600 dark:text-white/40">
-                Up to
-              </label>
-              <input
-                type="number"
-                {...register("priceRange.maxPrice", { valueAsNumber: true })}
-                className={inputClass}
-                placeholder="e.g., 500"
-              />
-              <p className="text-[9px] text-steel-blue/60 dark:text-white/40">
-                Maximum consultation fee
-              </p>
-            </div>
+          <div className="flex-1 flex flex-col gap-1.5">
+            <label className="text-[11px] text-gray-600 dark:text-white/40">
+              Up to
+            </label>
+            <input
+              type="number"
+              {...register("priceRange.maxPrice", { valueAsNumber: true })}
+              className={inputClass}
+              placeholder="e.g., 500"
+            />
+            <p className="text-[9px] text-steel-blue/60 dark:text-white/40">
+              Maximum consultation fee
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Submit Buttons */}
+      {/*   Submit Buttons   ─ */}
       <div className="flex gap-3 pt-4 border-t border-white/10 mb-8">
         <button
           type="button"
           onClick={() => window.history.back()}
           className="flex-1 py-2.5 rounded-xl border font-bold text-sm transition-all duration-200
-            border-steel-blue/30 dark:border-white/20 
-            text-gray-700 dark:text-white/80 
+            border-steel-blue/30 dark:border-white/20
+            text-gray-700 dark:text-white/80
             hover:bg-steel-blue/5 dark:hover:bg-white/10
             bg-white dark:bg-transparent"
         >
@@ -1039,7 +1229,7 @@ export default function VetForm({
           disabled={isLoading}
           className="flex-1 py-2.5 rounded-xl bg-lime-burst text-gray-900 font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
         >
-          {isLoading ? "Saving..." : "Save Clinic"}
+          {isLoading ? "Saving..." : isEdit ? "Save Changes" : "Create Clinic"}
         </button>
       </div>
     </form>

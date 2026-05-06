@@ -27,6 +27,7 @@ export default function VetDetailsPage() {
 
   const handleSubmit = async (formData: any) => {
     try {
+      console.log(formData);
       await updateVet({ id, body: formData }).unwrap();
       toast.success("Vet clinic updated successfully!");
       router.push("/admin/vets");
