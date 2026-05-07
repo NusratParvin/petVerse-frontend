@@ -106,13 +106,6 @@ export default function VetDetailsPage() {
   return (
     <div className="p-3 sm:p-3 max-w-full mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
-        {/* <div className="flex items-center gap-3 sm:gap-4"> */}
-        {/* <button
-            onClick={handleBack}
-            className="text-default-500 hover:text-default-700 dark:text-default-400 dark:hover:text-default-200 transition-colors"
-          >
-            ← Back
-          </button> */}
         <div>
           <h1 className="text-base font-bold text-steel-blue dark:text-white/90">
             {isEditMode ? "Edit Vet Clinic" : "Vet Clinic Info"}
@@ -123,7 +116,6 @@ export default function VetDetailsPage() {
               : `Viewing ${vet.clinicName} details`}
           </p>
         </div>
-        {/* </div> */}
 
         {/* Show Edit button only in view mode */}
         {!isEditMode ? (

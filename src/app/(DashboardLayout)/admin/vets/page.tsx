@@ -194,8 +194,7 @@ export default function VetsPage() {
   };
 
   const handleAddNew = () => {
-    // Navigate to add new page or open add modal
-    console.log("Add new vet");
+    router.push("vets/new");
   };
 
   const renderCell = useCallback(
