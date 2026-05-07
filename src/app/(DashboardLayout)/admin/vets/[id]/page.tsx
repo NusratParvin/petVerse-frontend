@@ -41,16 +41,16 @@ export default function VetDetailsPage() {
   };
 
   const handleBack = () => {
-    if (mode === "edit") {
-      router.push(`/admin/vets/${id}?mode=view`);
-    } else {
-      router.back();
-    }
+    // if (mode === "edit") {
+    router.push(`/admin/vets`);
+    // } else {
+    //   router.back();
+    // }
   };
 
   if (isLoadingVet) {
     return (
-      <div className="p-6 max-w-full mx-auto">
+      <div className="p-2 max-w-full mx-auto">
         <div className="animate-pulse">
           <div className="h-8 w-48 bg-white/10 rounded mb-2" />
           <div className="h-4 w-32 bg-white/5 rounded mb-6" />
@@ -66,7 +66,7 @@ export default function VetDetailsPage() {
 
   if (isError || !vet) {
     return (
-      <div className="p-6 max-w-4xl mx-auto">
+      <div className="p-2 max-w-full mx-auto">
         <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-8 text-center">
           <p className="text-red-500 font-medium">Clinic not found</p>
           <button
@@ -105,28 +105,28 @@ export default function VetDetailsPage() {
 
   return (
     <div className="p-3 sm:p-3 max-w-full mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <button
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+        {/* <div className="flex items-center gap-3 sm:gap-4"> */}
+        {/* <button
             onClick={handleBack}
             className="text-default-500 hover:text-default-700 dark:text-default-400 dark:hover:text-default-200 transition-colors"
           >
             ← Back
-          </button>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-              {isEditMode ? "Edit Vet Clinic" : "View Vet Clinic"}
-            </h1>
-            <p className="text-xs sm:text-sm text-default-500 mt-1">
-              {isEditMode
-                ? `Update ${vet.clinicName} details`
-                : `Viewing ${vet.clinicName} details`}
-            </p>
-          </div>
+          </button> */}
+        <div>
+          <h1 className="text-base font-bold text-steel-blue dark:text-white/90">
+            {isEditMode ? "Edit Vet Clinic" : "Vet Clinic Info"}
+          </h1>
+          <p className="text-xs   text-default-500 mt-1">
+            {isEditMode
+              ? `Update ${vet.clinicName} details`
+              : `Viewing ${vet.clinicName} details`}
+          </p>
         </div>
+        {/* </div> */}
 
         {/* Show Edit button only in view mode */}
-        {!isEditMode && (
+        {!isEditMode ? (
           <Button
             size="sm"
             variant="flat"
@@ -136,10 +136,18 @@ export default function VetDetailsPage() {
           >
             Edit Clinic
           </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            onPress={handleBack}
+            className="text-steel-blue hover:text-default-700 dark:text-lime-burst dark:hover:text-default-200 transition-colors border-none hover:bg-transparent"
+          >
+            ← Go Back
+          </Button>
         )}
       </div>
 
-      <div className="bg-default-50 dark:bg-default-100/5 border border-divider rounded-2xl overflow-hidden p-4 sm:p-6">
+      <div className="bg-default-50 dark:bg-default-100/50 border-none shadow-lg border-divider rounded-md overflow-hidden p-4 sm:p-6 mb-24">
         {isEditMode ? (
           <VetForm
             initial={initialFormData}

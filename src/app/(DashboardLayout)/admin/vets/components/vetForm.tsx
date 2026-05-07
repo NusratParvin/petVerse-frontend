@@ -652,11 +652,6 @@ interface VetFormProps {
   isEdit?: boolean;
 }
 
-// ---------------------------------------------------------------------------
-// Helper: recursively extract only the fields that RHF marked as dirty.
-// For arrays (workingHours, photos, specialities) we send the whole array
-// if any element changed — a partial array update would be ambiguous on the backend.
-// ---------------------------------------------------------------------------
 const getDirtyValues = (dirtyFields: any, allValues: any): any => {
   if (dirtyFields === true) return allValues;
 
@@ -678,9 +673,19 @@ const getDirtyValues = (dirtyFields: any, allValues: any): any => {
   return allValues;
 };
 
-// ---------------------------------------------------------------------------
+const getChangedFields = (
+  dirtyFields: Record<string, any>,
+  allValues: VetFormData,
+) => {
+  return Object.fromEntries(
+    Object.keys(dirtyFields).map((key) => [
+      key,
+      allValues[key as keyof VetFormData],
+    ]),
+  );
+};
+
 // Default working hours used both for create and as fallback in edit
-// ---------------------------------------------------------------------------
 const buildDefaultWorkingHours = () =>
   DAYS.map((day) => ({
     day,
@@ -710,9 +715,6 @@ const buildDefaultValues = (initial?: Partial<TVet>): VetFormData => ({
   emergency: initial?.emergency ?? false,
 });
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
 export default function VetForm({
   initial,
   onSubmit,
@@ -737,20 +739,16 @@ export default function VetForm({
     defaultValues: buildDefaultValues(initial),
   });
 
-  // When editing, reset AFTER the initial data arrives so RHF has a clean
-  // baseline to compare against. Without this, every field looks dirty.
   useEffect(() => {
     if (isEdit && initial) {
       reset(buildDefaultValues(initial));
     }
   }, [isEdit, initial, reset]);
 
-  // ---------------------------------------------------------------------------
-  // Submit handler — sends only changed fields in edit mode, everything in create
-  // ---------------------------------------------------------------------------
   const handleFormSubmit = handleSubmit((allValues) => {
     if (isEdit) {
-      const changed = getDirtyValues(dirtyFields, allValues);
+      const changed = getChangedFields(dirtyFields, allValues);
+      console.log(changed);
       if (!changed || Object.keys(changed).length === 0) {
         console.log("Nothing changed, skipping submit.");
         return;
@@ -837,7 +835,7 @@ export default function VetForm({
   };
 
   return (
-    <form onSubmit={handleFormSubmit} className="p-6 flex flex-col gap-5">
+    <form onSubmit={handleFormSubmit} className="flex flex-col gap-5">
       {/*   Basic Info      */}
       <div className="grid grid-cols-2 gap-3">
         {/* Clinic Name */}
