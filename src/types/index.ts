@@ -141,6 +141,14 @@ export const speciesEmoji: Record<string, string> = {
   rabbit: "🐇",
   reptile: "🦎",
   other: "🐾",
+  exotic: "🦋",
+  emergency: "🚨",
+  surgery: "🔬",
+  dental: "🦷",
+  dermatology: "🩺",
+  ophthalmology: "👁️",
+  "small-animals": "🐹",
+  nutrition: "🥗",
 };
 
 export const recordIcon: Record<string, string> = {

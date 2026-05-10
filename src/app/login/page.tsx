@@ -91,8 +91,8 @@ const Login = () => {
 
   const autofillCredentials = (role: "user" | "admin") => {
     if (role === "user") {
-      setValue("email", "u@u.com"); // Sets the email value
-      setValue("password", "u@u.com"); // Sets the password value
+      setValue("email", "chris@gmail.com"); // Sets the email value
+      setValue("password", "111111"); // Sets the password value
     } else if (role === "admin") {
       setValue("email", "admin@gmail.com");
       setValue("password", "111111");

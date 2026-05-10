@@ -1,11 +1,17 @@
 import Link from "next/link";
 import React from "react";
-import { navItems } from "./menuConstants";
 import { usePathname } from "next/navigation";
+import { NavItem } from "./menuConstants";
 
-const MenuSection = () => {
+interface MenuSectionProps {
+  menu: NavItem[];
+}
+
+const MenuSection = ({ menu }: MenuSectionProps) => {
+  // console.log(menu);
   const pathname = usePathname();
 
+  // const navItems=role==="USER"?userLinks:adminLinks
   return (
     <div className="px-3 py-2">
       <p className=" mb-3 text-[10px] font-black uppercase tracking-wider text-steel-blue dark:text-lime-burst/90">
@@ -13,7 +19,7 @@ const MenuSection = () => {
       </p>
 
       <div className="space-y-0.5">
-        {navItems.map((item) => {
+        {menu.map((item: NavItem) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
           return (
@@ -54,9 +60,9 @@ const MenuSection = () => {
               >
                 {item.label}
               </span>
-              {item.badge && (
+              {item?.badge && (
                 <span className="ml-auto text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-gradient-to-r from-pv-coral to-[#FF6B8A] text-white  shadow-sm">
-                  {item.badge}
+                  {item?.badge}
                 </span>
               )}
             </Link>

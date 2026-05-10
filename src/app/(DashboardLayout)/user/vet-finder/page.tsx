@@ -2,19 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { TEmirate, TSpeciality, TVet } from "@/src/types";
+import { speciesEmoji, TEmirate, TSpeciality, TVet } from "@/src/types";
 import { useGetVetsQuery } from "@/src/redux/features/vets/vetsApi";
-
-const EMIRATES: { value: TEmirate | ""; label: string }[] = [
-  { value: "", label: "All Emirates" },
-  { value: "dubai", label: "Dubai" },
-  { value: "abu-dhabi", label: "Abu Dhabi" },
-  { value: "sharjah", label: "Sharjah" },
-  { value: "ajman", label: "Ajman" },
-  { value: "ras-al-khaimah", label: "Ras Al Khaimah" },
-  { value: "fujairah", label: "Fujairah" },
-  { value: "umm-al-quwain", label: "Umm Al Quwain" },
-];
+import { EMIRATES } from "@/src/constant";
 
 const SPECIALITIES: { value: TSpeciality | ""; label: string }[] = [
   { value: "", label: "All Specialities" },
@@ -29,23 +19,6 @@ const SPECIALITIES: { value: TSpeciality | ""; label: string }[] = [
   { value: "surgery", label: "🔬 Surgery" },
   { value: "dental", label: "🦷 Dental" },
 ];
-
-const SPECIALITY_EMOJI: Record<string, string> = {
-  dogs: "🐕",
-  cats: "🐈",
-  birds: "🦜",
-  fish: "🐠",
-  rabbits: "🐇",
-  reptiles: "🦎",
-  exotic: "🦋",
-  emergency: "🚨",
-  surgery: "🔬",
-  dental: "🦷",
-  dermatology: "🩺",
-  ophthalmology: "👁️",
-  "small-animals": "🐹",
-  nutrition: "🥗",
-};
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -71,7 +44,7 @@ function VetCard({ vet }: { vet: TVet }) {
   const isOpenToday = todayHours && !todayHours.closed;
 
   return (
-    <Link href={`/user/vets/${vet._id}`}>
+    <Link href={`/user/vet-finder/${vet._id}`}>
       <div className="group relative rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm hover:border-[#4682B4]/50 hover:bg-white/10 transition-all duration-300 cursor-pointer">
         {/* Cover Photo */}
         <div className="relative h-36 overflow-hidden bg-white/5">
@@ -104,10 +77,10 @@ function VetCard({ vet }: { vet: TVet }) {
 
         {/* Card Body */}
         <div className="p-4">
-          <h3 className="text-white font-semibold text-sm leading-tight truncate">
+          <h3 className="text-black font-semibold text-sm leading-tight truncate">
             {vet.clinicName}
           </h3>
-          <p className="text-white/50 text-xs mt-0.5 truncate">
+          <p className="text-black/50 text-xs mt-0.5 truncate">
             {vet.area},{" "}
             {vet.emirate
               .split("-")
@@ -129,7 +102,7 @@ function VetCard({ vet }: { vet: TVet }) {
                 key={s}
                 className="text-[10px] bg-[#4682B4]/20 border border-[#4682B4]/30 text-[#4682B4] px-1.5 py-0.5 rounded-full"
               >
-                {SPECIALITY_EMOJI[s]} {s.charAt(0).toUpperCase() + s.slice(1)}
+                {speciesEmoji[s]} {s.charAt(0).toUpperCase() + s.slice(1)}
               </span>
             ))}
             {vet.specialities.length > 4 && (
@@ -142,11 +115,11 @@ function VetCard({ vet }: { vet: TVet }) {
           {/* Phone */}
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
             <span className="text-white/50 text-xs">{vet.phone}</span>
-            {vet.serviceRates?.length > 0 && (
+            {/* {vet.priceRange?.length > 0 && (
               <span className="text-[#B8FF2E] text-xs font-medium">
                 AED {vet.serviceRates[0].priceFrom}+
               </span>
-            )}
+            )} */}
           </div>
         </div>
       </div>
@@ -159,7 +132,7 @@ export default function VetFinderPage() {
   const [speciality, setSpeciality] = useState<TSpeciality | "">("");
   const [search, setSearch] = useState("");
 
-  const { data: vets, isLoading } = useGetVetsQuery(
+  const { data: vetsInfo, isLoading } = useGetVetsQuery(
     {
       emirate: emirate || undefined,
       speciality: speciality || undefined,
@@ -167,7 +140,8 @@ export default function VetFinderPage() {
     },
     { refetchOnMountOrArgChange: true },
   );
-
+  const vets = vetsInfo?.data ?? [];
+  // console.log(vets);
   const inputClass =
     "bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-[#4682B4]/60 focus:bg-white/10 transition-all placeholder:text-white/30";
 

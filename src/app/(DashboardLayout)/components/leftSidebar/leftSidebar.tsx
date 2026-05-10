@@ -6,13 +6,16 @@ import { useCurrentUser } from "@/src/redux/features/auth/authSlice";
 import { useAppSelector } from "@/src/redux/hooks";
 import { Avatar } from "@heroui/react";
 
-import { navItems } from "./menuConstants";
 import MenuSection from "./menuSection";
 import PetSection from "./petSection/petSection";
+import { userLinks, adminLinks } from "./menuConstants";
 
 export default function LeftSidebar() {
   const user = useAppSelector(useCurrentUser);
   const pathname = usePathname();
+  const navItems = user?.role === "USER" ? userLinks : adminLinks;
+
+  // console.log(user);
 
   return (
     <>
@@ -61,10 +64,10 @@ export default function LeftSidebar() {
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex fixed top-12   h-[calc(100vh-50px)] left-0   w-[220px] flex-col z-40 overflow-y-auto transition-all duration-500 bg-white dark:bg-bg border-r border-steel-blue/10 dark:border-lime-burst/20 custom-scrollbar ">
         {/* My Pets Section */}
-        <PetSection />
+        {user?.role == "USER" && <PetSection />}
 
         {/* Navigation Section */}
-        <MenuSection />
+        {user && <MenuSection menu={navItems} />}
 
         {/* Footer */}
         <div className="px-3 py-3 mt-auto border-t border-steel-blue/20 dark:border-lime-burst/15">

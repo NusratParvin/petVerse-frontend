@@ -3,23 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useGetSingleVetQuery } from "@/src/redux/features/vets/vetsApi";
-
-const SPECIALITY_EMOJI: Record<string, string> = {
-  dogs: "🐕",
-  cats: "🐈",
-  birds: "🦜",
-  fish: "🐠",
-  rabbits: "🐇",
-  reptiles: "🦎",
-  exotic: "🦋",
-  emergency: "🚨",
-  surgery: "🔬",
-  dental: "🦷",
-  dermatology: "🩺",
-  ophthalmology: "👁️",
-  "small-animals": "🐹",
-  nutrition: "🥗",
-};
+import { speciesEmoji } from "@/src/types";
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -27,14 +11,14 @@ function StarRating({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <svg
           key={star}
-          className={`w-4 h-4 ${star <= Math.round(rating) ? "text-[#F5D020]" : "text-white/20"}`}
+          className={`w-4 h-4 ${star <= Math.round(rating) ? "text-[#F5D020]" : "text-black/20"}`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
-      <span className="text-white/60 text-sm ml-1">
+      <span className="text-black/60 text-sm ml-1">
         {rating.toFixed(1)} · {0} reviews
       </span>
     </div>
@@ -48,7 +32,7 @@ export default function VetDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-4">
+      <div className="p-3 space-y-4">
         <div className="h-48 rounded-2xl bg-white/5 animate-pulse" />
         <div className="h-8 w-64 rounded-xl bg-white/5 animate-pulse" />
         <div className="h-4 w-48 rounded-xl bg-white/5 animate-pulse" />
@@ -59,7 +43,7 @@ export default function VetDetailPage() {
   if (!vet) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-white/50">Vet not found.</p>
+        <p className="text-black/50">Vet not found.</p>
         <Link
           href="/user/vets"
           className="mt-3 text-[#4682B4] text-sm hover:underline"
@@ -85,7 +69,7 @@ export default function VetDetailPage() {
       {/* Back */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-white/50 hover:text-white text-sm transition-colors w-fit"
+        className="flex items-center gap-2 text-black/50 hover:text-black text-sm transition-colors w-fit"
       >
         <svg
           className="w-4 h-4"
@@ -119,12 +103,12 @@ export default function VetDetailPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#020812] via-transparent to-transparent" />
         <div className="absolute bottom-4 left-5">
           <h1
-            className="text-white text-2xl font-bold"
+            className="text-black text-2xl font-bold"
             style={{ fontFamily: "Space Grotesk, sans-serif" }}
           >
             {vet.clinicName}
           </h1>
-          <p className="text-white/60 text-sm">
+          <p className="text-black/60 text-sm">
             {vet.area}, {formatEmirate(vet.emirate)}
           </p>
         </div>
@@ -155,12 +139,12 @@ export default function VetDetailPage() {
           {vet.about && (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <h2
-                className="text-white font-semibold text-sm mb-2"
+                className="text-black font-semibold text-sm mb-2"
                 style={{ fontFamily: "Space Grotesk, sans-serif" }}
               >
                 About
               </h2>
-              <p className="text-white/60 text-sm leading-relaxed">
+              <p className="text-black/60 text-sm leading-relaxed">
                 {vet.about}
               </p>
             </div>
@@ -169,7 +153,7 @@ export default function VetDetailPage() {
           {/* Specialities */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <h2
-              className="text-white font-semibold text-sm mb-3"
+              className="text-black font-semibold text-sm mb-3"
               style={{ fontFamily: "Space Grotesk, sans-serif" }}
             >
               Specialities
@@ -180,17 +164,17 @@ export default function VetDetailPage() {
                   key={s}
                   className="text-sm bg-[#4682B4]/15 border border-[#4682B4]/30 text-[#4682B4] px-3 py-1 rounded-full"
                 >
-                  {SPECIALITY_EMOJI[s]} {s.charAt(0).toUpperCase() + s.slice(1)}
+                  {speciesEmoji[s]} {s.charAt(0).toUpperCase() + s.slice(1)}
                 </span>
               ))}
             </div>
           </div>
 
           {/* Service Rates */}
-          {vet.serviceRates?.length > 0 && (
+          {/* {vet.serviceRates?.length > 0 && (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <h2
-                className="text-white font-semibold text-sm mb-3"
+                className="text-black font-semibold text-sm mb-3"
                 style={{ fontFamily: "Space Grotesk, sans-serif" }}
               >
                 Service Rates
@@ -201,7 +185,7 @@ export default function VetDetailPage() {
                     key={i}
                     className="flex items-center justify-between py-2 border-b border-white/5 last:border-0"
                   >
-                    <span className="text-white/70 text-sm">{r.service}</span>
+                    <span className="text-black/70 text-sm">{r.service}</span>
                     <span className="text-[#B8FF2E] text-sm font-medium">
                       AED {r.priceFrom} – {r.priceTo}
                     </span>
@@ -209,18 +193,18 @@ export default function VetDetailPage() {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Map */}
           {vet.googleMapsUrl && (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <div className="rounded-2xl border text-black border-white/10 bg-white/5 p-5">
               <h2
-                className="text-white font-semibold text-sm mb-3"
+                className="text-black font-semibold text-sm mb-3"
                 style={{ fontFamily: "Space Grotesk, sans-serif" }}
               >
                 Location
               </h2>
-              <p className="text-white/50 text-sm mb-3">{vet.address}</p>
+              <p className="text-black/50 text-sm mb-3">{vet.address}</p>
               <a
                 href={vet.googleMapsUrl}
                 target="_blank"
@@ -257,7 +241,7 @@ export default function VetDetailPage() {
           {/* Contact */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <h2
-              className="text-white font-semibold text-sm mb-3"
+              className="text-black font-semibold text-sm mb-3"
               style={{ fontFamily: "Space Grotesk, sans-serif" }}
             >
               Contact
@@ -265,7 +249,7 @@ export default function VetDetailPage() {
             <div className="flex flex-col gap-3">
               <a
                 href={`tel:${vet.phone}`}
-                className="flex items-center gap-3 text-white/70 hover:text-white text-sm transition-colors"
+                className="flex items-center gap-3 text-black/70 hover:text-black text-sm transition-colors"
               >
                 <span className="text-base">📞</span> {vet.phone}
               </a>
@@ -282,7 +266,7 @@ export default function VetDetailPage() {
               {vet.email && (
                 <a
                   href={`mailto:${vet.email}`}
-                  className="flex items-center gap-3 text-white/70 hover:text-white text-sm transition-colors"
+                  className="flex items-center gap-3 text-black/70 hover:text-black text-sm transition-colors"
                 >
                   <span className="text-base">✉️</span> {vet.email}
                 </a>
@@ -303,7 +287,7 @@ export default function VetDetailPage() {
           {/* Working Hours */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <h2
-              className="text-white font-semibold text-sm mb-3"
+              className="text-black font-semibold text-sm mb-3"
               style={{ fontFamily: "Space Grotesk, sans-serif" }}
             >
               Working Hours
@@ -312,7 +296,7 @@ export default function VetDetailPage() {
               {vet.workingHours?.map((h) => (
                 <div
                   key={h.day}
-                  className={`flex justify-between text-xs ${h.day === todayName ? "text-[#B8FF2E] font-semibold" : "text-white/50"}`}
+                  className={`flex justify-between text-xs ${h.day === todayName ? "text-[#B8FF2E] font-semibold" : "text-black/50"}`}
                 >
                   <span>{h.day.slice(0, 3)}</span>
                   <span>{h.closed ? "Closed" : `${h.open} – ${h.close}`}</span>
@@ -324,7 +308,7 @@ export default function VetDetailPage() {
           {/* Claim listing CTA */}
           {!vet.isClaimed && (
             <div className="rounded-2xl border border-dashed border-white/15 bg-white/3 p-4 text-center">
-              <p className="text-white/40 text-xs mb-2">Is this your clinic?</p>
+              <p className="text-black/40 text-xs mb-2">Is this your clinic?</p>
               <button className="text-[#4682B4] text-sm hover:underline font-medium">
                 Claim Your Listing →
               </button>
