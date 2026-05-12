@@ -1,15 +1,16 @@
 import { TVet } from "@/src/types";
 import { Chip } from "@heroui/react";
 import { formatEmirate, formatPriceRange } from "./utils";
+import GoogleMap from "@/src/components/shared/googleMap";
 
 export default function VetDetailsView({ vet }: { vet: TVet }) {
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header Section - Clinic info on left, Image on right */}
+    <div className="space-y-4 sm:space-y-6 pb-16">
+      {/* Header  */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         {/* Left side - Clinic Info */}
         <div className="flex-1">
-          <h2 className="text-sm sm:text-sm font-bold text-foreground">
+          <h2 className="text-sm sm:text-xl font-bold text-foreground">
             {vet.clinicName}
           </h2>
           {vet.name && (
@@ -193,36 +194,6 @@ export default function VetDetailsView({ vet }: { vet: TVet }) {
           </div>
         </div>
 
-        {/* Working Hours */}
-        {vet.workingHours && vet.workingHours.length > 0 && (
-          <div className="space-y-3 sm:space-y-4 lg:col-span-2">
-            <h3 className="text-sm sm:text-base font-semibold text-foreground border-b border-divider pb-2">
-              Working Hours
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-              {vet.workingHours.map((day: any) => (
-                <div
-                  key={day.day}
-                  className="flex justify-between items-center py-2 px-3 rounded-lg bg-default-50 dark:bg-default-100/5"
-                >
-                  <span className="font-medium text-sm text-foreground">
-                    {day.day}
-                  </span>
-                  {day.closed ? (
-                    <span className="text-xs sm:text-sm text-danger-500 font-medium">
-                      Closed
-                    </span>
-                  ) : (
-                    <span className="text-xs sm:text-sm text-foreground">
-                      {day.open} - {day.close}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* About */}
         {vet.about && (
           <div className="space-y-3 sm:space-y-4 lg:col-span-2">
@@ -237,32 +208,94 @@ export default function VetDetailsView({ vet }: { vet: TVet }) {
           </div>
         )}
 
-        {/* Google Maps */}
-        {vet.googleMapsUrl && (
-          <div className="space-y-3 sm:space-y-4 lg:col-span-2">
-            <h3 className="text-sm sm:text-base font-semibold text-foreground border-b border-divider pb-2">
-              Location Map
-            </h3>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-              <a
-                href={vet.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-steel-blue dark:text-lime-burst hover:underline text-sm sm:text-sm"
-              >
-                <span>📍</span>
-                View on Google Maps
-                <span>→</span>
-              </a>
-              <span className="text-xs text-default-500 hidden sm:inline">
-                |
-              </span>
-              <p className="text-xs text-default-500 break-all">
-                {vet.address}
-              </p>
+        <div className="grid grid-cols-2 gap-12 col-span-2">
+          {/* Working Hours */}
+          {vet.workingHours && vet.workingHours.length > 0 && (
+            <div className="space-y-3 sm:space-y-3 ">
+              <h3 className="text-sm sm:text-base font-semibold text-foreground border-b border-divider pb-2">
+                Working Hours
+              </h3>
+              <div className="">
+                {vet.workingHours.map((day: any) => (
+                  <div
+                    key={day.day}
+                    className="flex justify-between items-center py-2 px-3 rounded-lg bg-default-50 dark:bg-default-100/5"
+                  >
+                    <span className="font-medium text-sm text-foreground">
+                      {day.day}
+                    </span>
+                    {day.closed ? (
+                      <span className="text-xs sm:text-sm text-danger-500 font-medium">
+                        Closed
+                      </span>
+                    ) : (
+                      <span className="text-xs sm:text-sm text-foreground">
+                        {day.open} - {day.close}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Google Maps */}
+          <div className="space-y-3 sm:space-y-3 ">
+            <div className="flex flex-col gap-4">
+              <h3 className="text-sm sm:text-base font-semibold text-foreground border-b border-divider pb-2">
+                Location Map
+              </h3>
+              {/* 🗺️ Map Preview */}
+              {vet.latitude && vet.longitude && (
+                <div className="rounded-md overflow-hidden border border-gray-200 dark:border-white/10">
+                  <GoogleMap
+                    lat={vet.latitude}
+                    lon={vet.longitude}
+                    clinicName={vet.clinicName}
+                  />
+                </div>
+              )}
+
+              {/* 🚀 Navigation Buttons */}
+              <div className="flex flex-wrap gap-2 mt-4">
+                {vet.latitude && vet.longitude ? (
+                  <>
+                    {/* Google Maps */}
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${vet.latitude},${vet.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border border-steel-blue/90 dark:border-lime-burst/60 text-steel-blue dark:text-lime-burst font-semibold  transition w-36"
+                    >
+                      🗺️ Google Maps
+                    </a>
+
+                    {/* Waze */}
+                    <a
+                      href={`https://www.waze.com/ul?ll=${vet.latitude},${vet.longitude}&navigate=yes`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border border-steel-blue/90 dark:border-lime-burst/60 text-steel-blue dark:text-lime-burst font-semibold w-36 transition"
+                    >
+                      🚗 Waze
+                    </a>
+                  </>
+                ) : (
+                  vet.googleMapsUrl && (
+                    <a
+                      href={vet.googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-steel-blue dark:text-lime-burst hover:underline"
+                    >
+                      📍 View on Google Maps →
+                    </a>
+                  )
+                )}
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

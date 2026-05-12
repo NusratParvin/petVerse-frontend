@@ -99,6 +99,8 @@ export default function VetDetailsPage() {
     priceRange: vet.priceRange,
     rating: vet.rating,
     reviewCount: vet.reviewCount,
+    longitude: vet.longitude,
+    latitude: vet.latitude,
   };
 
   const isEditMode = mode === "edit";

@@ -268,6 +268,8 @@ export type TVet = {
   priceRange: TPriceRange;
   rating: number;
   reviewCount: number;
+  longitude?: number;
+  latitude?: number;
   emergency: boolean;
   isClaimed?: boolean;
   isDeleted?: boolean;
