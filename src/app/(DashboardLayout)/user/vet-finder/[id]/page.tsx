@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useGetSingleVetQuery } from "@/src/redux/features/vets/vetsApi";
 import { speciesEmoji } from "@/src/types";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Rating } from "next-flex-rating";
 
 import GoogleMap from "@/src/components/shared/googleMap";
@@ -16,7 +16,6 @@ import {
   CardHeader,
   Chip,
   Divider,
-  Skeleton,
   Tooltip,
 } from "@heroui/react";
 
@@ -32,33 +31,11 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useState } from "react";
+import { format } from "date-fns";
+import { LoadingSkeleton } from "../components/skeletonLoader";
+import { formatEmirateName } from "../components/utils";
+import Gallery from "../components/photoGallery";
 
-/*  helpers  */
-const formatEmirate = (e: string) =>
-  e
-    .split("-")
-    .map((w) => w[0].toUpperCase() + w.slice(1))
-    .join(" ");
-
-/*  Loading skeleton  */
-const LoadingSkeleton = () => (
-  <div className="p-4 md:p-8 space-y-5 max-w-7xl mx-auto">
-    {/* <Skeleton className="h-6 w-36 rounded-md" /> */}
-    <Skeleton className="h-56 w-full rounded-md" />
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-      <div className="lg:col-span-2 space-y-4">
-        <Skeleton className="h-32 rounded-md" />
-        <Skeleton className="h-24 rounded-md" />
-      </div>
-      <div className="space-y-4">
-        <Skeleton className="h-40 rounded-md" />
-        <Skeleton className="h-52 rounded-md" />
-      </div>
-    </div>
-  </div>
-);
-
-/*  Page  */
 const VetDetailPage = () => {
   const { id } = useParams();
   const router = useRouter();
@@ -81,16 +58,14 @@ const VetDetailPage = () => {
       </div>
     );
 
-  const todayName = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-  });
+  const todayName = format(new Date(), "EEEE");
   const todayHours = vet.workingHours?.find((h) => h.day === todayName);
   const isOpenToday = todayHours && !todayHours.closed;
 
   const aboutText = vet?.about || "";
 
   return (
-    <div className="flex flex-col gap-3 md:gap-3 p-3 max-w-full   mx-auto pb-24 md:pb-16">
+    <div className="flex flex-col gap-3 md:gap-3 p-3 max-w-full   mx-auto pb-24 md:pb-24">
       {/*  Hero cover  */}
       <div className="relative h-52 sm:h-64 md:h-72 rounded-md overflow-hidden border border-default-100 shadow-md">
         {vet.coverPhoto ? (
@@ -118,7 +93,7 @@ const VetDetailPage = () => {
               </h1>
               <p className="text-white/80 text-sm mt-0.5 flex items-center gap-1.5 drop-shadow">
                 <MapPin className="w-3.5 h-3.5" />
-                {vet.area}, {formatEmirate(vet.emirate)}
+                {vet.area}, {formatEmirateName(vet.emirate)}
               </p>
 
               {/* Rating + open status */}
@@ -128,7 +103,7 @@ const VetDetailPage = () => {
                   {vet.rating} ({vet.reviewCount} reviews)
                 </span>
 
-                {/* Open/Closed Chip with proper theme support */}
+                {/* Working hour Chip  */}
                 <Chip
                   variant="flat"
                   size="md"
@@ -176,7 +151,7 @@ const VetDetailPage = () => {
             size="sm"
             startContent={<ChevronLeft className="w-4 h-4" />}
             onPress={() => router.back()}
-            className="w-fit text-white font-semibold hover:bg-black/60 -ml-1 bg-black/50"
+            className="w-fit text-white font-semibold -ml-1 bg-black/50 hover:!bg-black/60"
           >
             Back to Vet Finder
           </Button>
@@ -246,7 +221,7 @@ const VetDetailPage = () => {
                     variant="flat"
                     color="primary"
                     size="sm"
-                    className="font-medium"
+                    className="font-medium border dark:border-lime-burst/50  dark:bg-lime-burst/20 dark:text-white"
                   >
                     {speciesEmoji[s]} {s.charAt(0).toUpperCase() + s.slice(1)}
                   </Chip>
@@ -453,7 +428,7 @@ const VetDetailPage = () => {
           </Card>
 
           {/* Claim CTA */}
-          {!vet.isClaimed && (
+          {/* {!vet.isClaimed && (
             <Card
               shadow="none"
               className="border border-dashed border-default-200 bg-default-50 dark:bg-black/20"
@@ -470,7 +445,50 @@ const VetDetailPage = () => {
                 </Button>
               </CardBody>
             </Card>
-          )}
+          )} */}
+        </div>
+
+        <div className="col-span-3  ">
+          <Card
+            shadow="none"
+            className="border border-default-100 rounded-md bg-default-50 dark:bg-black/20"
+          >
+            <CardHeader className="pb-1 pt-5 px-5">
+              <h2 className="text-sm font-semibold text-default-700 tracking-wide uppercase">
+                Gallery
+              </h2>
+            </CardHeader>
+
+            <CardBody className="pt-2 px-5 pb-5 overflow-hidden">
+              {vet?.photos && vet.photos.length > 0 ? (
+                <Gallery cardData={vet.photos} />
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                  <div className="w-16 h-16 rounded-full bg-default-100 dark:bg-default-800 flex items-center justify-center mb-4">
+                    <svg
+                      className="w-8 h-8 text-default-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-default-600 font-medium mb-1">
+                    No Photos Available
+                  </h3>
+                  <p className="text-default-400 text-sm">
+                    This clinic hasn't added any photos yet.
+                  </p>
+                </div>
+              )}
+            </CardBody>
+          </Card>
         </div>
       </div>
     </div>
