@@ -1,30 +1,30 @@
 import Link from "next/link";
 import React from "react";
 
-const QuickTools = () => {
-  const quickTools = [
+const QuickAccess = () => {
+  const quickAccess = [
     {
       icon: "✈️",
       label: "Import Wizard",
-      href: "/user/import-wizard",
+      href: "/user/quickAccess/import-wizard",
       color: "steel-blue",
     },
     {
       icon: "🏥",
       label: "Find a Vet",
-      href: "/user/vet-finder",
+      href: "/user/quickAccess/vet-finder",
       color: "lime-burst",
     },
     {
       icon: "🛡️",
       label: "Insurance",
-      href: "/user/insurance",
+      href: "/user/quickAccess/insurance",
       color: "steel-blue",
     },
     {
       icon: "🔍",
       label: "Lost & Found",
-      href: "/user/lost-found",
+      href: "/user/quickAccess/lost-found",
       color: "lime-burst",
     },
   ];
@@ -36,24 +36,24 @@ const QuickTools = () => {
       </p>
 
       <div className="grid grid-cols-2 gap-2 ">
-        {quickTools.map((tool) => (
+        {quickAccess.map((access) => (
           <Link
-            key={tool.href}
-            href={tool.href}
+            key={access.href}
+            href={access.href}
             className={`
                 group flex flex-row gap-1 items-center justify-center p-2 rounded-lg
                 transition-all duration-200 hover:scale-105 hover:-translate-y-0.5
                 bg-lime-burst/30 dark:bg-lime-burst/10
                 border border-steel-blue/30 dark:border-white/10
-                hover:border-${tool.color} hover:shadow-lg
+                hover:border-${access.color} hover:shadow-lg
                 dark:hover:border-lime-burst/50 dark:hover:shadow-lime-burst/10
               `}
           >
             <span className="text-base mb-1 group-hover:scale-110 transition-transform">
-              {tool.icon}
+              {access.icon}
             </span>
             <span className="text-xs font-semibold text-steel-blue dark:text-white/70 group-hover:text-steel-blue dark:group-hover:text-lime-burst">
-              {tool.label}
+              {access.label}
             </span>
           </Link>
         ))}
@@ -62,4 +62,4 @@ const QuickTools = () => {
   );
 };
 
-export default QuickTools;
+export default QuickAccess;

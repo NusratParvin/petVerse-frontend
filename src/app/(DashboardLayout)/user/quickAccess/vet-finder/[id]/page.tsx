@@ -32,9 +32,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
-import { LoadingSkeleton } from "../components/skeletonLoader";
+import { LoadingSkeleton } from "./components/skeletonLoader";
 import { formatEmirateName } from "../components/utils";
-import Gallery from "../components/photoGallery";
+import Gallery from "./components/photoGallery";
 
 const VetDetailPage = () => {
   const { id } = useParams();
@@ -50,7 +50,7 @@ const VetDetailPage = () => {
       <div className="flex flex-col items-center justify-center py-24 px-4 gap-3">
         <p className="text-default-400 text-sm">Vet not found.</p>
         <Link
-          href="/user/vets"
+          href="user/quickAccess/vet-finder"
           className="text-primary text-sm hover:underline"
         >
           ← Back to Vet Finder
@@ -150,7 +150,7 @@ const VetDetailPage = () => {
             variant="light"
             size="sm"
             startContent={<ChevronLeft className="w-4 h-4" />}
-            onPress={() => router.back()}
+            onPress={() => router.push("user/quickAccess/vet-finder")}
             className="w-fit text-white font-semibold -ml-1 bg-black/50 hover:!bg-black/60"
           >
             Back to Vet Finder

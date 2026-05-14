@@ -1,3 +1,5 @@
+import { TSpeciality } from "./types";
+
 export const protectedRoutes = [
   "/profile",
   "/profile/:page*",
@@ -7,6 +9,21 @@ export const protectedRoutes = [
 ];
 
 ///vets-constants
+
+export const SPECIALITIES: { value: TSpeciality | ""; label: string }[] = [
+  { value: "", label: "All Specialities" },
+  { value: "dogs", label: "🐕 Dogs" },
+  { value: "cats", label: "🐈 Cats" },
+  { value: "birds", label: "🦜 Birds" },
+  { value: "fish", label: "🐠 Fish" },
+  { value: "rabbits", label: "🐇 Rabbits" },
+  { value: "reptiles", label: "🦎 Reptiles" },
+  { value: "exotic", label: "🦋 Exotic" },
+  { value: "emergency", label: "🚨 Emergency" },
+  { value: "surgery", label: "🔬 Surgery" },
+  { value: "dental", label: "🦷 Dental" },
+];
+
 export const EMIRATES = [
   { value: "dubai", label: "Dubai" },
   { value: "abu-dhabi", label: "Abu Dhabi" },

@@ -2,12 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  useGetVetsQuery,
-  TEmirate,
-  TSpeciality,
-  TVet,
-} from "@/redux/features/vets/vetsApi";
+
+import { TEmirate, TSpeciality, TVet } from "@/src/types";
+import { useGetVetsQuery } from "@/src/redux/features/vets/vetsApi";
 
 const EMIRATES: { value: TEmirate | ""; label: string }[] = [
   { value: "", label: "All Emirates" },
