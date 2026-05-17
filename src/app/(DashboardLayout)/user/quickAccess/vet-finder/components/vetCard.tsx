@@ -1,6 +1,6 @@
 import { speciesEmoji, TVet } from "@/src/types";
 import { Card, CardBody, Divider } from "@heroui/react";
-import { MapPin, Phone } from "lucide-react";
+import { DoorClosed, DoorOpen, MapPin, Phone } from "lucide-react";
 import { Rating } from "next-flex-rating";
 import Link from "next/link";
 import { formatEmirateName } from "./utils";
@@ -22,12 +22,12 @@ const VetCard = ({ vet }: { vet: TVet }) => {
       <Card
         isPressable
         shadow="none"
-        className="group w-full border border-default-200 dark:border-default-100/10
-                   hover:border-primary/50 hover:shadow-md dark:hover:shadow-primary/5
-                   transition-all duration-300 bg-white dark:bg-default-50/5 overflow-hidden"
+        className="group w-full rounded-xl border border-default-200 dark:border-default-100/10
+                 hover:border-steel-blue/40 hover:shadow-sm dark:hover:border-lime-burst/40
+                 transition-all duration-200 bg-default-50 dark:bg-default-50/80 overflow-hidden"
       >
-        {/* ── Photo — fixed height, overflow hidden on parent ── */}
-        <div className="relative w-full h-40 shrink-0 overflow-hidden bg-default-100 dark:bg-default-50/5">
+        {/* Cover photo + status bar */}
+        <div className="relative w-full h-28 shrink-0 overflow-hidden bg-default-100 dark:bg-default-100/5">
           {vet.coverPhoto ? (
             <img
               src={vet.coverPhoto}
@@ -35,95 +35,104 @@ const VetCard = ({ vet }: { vet: TVet }) => {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-5xl opacity-20 select-none">
+            <div className="w-full h-full flex items-center justify-center text-4xl opacity-10 select-none">
               🏥
             </div>
           )}
 
-          {/* subtle gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
-
-          {/* Open/Closed — top-left */}
-          <span
-            className={`absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full
-              backdrop-blur-sm border leading-tight
-              ${
-                isOpenToday
-                  ? "bg-green-500/20 border-green-400/50 text-green-700 dark:text-green-400"
-                  : "bg-red-500/20 border-red-400/50 text-red-700 dark:text-red-400"
-              }`}
+          <div
+            className={`
+            absolute bottom-0 left-0 right-0
+            flex items-center gap-1.5 px-2.5 py-1.5
+            border-t
+            ${
+              isOpenToday
+                ? "bg-emerald-50 dark:bg-emerald-950/80 border-emerald-200 dark:border-emerald-950"
+                : "bg-red-50 dark:bg-red-950/80 border-red-200 dark:border-red-900"
+            }
+          `}
           >
-            {isOpenToday
-              ? `Open · ${todayHours!.open}–${todayHours!.close}`
-              : "Closed Today"}
-          </span>
+            {/* Door icon — open door vs closed door */}
+            {isOpenToday ? (
+              <DoorOpen className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <DoorClosed className="w-3.5 h-3.5 shrink-0 text-red-500 dark:text-red-400" />
+            )}
 
-          {/* Verified — top-right */}
-          {vet.isClaimed && (
             <span
-              className="absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5
-              rounded-full backdrop-blur-sm border bg-primary/20 border-primary/40 text-primary leading-tight"
+              className={`text-[11px] font-semibold ${
+                isOpenToday
+                  ? "text-emerald-700 dark:text-emerald-300"
+                  : "text-red-600 dark:text-red-400"
+              }`}
             >
-              ✓ Verified
+              {isOpenToday ? "Open now" : "Closed"}
             </span>
-          )}
+
+            {/* Hours on the right */}
+            <span
+              className={`ml-auto text-[10px] ${
+                isOpenToday
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-red-500 dark:text-red-500"
+              }`}
+            >
+              {isOpenToday
+                ? `${todayHours!.open} – ${todayHours!.close}`
+                : todayHours?.open
+                  ? `Opens ${todayHours.open}`
+                  : "—"}
+            </span>
+          </div>
         </div>
 
-        {/* ── Body ── */}
-        <CardBody className="p-3.5 flex flex-col gap-2 min-w-0">
-          {/* Name + location */}
+        {/* Body */}
+        <CardBody className="p-3 flex flex-col gap-2 min-w-0">
+          {/* Name + Location */}
           <div className="min-w-0">
-            <h3
-              className="text-default-900 dark:text-default-100 font-semibold text-sm
-                           leading-snug truncate"
-            >
+            <h3 className="text-default-900 dark:text-white/90 font-semibold text-[12px] leading-snug truncate">
               {vet.clinicName}
             </h3>
-            <p className="flex items-center gap-1 text-default-400 text-xs mt-0.5 min-w-0">
-              <MapPin className="w-3 h-3 shrink-0" />
-              <span className="truncate">
-                {vet.area}, {formatEmirateName(vet.emirate)}
-              </span>
+            <p className="flex items-center gap-1 text-default-400 dark:text-default-500 text-[10px] mt-0.5 truncate">
+              <MapPin className="w-2.5 h-2.5 shrink-0" />
+              {vet.area}, {formatEmirateName(vet.emirate)}
             </p>
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-1.5">
-            <Rating value={vet.rating} readOnly size={13} />
-            <span className="text-default-400 text-[11px] shrink-0">
-              ({vet.reviewCount ?? 0})
+          <div className="flex items-center gap-1">
+            <Rating value={vet.rating} readOnly size={10} />
+            <span className="text-default-400 dark:text-default-500 text-[11px]">
+              {vet.rating?.toFixed(1)}{" "}
+              <span className="opacity-90">({vet.reviewCount ?? 0})</span>
             </span>
           </div>
 
-          {/* Speciality chips — hard-limited to 3 */}
+          {/* Speciality chips */}
           <div className="flex flex-wrap gap-1">
             {visibleSpecs.map((s) => (
               <span
                 key={s}
-                className="inline-flex items-center gap-0.5 whitespace-nowrap
-                           text-[10px] font-medium px-2 py-0.5 rounded-full
-                           bg-primary/10 dark:bg-primary/15 border border-primary/25 text-primary"
+                className="text-[10px] font-medium px-2 py-0.5 rounded-full
+                         bg-steel-blue/25 dark:bg-steel-blue/25
+                         border border-primary/20 text-primary dark:text-white/90"
               >
-                {speciesEmoji[s]} {s.charAt(0).toUpperCase() + s.slice(1)}
+                {s.charAt(0).toUpperCase() + s.slice(1)}
               </span>
             ))}
             {extraCount > 0 && (
-              <span
-                className="inline-flex items-center whitespace-nowrap
-                               text-[10px] px-2 py-0.5 rounded-full
-                               bg-default-100 dark:bg-default-100/10 text-default-400"
-              >
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-default-100 dark:bg-default-100/10 text-default-400">
                 +{extraCount}
               </span>
             )}
           </div>
 
-          <Divider className="opacity-40" />
+          <Divider className="opacity-30 bg-steel-blue/40 dark:bg-lime-burst/50" />
 
           {/* Phone */}
-          <div className="flex items-center gap-1.5 min-w-0">
-            <Phone className="w-3 h-3 text-default-400 shrink-0" />
-            <span className="text-xs text-default-400 truncate">
+          <div className="flex items-center gap-1.5 ">
+            <Phone className="w-2.5 h-2.5 text-steel-blue dark:text-lime-burst shrink-0" />
+            <span className="text-[11px] text-steel-blue dark:text-lime-burst truncate font-medium">
               {vet.phone ?? "—"}
             </span>
           </div>
