@@ -150,7 +150,8 @@ const VetDetailPage = () => {
             variant="light"
             size="sm"
             startContent={<ChevronLeft className="w-4 h-4" />}
-            onPress={() => router.push("user/quickAccess/vet-finder")}
+            onPress={() => router.push("/user/quickAccess/vet-finder")}
+            // onPress={() => router.back()}
             className="w-fit text-white font-semibold -ml-1 bg-black/50 hover:!bg-black/60"
           >
             Back to Vet Finder

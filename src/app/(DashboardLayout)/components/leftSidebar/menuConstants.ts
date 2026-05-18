@@ -24,7 +24,7 @@ export interface NavItem {
 }
 
 export const userLinks: NavItem[] = [
-  { href: `"/user/newsfeed"`, label: "News Feed", icon: PawPrint },
+  { href: "/user/newsfeed", label: "News Feed", icon: PawPrint },
   { href: "/user/my-pets", label: "My Pets", icon: Heart },
   { href: "/user/health", label: "Health", icon: Stethoscope },
   {

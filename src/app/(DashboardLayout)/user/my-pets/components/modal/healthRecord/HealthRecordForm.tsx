@@ -56,7 +56,7 @@ export default function HealthRecordForm({
       {/* Type Selection */}
       <div>
         <label className={labelClass}>Record Type</label>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-6 gap-2">
           {RECORD_TYPES.map((type) => {
             const Icon = type.icon;
             const isSelected = form.type === type.value;
@@ -66,7 +66,7 @@ export default function HealthRecordForm({
                 type="button"
                 onClick={() => setForm({ ...form, type: type.value })}
                 className={`
-                  flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all border
+                  flex flex-col items-center gap-1.5 p-2 rounded-md transition-all border
                   ${
                     isSelected
                       ? "bg-lime-burst/40 dark:bg-lime-burst/20 border-lime-burst text-steel-blue dark:text-lime-burst"

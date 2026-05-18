@@ -35,7 +35,7 @@ export default function HealthRecordModal({
       isOpen={isOpen}
       onClose={onClose}
       placement="center"
-      size="lg"
+      size="2xl"
       classNames={{
         backdrop: "bg-black/50 backdrop-blur-sm",
         base: "border border-steel-blue/20 dark:border-white/10 bg-white dark:bg-[#0d1020] rounded-lg max-h-[85vh]  p-4 ",
