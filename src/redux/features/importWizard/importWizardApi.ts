@@ -26,7 +26,7 @@ export const importWizardApi = baseApi.injectEndpoints({
     parseVetNotes: builder.mutation<{ data: ParseResult }, ParseInput>({
       query: ({ files, text }) => {
         // Must use FormData — JSON can't carry binary files
-        console.log(files);
+        console.log(text);
         const formData = new FormData();
 
         if (files && files.length > 0) {
