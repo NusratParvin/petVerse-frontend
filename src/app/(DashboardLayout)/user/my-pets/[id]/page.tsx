@@ -143,13 +143,13 @@ export default function PetProfilePage() {
           <div className="absolute top-3 right-3 flex gap-2">
             <button
               onClick={() => setShowEditPet(true)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-white/80 dark:bg-white/10 text-steel-blue dark:text-white hover:bg-white dark:hover:bg-white/20"
+              className="w-8 h-8 rounded-md flex items-center justify-center transition-all bg-white/80 dark:bg-white/10 text-steel-blue dark:text-white hover:bg-white dark:hover:bg-white/20"
             >
               <Edit2 size={13} />
             </button>
             <button
               onClick={handleDeletePet}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-coral/10 dark:bg-coral/20 text-coral hover:bg-coral/20 dark:hover:bg-coral/30"
+              className="w-8 h-8 rounded-md flex items-center justify-center transition-all bg-coral/10 dark:bg-coral/20 text-coral hover:bg-coral/20 dark:hover:bg-coral/30"
             >
               <Trash2 size={13} />
             </button>
@@ -196,95 +196,10 @@ export default function PetProfilePage() {
       </div>
 
       {/* Two column */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {/* Health Passport */}
-        <div className="rounded-lg p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-grotesk font-bold text-sm text-gray-900 dark:text-white/85">
-              Health Passport
-            </h2>
-            <button
-              onClick={() => setShowAddRecord(true)}
-              className="text-[10px] font-semibold px-3 py-1 rounded-full transition-all bg-steel-blue/10 dark:bg-lime-burst/15 text-steel-blue dark:text-lime-burst border border-steel-blue/20 dark:border-lime-burst/25 hover:bg-steel-blue/20 dark:hover:bg-lime-burst/25"
-            >
-              + Add Record
-            </button>
-          </div>
-
-          {pet.healthRecords?.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-xs text-gray-500 dark:text-white/25">
-                No health records yet
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-1">
-              {pet.healthRecords?.map((record: any, index: number) => {
-                const daysLeft = record.nextDueDate
-                  ? getDaysLeft(record.nextDueDate)
-                  : null;
-                const dueColor = getDueColor(daysLeft);
-
-                return (
-                  <div
-                    key={record._id}
-                    className="flex gap-3 py-2.5 relative group border-b border-steel-blue/10 dark:border-white/10 "
-                  >
-                    {/* Timeline dot */}
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 mt-0.5 bg-steel-blue/10 dark:bg-steel-blue/15">
-                      {recordIcon[record.type] || "📋"}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-gray-900 dark:text-white/85">
-                        {record.title}
-                      </p>
-                      <p className="text-[10px] mt-0.5 text-gray-500 dark:text-white/28">
-                        {new Date(record.date).toLocaleDateString()}
-                        {record.vetName && ` · ${record.vetName}`}
-                        {record.cost && ` · AED ${record.cost}`}
-                      </p>
-                      {daysLeft !== null && (
-                        <p
-                          className={`text-[10px] font-medium mt-1 ${dueColor}`}
-                        >
-                          {daysLeft <= 0
-                            ? "Overdue!"
-                            : `Next due in ${daysLeft} day${daysLeft !== 1 ? "s" : ""}`}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => handleViewHealthRecord(record)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-teal bg-teal/10 dark:bg-teal/20 hover:bg-teal/20 dark:hover:bg-teal/30"
-                      >
-                        <Eye size={11} />
-                      </button>
-                      <button
-                        onClick={() => handleEditHealthRecord(record)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-green bg-green/10 dark:bg-green/20 hover:bg-green/20 dark:hover:bg-green/30"
-                      >
-                        <Pen size={11} />
-                      </button>
-                      {/* Delete record */}
-                      <button
-                        onClick={() => handleDeleteHealthRecord(record._id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-coral bg-coral/10 dark:bg-coral/20 hover:bg-coral/20 dark:hover:bg-coral/30"
-                      >
-                        <Trash2 size={11} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
+      <div className="grid grid-cols-1  md:grid-cols-[45%_55%] gap-2">
+        {" "}
         {/* Pet Details */}
-        <div className="rounded-lg p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
+        <div className="  rounded-md p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
           <h2 className="font-grotesk font-bold text-sm mb-4 text-gray-900 dark:text-white/85">
             Pet Details
           </h2>
@@ -331,6 +246,92 @@ export default function PetProfilePage() {
               </div>
             )}
           </div>
+        </div>
+        {/* Health Records */}
+        <div className="  rounded-md p-5 bg-white dark:bg-white/5 border border-steel-blue/10 dark:border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-grotesk font-bold text-sm text-gray-900 dark:text-white/85">
+              Health Records
+            </h2>
+            <button
+              onClick={() => setShowAddRecord(true)}
+              className="text-[10px] font-semibold px-3 py-1 rounded-full transition-all bg-steel-blue/10 dark:bg-lime-burst/15 text-steel-blue dark:text-lime-burst border border-steel-blue/20 dark:border-lime-burst/25 hover:bg-steel-blue/20 dark:hover:bg-lime-burst/25"
+            >
+              + Add Record
+            </button>
+          </div>
+
+          {pet.healthRecords?.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-xs text-gray-500 dark:text-white/25">
+                No health records yet
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1">
+              {pet.healthRecords?.map((record: any, index: number) => {
+                const daysLeft = record.nextDueDate
+                  ? getDaysLeft(record.nextDueDate)
+                  : null;
+                const dueColor = getDueColor(daysLeft);
+
+                return (
+                  <div
+                    key={record._id}
+                    className="flex gap-3 py-2.5 relative group border-b border-steel-blue/10 dark:border-white/10 "
+                  >
+                    {/* Timeline dot */}
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 mt-0.5 bg-steel-blue/10 dark:bg-steel-blue/15">
+                      {recordIcon[record.type] || "📋"}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-gray-900 dark:text-white/85">
+                        {record.title}
+                      </p>
+                      <p className="text-[10px] mt-0.5 text-gray-500 dark:text-white/28">
+                        {new Date(record.date).toLocaleDateString()}
+                        {record.vetName && ` · ${record.vetName}`}
+                        {record.clinicName && ` · ${record.clinicName}`}
+                        {record.cost && ` · AED ${record.cost}`}
+                      </p>
+                      {daysLeft !== null && (
+                        <p
+                          className={`text-[10px] font-medium mt-1 ${dueColor}`}
+                        >
+                          {daysLeft <= 0
+                            ? "Overdue!"
+                            : `Next due in ${daysLeft} day${daysLeft !== 1 ? "s" : ""}`}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleViewHealthRecord(record)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-teal bg-teal/10 dark:bg-teal/20 hover:bg-teal/20 dark:hover:bg-teal/30"
+                      >
+                        <Eye size={11} />
+                      </button>
+                      <button
+                        onClick={() => handleEditHealthRecord(record)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-green bg-green/10 dark:bg-green/20 hover:bg-green/20 dark:hover:bg-green/30"
+                      >
+                        <Pen size={11} />
+                      </button>
+                      {/* Delete record */}
+                      <button
+                        onClick={() => handleDeleteHealthRecord(record._id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-coral bg-coral/10 dark:bg-coral/20 hover:bg-coral/20 dark:hover:bg-coral/30"
+                      >
+                        <Trash2 size={11} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 

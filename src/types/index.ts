@@ -192,7 +192,7 @@ export type THealthRecordType =
   | "other";
 
 export type THealthRecord = {
-  _id: string;
+  _id?: string;
   type: THealthRecordType;
   title: string;
   date: Date | string;
@@ -200,6 +200,7 @@ export type THealthRecord = {
   notes?: string;
   cost?: number;
   vetName?: string;
+  clinicName?: string;
 };
 
 export type TPet = {
@@ -296,4 +297,28 @@ export interface ApiResponse {
     limit: number;
     pages: number;
   };
+}
+
+///import wizard
+export interface ParsedHealthRecord {
+  // type: "vaccine" | "vet-visit" | "medication" | "grooming" | "other";
+  type: THealthRecordType;
+  title: string;
+  date: string;
+  nextDueDate?: string;
+  notes?: string;
+  cost?: number;
+  vetName?: string;
+  clinicName?: string;
+}
+
+export interface ParseResult {
+  records: ParsedHealthRecord[];
+  summary: string;
+}
+
+// Input can be files, text, or both
+export interface ParseInput {
+  files?: File[]; // actual File objects from the browser input
+  text?: string;
 }

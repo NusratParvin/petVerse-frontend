@@ -143,10 +143,29 @@ export default function ViewHealthRecord({
                 </div>
                 <div className="min-w-0">
                   <p className="text-[9px] font-bold uppercase tracking-[0.08em] text-gray-400 dark:text-white/35 mb-0.5">
-                    Vet / Clinic
+                    Vet
                   </p>
                   <p className="text-[12px] font-medium text-gray-800 dark:text-white/85">
                     {healthRecord.vetName}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {healthRecord.clinicName && (
+              <div className="flex items-start gap-3 px-3 py-2.5 bg-white dark:bg-white/[0.02] border-b border-black/[0.05] dark:border-white/[0.06]">
+                <div className="w-6 h-6 rounded-md bg-gray-100 dark:bg-white/[0.06] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <User
+                    size={12}
+                    className="text-gray-400 dark:text-white/35"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold uppercase tracking-[0.08em] text-gray-400 dark:text-white/35 mb-0.5">
+                    Clinic
+                  </p>
+                  <p className="text-[12px] font-medium text-gray-800 dark:text-white/85">
+                    {healthRecord.clinicName}
                   </p>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 import { Button } from "@heroui/react";
-import { ParsedHealthRecord } from "@/src/redux/features/importWizard/importWizardApi";
 import { TYPE_META } from "./constants";
+import { ParsedHealthRecord } from "@/src/types";
 
 interface Step3Props {
   records: ParsedHealthRecord[];
@@ -135,6 +135,11 @@ function RecordCard({ record, isChecked, onToggle }: any) {
           {record.vetName && (
             <span className="text-[11px] text-default-400">
               👨‍⚕️ {record.vetName}
+            </span>
+          )}
+          {record.clinicName && (
+            <span className="text-[11px] text-default-400">
+              🏥 {record.clinicName}{" "}
             </span>
           )}
           {record.cost && (

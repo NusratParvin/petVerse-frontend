@@ -42,6 +42,7 @@ export const healthRecordToFormData = (healthRecord: THealthRecord) => ({
     ? new Date(healthRecord.nextDueDate).toISOString().split("T")[0]
     : "",
   vetName: healthRecord.vetName || "",
+  clinicName: healthRecord.clinicName || "",
   cost: healthRecord.cost?.toString() || "",
   notes: healthRecord.notes || "",
 });

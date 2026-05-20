@@ -13,6 +13,7 @@ interface HealthRecordFormProps {
     date: string;
     nextDueDate: string;
     vetName: string;
+    clinicName: string;
     cost: string;
     notes: string;
   };
@@ -33,6 +34,7 @@ export default function HealthRecordForm({
     date: initialData?.date || "",
     nextDueDate: initialData?.nextDueDate || "",
     vetName: initialData?.vetName || "",
+    clinicName: initialData?.clinicName || "",
     cost: initialData?.cost || "",
     notes: initialData?.notes || "",
   });
@@ -130,6 +132,19 @@ export default function HealthRecordForm({
             className={inputClass}
           />
         </div>
+        <div>
+          <label className={labelClass}>Clinic Name</label>
+          <input
+            name="clinicName"
+            value={form.clinicName}
+            onChange={handleChange}
+            placeholder="ABC Vet Clinic"
+            className={inputClass}
+          />
+        </div>
+      </div>
+      {/* Cost */}
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={labelClass}>Cost (AED)</label>
           <input
