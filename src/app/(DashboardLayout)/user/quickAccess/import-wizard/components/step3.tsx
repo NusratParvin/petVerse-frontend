@@ -24,10 +24,10 @@ export function Step3({
   return (
     <div className="flex flex-col gap-3">
       {/* AI Summary */}
-      <div className="flex items-start gap-2 p-3 rounded-xl bg-primary/5 border border-primary/20">
-        <span className="text-base">🤖</span>
+      <div className="flex items-start gap-2 p-3 rounded-md bg-primary/5 dark:shadow-sm dark:shadow-primary-500 border border-primary/20">
+        <span className="text-xl">🤖</span>
         <div>
-          <p className="text-xs font-semibold text-primary mb-0.5">
+          <p className="text-xs font-semibold text-primary dark:text-lime-burst mb-0.5">
             AI Summary
           </p>
           <p className="text-xs text-default-600">{aiSummary}</p>
@@ -66,15 +66,21 @@ export function Step3({
       )}
 
       <div className="flex gap-2 justify-between mt-1">
-        <Button variant="flat" size="sm" radius="lg" onPress={onBack}>
+        <Button
+          variant="flat"
+          size="sm"
+          radius="md"
+          onPress={onBack}
+          className="w-40 font-medium"
+        >
           ← Back
         </Button>
         <Button
-          color="primary"
           size="sm"
-          radius="lg"
+          radius="md"
           isDisabled={checked.size === 0}
           onPress={onSave}
+          className="w-40 bg-steel-blue/90 text-white font-medium"
         >
           Save {checked.size} Record{checked.size !== 1 ? "s" : ""} →
         </Button>
@@ -83,19 +89,19 @@ export function Step3({
   );
 }
 
-// Sub-component for a single record
+//   single record
 function RecordCard({ record, isChecked, onToggle }: any) {
   const meta = TYPE_META[record.type] ?? TYPE_META.other;
 
   return (
     <button
       onClick={onToggle}
-      className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-all
-        ${isChecked ? "border-primary/40 bg-primary/5" : "border-default-200 opacity-50"}`}
+      className={`flex items-start gap-3 p-3 rounded-md border text-left transition-all  
+        ${isChecked ? "border-primary/40 bg-primary/5 dark:shadow-sm dark:shadow-primary-500" : "border-default-200 opacity-50"}`}
     >
       <div
         className={`w-4 h-4 rounded border-2 shrink-0 mt-0.5 flex items-center justify-center
-          ${isChecked ? "bg-primary border-primary" : "border-default-300"}`}
+          ${isChecked ? "bg-steel-blue border-steel-blue  " : "border-default-300 "}`}
       >
         {isChecked && (
           <svg

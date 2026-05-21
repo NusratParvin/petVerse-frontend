@@ -1,6 +1,5 @@
-// components/StepSelectPet.tsx
-import { Button, Spinner } from "@heroui/react";
-import { TPet } from "@/src/types";
+import { Button, Spinner, Card, User, Chip } from "@heroui/react";
+import { speciesEmoji, TPet } from "@/src/types";
 
 interface Step1Props {
   pets: TPet[];
@@ -17,19 +16,6 @@ export function Step1({
   onSelectPet,
   onContinue,
 }: Step1Props) {
-  const getPetEmoji = (species: string) => {
-    switch (species) {
-      case "dog":
-        return "🐶";
-      case "cat":
-        return "🐱";
-      case "bird":
-        return "🐦";
-      default:
-        return "🐾";
-    }
-  };
-
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm text-default-600">
@@ -38,26 +24,29 @@ export function Step1({
 
       {isLoading ? (
         <div className="flex justify-center py-8">
-          <Spinner size="sm" />
+          <Spinner size="sm" label="Loading pets..." />
         </div>
       ) : pets.length === 0 ? (
-        <p className="text-center py-8 text-default-400 text-sm">
-          No pets found. Add a pet first.
-        </p>
+        <Card className="py-8 shadow-none">
+          <p className="text-center text-default-400 text-sm">
+            No pets found. Add a pet first.
+          </p>
+        </Card>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {pets.map((pet) => (
-            <button
+            <Card
               key={pet._id}
-              onClick={() => onSelectPet(pet)}
+              isPressable
+              onPress={() => onSelectPet(pet)}
               className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all
                 ${
                   selectedPet?._id === pet._id
-                    ? "border-primary bg-primary/5"
-                    : "border-default-200 hover:border-primary/50"
+                    ? "border-primary/30 bg-primary/5 dark:shadow-md shadow-lg shadow-default-200 dark:shadow-primary-500"
+                    : "border-default-200"
                 }`}
             >
-              <div className="w-12 h-12 rounded-full bg-default-100 flex items-center justify-center text-2xl overflow-hidden">
+              <div className="w-16 h-16 rounded-full bg-default-100 flex items-center justify-center text-3xl overflow-hidden">
                 {pet.profilePhoto ? (
                   <img
                     src={pet.profilePhoto}
@@ -65,18 +54,22 @@ export function Step1({
                     className="w-full h-full object-cover rounded-full"
                   />
                 ) : (
-                  getPetEmoji(pet.species)
+                  <span>{speciesEmoji[pet.species]}</span>
                 )}
               </div>
               <div className="text-center">
                 <p className="text-xs font-semibold text-default-900">
                   {pet.name}
                 </p>
-                <p className="text-[10px] text-default-400 capitalize">
+                <Chip
+                  size="sm"
+                  variant="flat"
+                  className="text-[10px] h-5 capitalize"
+                >
                   {pet.species}
-                </p>
+                </Chip>
               </div>
-            </button>
+            </Card>
           ))}
         </div>
       )}
@@ -87,7 +80,7 @@ export function Step1({
         radius="lg"
         isDisabled={!selectedPet}
         onPress={onContinue}
-        className="self-end mt-1"
+        className="self-end mt-1 w-40 bg-steel-blue/90 text-white  font-medium"
       >
         Continue →
       </Button>

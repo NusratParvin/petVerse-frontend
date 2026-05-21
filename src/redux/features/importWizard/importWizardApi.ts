@@ -1,4 +1,4 @@
-import { ParseInput, ParseResult, THealthRecordType } from "@/src/types";
+import { ParseInput, ParseResult } from "@/src/types";
 import baseApi from "../../api/baseApi";
 
 export const importWizardApi = baseApi.injectEndpoints({
@@ -23,8 +23,6 @@ export const importWizardApi = baseApi.injectEndpoints({
           url: "/import-wizard/parse",
           method: "POST",
           body: formData,
-          // Do NOT set Content-Type header — browser sets it automatically
-          // with the correct multipart boundary when using FormData
         };
       },
     }),

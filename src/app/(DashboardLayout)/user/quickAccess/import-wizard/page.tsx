@@ -67,11 +67,12 @@ export default function ImportWizard() {
 
   const handleParse = async () => {
     try {
-      // console.log(rawText);
+      console.log(rawText);
       const res = await parseVetNotes({
         files: inputMode === "upload" ? files : undefined,
         text: inputMode === "text" ? rawText : undefined,
       }).unwrap();
+      console.log(res);
       setRecords(res.data.records);
       setAiSummary(res.data.summary);
       setChecked(new Set(res.data.records.map((_, i) => i)));
@@ -89,16 +90,16 @@ export default function ImportWizard() {
       try {
         await addHealthRecord({
           petId: selectedPet._id,
-          body: {
-            type: r.type,
-            title: r.title,
-            date: r.date,
-            nextDueDate: r.nextDueDate,
-            notes: r.notes,
-            cost: r.cost,
-            vetName: r.vetName,
-            clinicName: r.clinicName,
-          },
+          // body: {
+          type: r.type,
+          title: r.title,
+          date: r.date,
+          nextDueDate: r.nextDueDate,
+          notes: r.notes,
+          cost: r.cost,
+          vetName: r.vetName,
+          clinicName: r.clinicName,
+          // },
         }).unwrap();
         count++;
       } catch {}
@@ -121,7 +122,7 @@ export default function ImportWizard() {
 
   //   RENDER
   return (
-    <div className="flex flex-col gap-5 p-3 sm:p-5 w-full max-w-2xl mx-auto">
+    <div className="flex flex-col gap-5 p-3 w-full mx-auto">
       {/* Header */}
       <div>
         <h1 className="text-gray-900 dark:text-white text-base font-bold flex items-center gap-2">
