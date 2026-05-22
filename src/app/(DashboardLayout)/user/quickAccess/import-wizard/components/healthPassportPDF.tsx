@@ -1,5 +1,5 @@
 // src/components/ImportWizard/HealthPassportPDF.tsx
-// npm install @react-pdf/renderer
+import { ParsedHealthRecord } from "@/src/types";
 import {
   Document,
   Page,
@@ -8,14 +8,26 @@ import {
   StyleSheet,
   pdf,
 } from "@react-pdf/renderer";
-import { TVet } from "@/src/types";
-import { ParsedHealthRecord } from "@/src/redux/features/importWizard/importWizardApi";
 
 const TYPE_LABELS: Record<string, string> = {
   vaccine: "Vaccine",
   "vet-visit": "Vet Visit",
   medication: "Medication",
   grooming: "Grooming",
+  "lab-test": "Lab Test",
+  surgery: "Surgery",
+  imaging: "Imaging",
+  hospitalization: "Hospitalization",
+  other: "Other",
+};
+
+const SPECIES_LABELS: Record<string, string> = {
+  dog: "Dog",
+  cat: "Cat",
+  bird: "Bird",
+  fish: "Fish",
+  rabbit: "Rabbit",
+  reptile: "Reptile",
   other: "Other",
 };
 
@@ -26,13 +38,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   header: {
-    marginBottom: 24,
+    marginBottom: 20,
     borderBottomWidth: 2,
     borderBottomColor: "#4682B4",
     paddingBottom: 12,
   },
   title: {
-    fontSize: 22,
+    fontSize: 18,
     fontFamily: "Helvetica-Bold",
     color: "#1a1a2e",
   },
@@ -97,8 +109,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   recordMeta: {
-    flexDirection: "row",
-    gap: 16,
+    flexDirection: "column",
+    flexWrap: "wrap",
+    gap: 4,
     marginTop: 4,
   },
   metaText: {
@@ -147,7 +160,7 @@ const HealthPassportDoc = ({
     <Page size="A4" style={styles.page}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>🐾 Health Passport</Text>
+        <Text style={styles.title}>Health Passport</Text>
         <Text style={styles.subtitle}>
           PetVerse UAE — Generated {generatedAt}
         </Text>
@@ -161,7 +174,7 @@ const HealthPassportDoc = ({
         </View>
         <View style={styles.petInfoItem}>
           <Text style={styles.label}>Species</Text>
-          <Text style={styles.value}>{species}</Text>
+          <Text style={styles.value}>{SPECIES_LABELS[species]}</Text>
         </View>
         {breed && (
           <View style={styles.petInfoItem}>
@@ -185,11 +198,14 @@ const HealthPassportDoc = ({
           </View>
           <View style={styles.recordMeta}>
             <Text style={styles.metaText}>Date: {r.date}</Text>
+            {r.vetName && <Text style={styles.metaText}>Vet: {r.vetName}</Text>}
+            {r.clinicName && (
+              <Text style={styles.metaText}>Clinic: {r.clinicName}</Text>
+            )}
+            {r.cost && <Text style={styles.metaText}>Cost: AED {r.cost}</Text>}
             {r.nextDueDate && (
               <Text style={styles.metaText}>Next due: {r.nextDueDate}</Text>
             )}
-            {r.vetName && <Text style={styles.metaText}>Vet: {r.vetName}</Text>}
-            {r.cost && <Text style={styles.metaText}>Cost: AED {r.cost}</Text>}
           </View>
           {r.notes && <Text style={styles.notes}>{r.notes}</Text>}
         </View>
@@ -206,7 +222,7 @@ const HealthPassportDoc = ({
   </Document>
 );
 
-// Call this to trigger browser download
+// trigger browser download
 export const downloadHealthPassport = async (
   petName: string,
   species: string,
@@ -232,7 +248,7 @@ export const downloadHealthPassport = async (
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${petName}-health-passport.pdf`;
+  a.download = `${petName.toUpperCase()}-health-passport.pdf`;
   a.click();
   URL.revokeObjectURL(url);
 };

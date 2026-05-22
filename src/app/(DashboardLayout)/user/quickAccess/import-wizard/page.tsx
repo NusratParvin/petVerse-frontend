@@ -6,21 +6,19 @@ import {
   useGetMyPetsQuery,
 } from "@/src/redux/features/pets/petsApi";
 import { useParseVetNotesMutation } from "@/src/redux/features/importWizard/importWizardApi";
-import { downloadHealthPassport } from "./HealthPassportPDF";
 import { ParsedHealthRecord, TPet } from "@/src/types";
-
-// Import components
 
 import { Step1 } from "./components/step1";
 import { Step2 } from "./components/step2";
 import { Step3 } from "./components/step3";
 import { Step4 } from "./components/step4";
 import { StepIndicator } from "./components/stepIndicator";
+import { toast } from "sonner";
+import { downloadHealthPassport } from "./components/healthPassportPDF";
 
 const STEPS = ["Select Pet", "Upload / Paste", "Review", "Done"];
 
 export default function ImportWizard() {
-  //   ALL STATE STAYS HERE
   const [step, setStep] = useState(0);
   const [selectedPet, setSelectedPet] = useState<TPet | null>(null);
   const [inputMode, setInputMode] = useState<"upload" | "text">("upload");
@@ -31,17 +29,19 @@ export default function ImportWizard() {
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const [savedCount, setSavedCount] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
-  const fileInputRef = useRef(null);
 
-  //   API HOOKS
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // API HOOKS
   const { data: petsData, isLoading: petsLoading } = useGetMyPetsQuery({});
   const pets: TPet[] = petsData?.data ?? [];
   const [parseVetNotes, { isLoading: isParsing }] = useParseVetNotesMutation();
   const [addHealthRecord] = useAddHealthRecordMutation();
 
-  //   HELPER FUNCTIONS
+  // HELPER FUNCTIONS
   const goNext = () => setStep((s) => s + 1);
   const goBack = () => setStep((s) => s - 1);
+
   const resetWizard = () => {
     setStep(0);
     setSelectedPet(null);
@@ -67,30 +67,46 @@ export default function ImportWizard() {
 
   const handleParse = async () => {
     try {
-      console.log(rawText);
-      const res = await parseVetNotes({
-        files: inputMode === "upload" ? files : undefined,
-        text: inputMode === "text" ? rawText : undefined,
-      }).unwrap();
-      console.log(res);
+      const formData = new FormData();
+
+      if (inputMode === "upload" && files && files.length > 0) {
+        files.forEach((file) => {
+          formData.append("files", file);
+        });
+      }
+
+      if (inputMode === "text" && rawText) {
+        formData.append("text", rawText);
+      }
+
+      const res = await parseVetNotes(formData).unwrap();
       setRecords(res.data.records);
       setAiSummary(res.data.summary);
-      setChecked(new Set(res.data.records.map((_, i) => i)));
+      setChecked(new Set(res.data.records.map((_: any, i: number) => i)));
       goNext();
-    } catch {
-      alert("Could not process your input. Please try again.");
+    } catch (error: any) {
+      toast.error("Could not process your request", {
+        description:
+          error?.data?.message ||
+          error?.message ||
+          "Please check your input and try again",
+        duration: 4000,
+        position: "bottom-left",
+        icon: "❌",
+      });
     }
   };
 
   const handleSave = async () => {
     if (!selectedPet) return;
     let count = 0;
-    for (const i of checked) {
+    const checkedArray = Array.from(checked);
+
+    for (const i of checkedArray) {
       const r = records[i];
       try {
         await addHealthRecord({
           petId: selectedPet._id,
-          // body: {
           type: r.type,
           title: r.title,
           date: r.date,
@@ -99,30 +115,53 @@ export default function ImportWizard() {
           cost: r.cost,
           vetName: r.vetName,
           clinicName: r.clinicName,
-          // },
         }).unwrap();
         count++;
-      } catch {}
+      } catch (error) {
+        console.error(`Failed to save record ${i}:`, error);
+      }
     }
     setSavedCount(count);
     goNext();
   };
 
+  // const handleExport = async () => {
+  //   if (!selectedPet) return;
+  //   setIsExporting(true);
+  //   await downloadHealthPassport(
+  //     selectedPet.name,
+  //     selectedPet.species,
+  //     selectedPet.breed,
+  //     records.filter((_, i) => checked.has(i)),
+  //   );
+  //   setIsExporting(false);
+  // };
+
   const handleExport = async () => {
-    if (!selectedPet) return;
+    if (!selectedPet || checked.size === 0) {
+      toast.error("No records selected for export");
+      return;
+    }
+
     setIsExporting(true);
-    await downloadHealthPassport(
-      selectedPet.name,
-      selectedPet.species,
-      selectedPet.breed,
-      records.filter((_, i) => checked.has(i)),
-    );
-    setIsExporting(false);
+    try {
+      const selectedRecords = records.filter((_, i) => checked.has(i));
+      await downloadHealthPassport(
+        selectedPet.name,
+        selectedPet.species,
+        selectedPet.breed,
+        selectedRecords,
+      );
+      toast.success("PDF downloaded successfully!");
+    } catch (error: any) {
+      toast.error("Failed to generate PDF", error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
-  //   RENDER
   return (
-    <div className="flex flex-col gap-5 p-3 w-full mx-auto">
+    <div className="flex flex-col gap-5 p-3 sm:p-4 w-full mx-auto">
       {/* Header */}
       <div>
         <h1 className="text-gray-900 dark:text-white text-base font-bold flex items-center gap-2">

@@ -14,7 +14,7 @@ interface Step2Props {
   isParsing: boolean;
   onBack: () => void;
   onParse: () => void;
-  fileInputRef: RefObject<HTMLInputElement>;
+  fileInputRef: RefObject<HTMLInputElement | null>;
 }
 
 const MAX_FILES = 5;

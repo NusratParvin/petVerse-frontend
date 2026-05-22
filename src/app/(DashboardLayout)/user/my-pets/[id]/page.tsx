@@ -54,6 +54,12 @@ export default function PetProfilePage() {
   const pet = petDetails?.data;
   // console.log(pet);
 
+  const sortedRecords = pet?.healthRecords
+    ? [...pet.healthRecords].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      )
+    : [];
+
   const handleEditHealthRecord = (record: THealthRecord) => {
     // console.log(record);
     setSelectedRecord(record);
@@ -268,8 +274,9 @@ export default function PetProfilePage() {
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-1">
-              {pet.healthRecords?.map((record: any, index: number) => {
+            // <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+              {sortedRecords?.map((record: any, index: number) => {
                 const daysLeft = record.nextDueDate
                   ? getDaysLeft(record.nextDueDate)
                   : null;

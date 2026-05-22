@@ -30,6 +30,7 @@ const baseApi = createApi({
     "Pages",
     "Pets",
     "Vets",
+    "Insurance",
   ],
   endpoints: () => ({}),
 });
