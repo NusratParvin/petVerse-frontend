@@ -1,43 +1,96 @@
 import baseApi from "../../api/baseApi";
 
-const insuranceApi = baseApi.injectEndpoints({
+import {
+  TApiResponse,
+  TAIRecommendationForm,
+  TAIRecommendationResult,
+  TInsuranceProvider,
+  TInsuranceReview,
+  TInsuranceReviewResponse,
+} from "@/src/types";
+
+export const insuranceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // GET /insurance/ratings — all provider avg ratings (Compare page)
-    getInsuranceRatings: builder.query({
-      query: () => "/insurance/ratings",
+    // ─────────────────────────────────────────
+    // Providers
+    // ─────────────────────────────────────────
+    getAllInsuranceProviders: builder.query<TInsuranceProvider[], void>({
+      query: () => "/insurance",
       providesTags: ["Insurance"],
+      transformResponse: (response: TApiResponse<TInsuranceProvider[]>) =>
+        response.data,
     }),
 
-    // GET /insurance/reviews/:providerId — reviews for one provider (Detail page)
-    getProviderReviews: builder.query({
-      query: (providerId: string) => `/insurance/reviews/${providerId}`,
-      providesTags: (_result, _error, providerId) => [
-        { type: "Insurance", id: providerId },
-      ],
+    getInsuranceProviderById: builder.query<TInsuranceProvider, string>({
+      query: (id) => `/insurance/${id}`,
+      providesTags: (_result, _error, id) => [{ type: "Insurance", id }],
+      transformResponse: (response: TApiResponse<TInsuranceProvider>) =>
+        response.data,
     }),
 
-    // POST /insurance/reviews — submit a review
-    submitInsuranceReview: builder.mutation({
-      query: (body: {
-        providerId: string;
-        rating: number;
-        text: string;
-        planUsed?: string;
-      }) => ({
-        url: "/insurance/reviews",
+    createInsuranceProvider: builder.mutation<
+      TInsuranceProvider,
+      Partial<TInsuranceProvider>
+    >({
+      query: (body) => ({
+        url: "/insurance",
         method: "POST",
         body,
       }),
-      invalidatesTags: (_result, _error, arg) => [
-        { type: "Insurance", id: arg.providerId },
+      invalidatesTags: ["Insurance"],
+      transformResponse: (response: TApiResponse<TInsuranceProvider>) =>
+        response.data,
+    }),
+
+    updateInsuranceProvider: builder.mutation<
+      TInsuranceProvider,
+      { id: string; body: Partial<TInsuranceProvider> }
+    >({
+      query: ({ id, body }) => ({
+        url: `/insurance/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Insurance", id },
         "Insurance",
       ],
+      transformResponse: (response: TApiResponse<TInsuranceProvider>) =>
+        response.data,
+    }),
+
+    deleteInsuranceProvider: builder.mutation<null, string>({
+      query: (id) => ({
+        url: `/insurance/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Insurance"],
+    }),
+
+    // ─────────────────────────────────────────
+    // AI Recommendation
+    // ─────────────────────────────────────────
+    getInsuranceRecommendation: builder.mutation<
+      TAIRecommendationResult,
+      TAIRecommendationForm
+    >({
+      query: (body) => ({
+        url: "/insurance/ai/recommendation",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: TApiResponse<TAIRecommendationResult>) =>
+        response.data,
     }),
   }),
 });
 
 export const {
-  useGetInsuranceRatingsQuery,
-  useGetProviderReviewsQuery,
-  useSubmitInsuranceReviewMutation,
+  useGetAllInsuranceProvidersQuery,
+  useGetInsuranceProviderByIdQuery,
+  useCreateInsuranceProviderMutation,
+  useUpdateInsuranceProviderMutation,
+  useDeleteInsuranceProviderMutation,
+
+  useGetInsuranceRecommendationMutation,
 } = insuranceApi;

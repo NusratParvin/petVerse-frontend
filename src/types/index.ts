@@ -319,373 +319,167 @@ export interface ParseResult {
 
 // Input can be files, text, or both
 export interface ParseInput {
-  files?: File[]; // actual File objects from the browser input
+  files?: File[];
   text?: string;
 }
 
 //Insurance
-// src/data/insuranceProviders.ts
-// Shared across Compare page and Detail page
+// ── Insurance Constants (mirrors backend) ───────────────────────────────────
+export const COVERAGE_TYPES = [
+  "accidents",
+  "illness",
+  "surgery",
+  "dental",
+  "hereditary",
+  "wellness",
+  "thirdParty",
+  "travel",
+  "cancer",
+  "hospitalization",
+] as const;
 
-export type CoverageFlag =
-  | "accidents"
-  | "illness"
-  | "surgery"
-  | "dental"
-  | "hereditary"
-  | "wellness"
-  | "thirdParty"
-  | "travel"
-  | "cancer"
-  | "hospitalization";
+export const INSURANCE_BADGES = [
+  "mostPopular",
+  "trusted",
+  "bestForPuppies",
+  "mostFlexible",
+  "bestPreventive",
+  "budgetPick",
+] as const;
 
-export type Provider = {
-  id: string;
-  name: string;
-  logo: string;
-  badge: string;
-  badgeColor: "lime" | "blue" | "coral" | "teal" | "yellow";
-  priceFrom: number;
-  priceTo: number;
-  annualLimit: string;
-  reimbursement: string;
-  claimsIn: string;
-  coverageScore: number; // 0-100 for the progress bar
-  maxAgeYears: number;
-  minAgeWeeks: number;
-  pets: string[];
-  plans: string[];
-  coverageFlags: CoverageFlag[];
-  coveredConditions: string[];
-  excludedConditions: string[];
-  highlights: string[]; // 4 short bullet points for the card
-  website: string;
-  phone: string;
-  email: string;
-  about: string;
-};
+export const PET_TYPES = ["dog", "cat", "bird", "rabbit", "other"] as const;
 
-export const PROVIDERS: Provider[] = [
-  {
-    id: "1",
-    name: "GIG Gulf (AXA)",
-    logo: "🛡️",
-    badge: "Most Popular",
-    badgeColor: "lime",
-    priceFrom: 90,
-    priceTo: 250,
-    annualLimit: "AED 30,000",
-    reimbursement: "80%",
-    claimsIn: "3–5 working days",
-    coverageScore: 80,
-    maxAgeYears: 10,
-    minAgeWeeks: 8,
-    pets: ["dog", "cat"],
-    plans: ["Essential", "Plus", "Premier"],
-    coverageFlags: [
-      "accidents",
-      "illness",
-      "surgery",
-      "hereditary",
-      "travel",
-      "cancer",
-      "hospitalization",
-    ],
-    coveredConditions: [
-      "Hip Dysplasia",
-      "Cancer",
-      "Diabetes",
-      "Epilepsy",
-      "Allergies",
-      "Arthritis",
-    ],
-    excludedConditions: [
-      "Pre-existing conditions (Essential plan)",
-      "Breeding costs",
-      "Cosmetic procedures",
-      "Dental (Essential plan)",
-    ],
-    highlights: [
-      "Lifetime cover for dogs & cats",
-      "Accidents, illness & surgery",
-      "Travel coverage add-on",
-      "24/7 customer support",
-    ],
-    website: "https://www.giggulf.ae",
-    phone: "+971 4 270 8000",
-    email: "petinsurance@giggulf.ae",
-    about:
-      "GIG Gulf, formerly AXA Gulf, is one of the UAE's most trusted insurers with 20+ years in market. Their pet plans offer comprehensive tiered coverage with flexible options to suit all budgets and pet needs.",
-  },
-  {
-    id: "2",
-    name: "Sukoon Insurance",
-    logo: "🌿",
-    badge: "Trusted 50 Years",
-    badgeColor: "blue",
-    priceFrom: 110,
-    priceTo: 300,
-    annualLimit: "AED 25,000",
-    reimbursement: "85%",
-    claimsIn: "3–5 working days",
-    coverageScore: 85,
-    maxAgeYears: 9,
-    minAgeWeeks: 8,
-    pets: ["dog", "cat"],
-    plans: ["Silver", "Gold", "Platinum"],
-    coverageFlags: [
-      "accidents",
-      "illness",
-      "surgery",
-      "hereditary",
-      "cancer",
-      "hospitalization",
-      "dental",
-    ],
-    coveredConditions: [
-      "Hip Dysplasia",
-      "Cancer",
-      "Heart Disease",
-      "Diabetes",
-      "Epilepsy",
-      "Skin Conditions",
-    ],
-    excludedConditions: [
-      "Pre-existing conditions",
-      "Elective surgery",
-      "Parasites (Silver plan)",
-      "Behavioral therapy",
-    ],
-    highlights: [
-      "Cashless at 2,000+ UAE clinics",
-      "A-rated by S&P & AM Best",
-      "Accident & illness cover",
-      "Direct billing network",
-    ],
-    website: "https://www.sukoon.com",
-    phone: "+971 4 233 7373",
-    email: "care@sukoon.com",
-    about:
-      "Sukoon (formerly Oman Insurance) has protected UAE residents for 50 years. Their pet plans feature the widest vet network in the country with cashless settlement at partner clinics across all 7 emirates.",
-  },
-  {
-    id: "3",
-    name: "Gargash Insurance",
-    logo: "🐾",
-    badge: "Best for Puppies",
-    badgeColor: "coral",
-    priceFrom: 75,
-    priceTo: 200,
-    annualLimit: "AED 30,000",
-    reimbursement: "75%",
-    claimsIn: "5–7 working days",
-    coverageScore: 75,
-    maxAgeYears: 8,
-    minAgeWeeks: 12,
-    pets: ["dog", "cat"],
-    plans: ["Basic", "Comprehensive"],
-    coverageFlags: [
-      "accidents",
-      "illness",
-      "surgery",
-      "thirdParty",
-      "hospitalization",
-    ],
-    coveredConditions: [
-      "Fractures",
-      "Infections",
-      "Digestive issues",
-      "Eye conditions",
-      "Ear infections",
-    ],
-    excludedConditions: [
-      "Pre-existing conditions",
-      "Hereditary conditions",
-      "Dental",
-      "Cancer (Basic plan)",
-      "Behavioral therapy",
-    ],
-    highlights: [
-      "Covers pets from 12 weeks old",
-      "Surgery & hospitalisation",
-      "3rd party liability included",
-      "Dogs & cats up to 8 years",
-    ],
-    website: "https://www.gargashinsurance.com",
-    phone: "+971 4 212 0000",
-    email: "pets@gargashinsurance.com",
-    about:
-      "Gargash Insurance is an established UAE broker with over 30 years experience. Their pet plans are designed to be accessible and affordable, especially suited for young pets and first-time pet owners.",
-  },
-  {
-    id: "4",
-    name: "MetLife UAE",
-    logo: "💼",
-    badge: "Most Flexible",
-    badgeColor: "teal",
-    priceFrom: 120,
-    priceTo: 400,
-    annualLimit: "AED 30,000",
-    reimbursement: "90%",
-    claimsIn: "3–5 working days",
-    coverageScore: 90,
-    maxAgeYears: 12,
-    minAgeWeeks: 8,
-    pets: ["dog", "cat"],
-    plans: ["Core", "Enhanced", "Premium"],
-    coverageFlags: [
-      "accidents",
-      "illness",
-      "surgery",
-      "hereditary",
-      "cancer",
-      "hospitalization",
-      "dental",
-      "wellness",
-    ],
-    coveredConditions: [
-      "Hip Dysplasia",
-      "Cancer",
-      "Heart Disease",
-      "Diabetes",
-      "Epilepsy",
-      "Hereditary conditions",
-      "Chronic illness",
-    ],
-    excludedConditions: [
-      "Cosmetic procedures",
-      "Breeding costs",
-      "Pre-existing (Core plan)",
-    ],
-    highlights: [
-      "Highest reimbursement at 90%",
-      "Customizable coverage limits",
-      "Covers pets up to 12 years",
-      "Wellness add-on available",
-    ],
-    website: "https://www.metlife.ae",
-    phone: "+971 4 423 8000",
-    email: "petcare@metlife.ae",
-    about:
-      "MetLife UAE brings global insurance expertise to UAE pet owners. Known for the highest reimbursement rates in the market and flexible plans that can be customized to match any pet's profile and owner budget.",
-  },
-  {
-    id: "5",
-    name: "PetAssure (Bupa)",
-    logo: "🏥",
-    badge: "Best Preventive",
-    badgeColor: "yellow",
-    priceFrom: 95,
-    priceTo: 220,
-    annualLimit: "AED 20,000",
-    reimbursement: "80%",
-    claimsIn: "3–5 working days",
-    coverageScore: 78,
-    maxAgeYears: 9,
-    minAgeWeeks: 8,
-    pets: ["dog", "cat"],
-    plans: ["Wellness", "Wellness Plus"],
-    coverageFlags: [
-      "accidents",
-      "illness",
-      "wellness",
-      "hospitalization",
-      "surgery",
-    ],
-    coveredConditions: [
-      "Infections",
-      "Digestive issues",
-      "Skin conditions",
-      "Eye conditions",
-      "Routine illness",
-    ],
-    excludedConditions: [
-      "Hereditary conditions",
-      "Cancer (Wellness plan)",
-      "Pre-existing conditions",
-      "Dental",
-      "Hip Dysplasia",
-    ],
-    highlights: [
-      "Wellness checks & vaccines covered",
-      "Routine parasite control",
-      "Cashless at partner clinics",
-      "Preventive-first approach",
-    ],
-    website: "https://www.bupa.ae",
-    phone: "+971 4 217 5000",
-    email: "petassure@bupa.ae",
-    about:
-      "PetAssure backed by Bupa focuses on preventative care — keeping pets healthy before issues arise. Ideal for owners who want routine care covered alongside standard accident and illness protection.",
-  },
-  {
-    id: "6",
-    name: "InsuranceMarket.ae",
-    logo: "📊",
-    badge: "Compare & Save",
-    badgeColor: "blue",
-    priceFrom: 85,
-    priceTo: 180,
-    annualLimit: "AED 15,000",
-    reimbursement: "70%",
-    claimsIn: "5–7 working days",
-    coverageScore: 70,
-    maxAgeYears: 8,
-    minAgeWeeks: 12,
-    pets: ["dog", "cat", "other"],
-    plans: ["Accident Only", "Accident & Illness"],
-    coverageFlags: ["accidents", "illness", "thirdParty", "surgery"],
-    coveredConditions: [
-      "Fractures",
-      "Bite injuries",
-      "Accidental poisoning",
-      "Road traffic injuries",
-      "Burns",
-    ],
-    excludedConditions: [
-      "Pre-existing conditions",
-      "Hereditary conditions",
-      "Cancer",
-      "Dental",
-      "Wellness",
-      "Chronic illness",
-    ],
-    highlights: [
-      "30+ years UAE experience",
-      "Accident & illness coverage",
-      "3rd party injury & damage",
-      "Multiple insurer network",
-    ],
-    website: "https://insurancemarket.ae/pet-insurance",
-    phone: "+971 4 432 7331",
-    email: "pets@insurancemarket.ae",
-    about:
-      "InsuranceMarket.ae is a UAE broker with 30+ years experience, offering access to multiple pet insurers through a single platform. Best for owners looking for basic affordable accident coverage.",
-  },
-];
+export type TCoverageFlag = (typeof COVERAGE_TYPES)[number];
+export type TInsuranceBadge = (typeof INSURANCE_BADGES)[number];
+export type TPetType = (typeof PET_TYPES)[number];
 
-// Helper: badge colour → Tailwind classes
-export function badgeClasses(color: Provider["badgeColor"]) {
-  const map: Record<Provider["badgeColor"], string> = {
-    lime: "bg-[#B8FF2E] text-black",
-    blue: "bg-[#4682B4] text-white",
-    coral: "bg-[#FF4D6D] text-white",
-    teal: "bg-[#00E5CC] text-black",
-    yellow: "bg-[#F5D020] text-black",
-  };
-  return map[color];
-}
-
-// Human-readable labels for coverage flags
-export const COVERAGE_LABELS: Record<CoverageFlag, string> = {
+// ── Coverage label map (used in UI) ─────────────────────────────────────────
+export const COVERAGE_LABELS: Record<TCoverageFlag, string> = {
   accidents: "Accidents",
   illness: "Illness",
   surgery: "Surgery",
   dental: "Dental",
   hereditary: "Hereditary",
   wellness: "Wellness",
-  thirdParty: "3rd Party",
+  thirdParty: "3rd Party Liability",
   travel: "Travel",
   cancer: "Cancer",
-  hospitalization: "Hospitalisation",
+  hospitalization: "Hospitalization",
 };
+
+// ── Badge to UI display mapping ─────────────────────────────────────────────
+export const BADGE_DISPLAY: Record<TInsuranceBadge, string> = {
+  mostPopular: "Most Popular",
+  trusted: "Trusted",
+  bestForPuppies: "Best for Puppies",
+  mostFlexible: "Most Flexible",
+  bestPreventive: "Best Preventive",
+  budgetPick: "Budget Pick",
+};
+
+// ── Badge color mapping ─────────────────────────────────────────────────────
+export const BADGE_COLORS: Record<TInsuranceBadge, string> = {
+  mostPopular: "yellow",
+  trusted: "blue",
+  bestForPuppies: "coral",
+  mostFlexible: "teal",
+  bestPreventive: "green",
+  budgetPick: "purple",
+};
+
+// ── Provider ─────────────────────────────────────────────────────────────────
+export type TInsuranceProvider = {
+  _id: string;
+  name: string;
+  logo: string;
+  badge?: TInsuranceBadge;
+  priceFrom: number;
+  priceTo: number;
+  annualLimit: number;
+  reimbursement: number;
+  claimsIn: string;
+  coverageScore: number;
+  maxAgeYears: number;
+  minAgeWeeks: number;
+  pets: TPetType[];
+  plans: string[];
+  coverageFlags: TCoverageFlag[];
+  coveredConditions: string[];
+  excludedConditions: string[];
+  highlights: string[];
+  website: string;
+  phone: string;
+  email: string;
+  about: string;
+  avgRating: number;
+  reviewCount: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+// ── Review ────────────────────────────────────────────────────────────────────
+export type TInsuranceReview = {
+  _id: string;
+  provider: string;
+  user: string;
+  userName: string;
+  rating: number;
+  text: string;
+  planUsed?: string;
+  createdAt: string;
+  updatedAt?: string;
+};
+
+// ── Review response with stats ────────────────────────────────────────────────
+export type TInsuranceReviewResponse = {
+  reviews: TInsuranceReview[];
+  avgRating: number;
+  count: number;
+};
+
+// ── AI Recommendation ────────────────────────────────────────────────────────
+export type TAIRecommendationResult = {
+  topProvider: string;
+  recommendation: string;
+  reasoning: string;
+  tips: string[];
+};
+
+export type TAIRecommendationForm = {
+  petName: string;
+  species: string;
+  breed: string;
+  ageYears: string;
+  existingConditions: string;
+  budget: string;
+};
+
+// ── RTK API response wrappers ────────────────────────────────────────────────
+export type TApiResponse<T> = {
+  success: boolean;
+  message: string;
+  data: T;
+};
+
+// ── Badge color helper ────────────────────────────────────────────────────────
+export function getBadgeColorClass(badge?: TInsuranceBadge): string {
+  const colorMap: Record<TInsuranceBadge, string> = {
+    mostPopular:
+      "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
+    trusted: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+    bestForPuppies:
+      "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+    mostFlexible:
+      "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
+    bestPreventive:
+      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+    budgetPick:
+      "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+  };
+  return badge ? colorMap[badge] : colorMap.mostPopular;
+}
+
+export function getBadgeDisplay(badge?: TInsuranceBadge): string {
+  if (!badge) return "";
+  return BADGE_DISPLAY[badge];
+}
