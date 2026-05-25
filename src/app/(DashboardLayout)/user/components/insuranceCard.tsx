@@ -23,7 +23,7 @@ const InsuranceCard = () => {
                 </p>
               </div>
               <p className="text-sm font-bold text-white dark:text-white">
-                Is Max protected? 🐾
+                Is Your Pet protected? 🐾
               </p>
             </div>
             <div className="w-8 h-8 rounded-full bg-white/20 dark:bg-lime-burst/20 flex items-center justify-center">
@@ -38,16 +38,16 @@ const InsuranceCard = () => {
 
           <div className="flex gap-2">
             <Link
-              href="/user/insurance"
-              className="flex-1 text-center text-[11px] font-bold py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] bg-lime-burst text-gray-900 shadow-lg hover:shadow-xl"
+              href="/user/quickAccess/insurance"
+              className="flex-1 text-center text-[11px] font-bold py-2 rounded-md transition-all duration-200 hover:scale-[1.02] bg-lime-burst text-gray-900 shadow-lg hover:shadow-xl"
             >
-              Compare Plans →
+              ✨ Protect Now →
             </Link>
             <Link
-              href="/user/insurance/calculator"
-              className="px-3 py-2 rounded-lg text-[10px] font-semibold bg-white/20 dark:bg-white/10 text-white dark:text-white/80 hover:bg-white/30 dark:hover:bg-white/20"
+              href="/user/quickAccess/insurance/finder"
+              className="px-3 py-2 rounded-md text-[11px] font-semibold bg-white/20 dark:bg-white/10 text-white dark:text-white/80 hover:bg-white/30 dark:hover:bg-white/20"
             >
-              Calculate
+              🤖 Find My Plan
             </Link>
           </div>
         </div>

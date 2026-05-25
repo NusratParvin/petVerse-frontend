@@ -488,3 +488,64 @@ export function getBadgeDisplay(badge?: TInsuranceBadge): string {
   if (!badge) return "";
   return BADGE_DISPLAY[badge];
 }
+
+//   Lost & Found
+export const LF_POST_TYPES = ["lost", "found"] as const;
+export const LF_SPECIES = [
+  "dog",
+  "cat",
+  "bird",
+  "rabbit",
+  "reptile",
+  "other",
+] as const;
+export const LF_EMIRATES = [
+  "Abu Dhabi",
+  "Dubai",
+  "Sharjah",
+  "Ajman",
+  "Ras Al Khaimah",
+  "Fujairah",
+  "Umm Al Quwain",
+] as const;
+
+export type TLFPostType = (typeof LF_POST_TYPES)[number];
+export type TLFSpecies = (typeof LF_SPECIES)[number];
+export type TLFEmirate = (typeof LF_EMIRATES)[number];
+
+export type TLostFoundPost = {
+  _id: string;
+  postedBy: { _id: string; name: string; email: string; profilePhoto?: string };
+  posterName: string;
+  posterPhone: string;
+  type: TLFPostType;
+  status: "active" | "resolved";
+  petName?: string;
+  species: TLFSpecies;
+  breed?: string;
+  color: string;
+  description: string;
+  emirate: TLFEmirate;
+  area: string;
+  dateLostFound: string;
+  photos: string[];
+  microchipNumber?: string;
+  reward?: number;
+  createdAt: string;
+};
+
+export type TCreateLostFoundPayload = {
+  type: TLFPostType;
+  petName?: string;
+  species: TLFSpecies;
+  breed?: string;
+  color: string;
+  description: string;
+  emirate: TLFEmirate;
+  area: string;
+  dateLostFound: string;
+  posterPhone: string;
+  photos?: string[];
+  microchipNumber?: string;
+  reward?: number;
+};
