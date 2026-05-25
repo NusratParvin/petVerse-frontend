@@ -84,7 +84,7 @@ const ReviewSection = ({ providerId }: { providerId: string }) => {
           </h2>
           {avgRating > 0 && (
             <div className="flex items-center gap-2">
-              <Rating value={avgRating} readOnly={true} />
+              <Rating value={avgRating} readOnly={true} size={14} />
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 {avgRating.toFixed(1)} ({reviewCount})
               </span>
@@ -126,7 +126,7 @@ const ReviewSection = ({ providerId }: { providerId: string }) => {
                     </div>
                   </div>
                   <div className="flex-shrink-0">
-                    <Rating value={review.rating} readOnly={true} />
+                    <Rating value={review.rating} readOnly={true} size={12} />
                   </div>
                 </div>
                 <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed pl-9">

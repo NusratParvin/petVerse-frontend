@@ -208,7 +208,7 @@ export type TPet = {
   owner: string;
   name: string;
   species: TSpecies;
-  breed?: string;
+  breed?: string | null;
   gender: TGender;
   dateOfBirth?: Date | string;
   weight?: number;
@@ -324,7 +324,7 @@ export interface ParseInput {
 }
 
 //Insurance
-// ── Insurance Constants (mirrors backend) ───────────────────────────────────
+//     Insurance Constants (mirrors backend)
 export const COVERAGE_TYPES = [
   "accidents",
   "illness",
@@ -353,7 +353,7 @@ export type TCoverageFlag = (typeof COVERAGE_TYPES)[number];
 export type TInsuranceBadge = (typeof INSURANCE_BADGES)[number];
 export type TPetType = (typeof PET_TYPES)[number];
 
-// ── Coverage label map (used in UI) ─────────────────────────────────────────
+//     Coverage label map (used in UI)
 export const COVERAGE_LABELS: Record<TCoverageFlag, string> = {
   accidents: "Accidents",
   illness: "Illness",
@@ -367,7 +367,7 @@ export const COVERAGE_LABELS: Record<TCoverageFlag, string> = {
   hospitalization: "Hospitalization",
 };
 
-// ── Badge to UI display mapping ─────────────────────────────────────────────
+//     Badge to UI display mapping
 export const BADGE_DISPLAY: Record<TInsuranceBadge, string> = {
   mostPopular: "Most Popular",
   trusted: "Trusted",
@@ -377,17 +377,22 @@ export const BADGE_DISPLAY: Record<TInsuranceBadge, string> = {
   budgetPick: "Budget Pick",
 };
 
-// ── Badge color mapping ─────────────────────────────────────────────────────
+//     Badge color mapping
 export const BADGE_COLORS: Record<TInsuranceBadge, string> = {
-  mostPopular: "yellow",
-  trusted: "blue",
-  bestForPuppies: "coral",
-  mostFlexible: "teal",
-  bestPreventive: "green",
-  budgetPick: "purple",
+  mostPopular:
+    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
+  trusted: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+  bestForPuppies:
+    "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+  mostFlexible:
+    "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
+  bestPreventive:
+    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+  budgetPick:
+    "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
 };
 
-// ── Provider ─────────────────────────────────────────────────────────────────
+//     Provider
 export type TInsuranceProvider = {
   _id: string;
   name: string;
@@ -417,7 +422,7 @@ export type TInsuranceProvider = {
   updatedAt?: string;
 };
 
-// ── Review ────────────────────────────────────────────────────────────────────
+//     Review
 export type TInsuranceReview = {
   _id: string;
   provider: string;
@@ -430,14 +435,14 @@ export type TInsuranceReview = {
   updatedAt?: string;
 };
 
-// ── Review response with stats ────────────────────────────────────────────────
+//     Review response with stats
 export type TInsuranceReviewResponse = {
   reviews: TInsuranceReview[];
   avgRating: number;
   count: number;
 };
 
-// ── AI Recommendation ────────────────────────────────────────────────────────
+//     AI Recommendation
 export type TAIRecommendationResult = {
   topProvider: string;
   recommendation: string;
@@ -454,14 +459,14 @@ export type TAIRecommendationForm = {
   budget: string;
 };
 
-// ── RTK API response wrappers ────────────────────────────────────────────────
+//     RTK API response wrappers
 export type TApiResponse<T> = {
   success: boolean;
   message: string;
   data: T;
 };
 
-// ── Badge color helper ────────────────────────────────────────────────────────
+//     Badge color helper
 export function getBadgeColorClass(badge?: TInsuranceBadge): string {
   const colorMap: Record<TInsuranceBadge, string> = {
     mostPopular:

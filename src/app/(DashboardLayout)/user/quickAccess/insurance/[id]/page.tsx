@@ -7,11 +7,13 @@ import { Rating } from "next-flex-rating";
 
 import { useGetInsuranceProviderByIdQuery } from "@/src/redux/features/insurance/insuranceApi";
 import {
+  BADGE_DISPLAY,
   COVERAGE_LABELS,
   getBadgeColorClass,
   getBadgeDisplay,
 } from "@/src/types";
 import ReviewSection from "./components/reviewSection";
+import { getBadgeStyle } from "../page";
 
 // Main Component
 export default function ProviderDetailPage() {
@@ -44,28 +46,36 @@ export default function ProviderDetailPage() {
             href="/user/quickAccess/insurance"
             className="text-steel-blue text-sm hover:underline"
           >
-            ← Back to Compare Plans
+            ← Back to Insurances
           </Link>
         </div>
       </div>
     );
   }
 
-  const badgeDisplay = getBadgeDisplay(provider.badge);
-  const badgeColorClass = getBadgeColorClass(provider.badge);
   const avgRating = provider.avgRating ?? 0;
   const reviewCount = provider.reviewCount ?? 0;
 
   return (
     <div className="min-h-screen bg-white dark:bg-transparent text-gray-900 dark:text-white p-3 sm:p-4 transition-colors mb-16">
       <div className="max-w-full mx-auto">
-        {/* Back link */}
-        <Link
-          href="/user/quickAccess/insurance"
-          className="inline-flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-xs hover:text-gray-900 dark:hover:text-white transition-colors mb-5"
-        >
-          ← Back to Compare Plans
-        </Link>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-5">
+          {/* Back link with left arrow */}
+          <Link
+            href="/user/quickAccess/insurance"
+            className="inline-flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-xs hover:text-steel-blue dark:hover:text-lime-burst transition-colors w-fit"
+          >
+            ← Back to Insurances
+          </Link>
+
+          {/* Find Plan link with right arrow */}
+          <Link
+            href="/user/quickAccess/insurance/finder"
+            className="inline-flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-xs hover:text-steel-blue dark:hover:text-lime-burst transition-colors w-fit"
+          >
+            Find Best Plan for My Pet →
+          </Link>
+        </div>
 
         {/* Provider Header Card */}
         <Card className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-md shadow-sm mb-4">
@@ -84,9 +94,13 @@ export default function ProviderDetailPage() {
                     {provider.badge && (
                       <Chip
                         size="sm"
-                        className={`text-[10px] font-bold px-2 py-0.5 h-auto ${badgeColorClass}`}
+                        className="text-[10px] font-bold px-2 py-0.5 h-auto"
+                        style={{
+                          backgroundColor: getBadgeStyle(provider.badge).bg,
+                          color: getBadgeStyle(provider.badge).color,
+                        }}
                       >
-                        {badgeDisplay}
+                        {BADGE_DISPLAY[provider.badge]}{" "}
                       </Chip>
                     )}
                   </div>
