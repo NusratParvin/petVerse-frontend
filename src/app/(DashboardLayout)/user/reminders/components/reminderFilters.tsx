@@ -1,0 +1,118 @@
+import { Search } from "lucide-react";
+import { Button, Input } from "@heroui/react";
+
+type ReminderFiltersProps = {
+  urgentCount: number;
+  soonCount: number;
+  okCount: number;
+  overdueCount: number;
+  whatsappCount: number;
+  allCount: number;
+  filter: string;
+  setFilter: (filter: string) => void;
+  search: string;
+  setSearch: (search: string) => void;
+};
+
+const ReminderFilters = ({
+  urgentCount,
+  soonCount,
+  okCount,
+  overdueCount,
+  whatsappCount,
+  allCount,
+  filter,
+  setFilter,
+  search,
+  setSearch,
+}: ReminderFiltersProps) => {
+  const filters = [
+    { key: "all", label: "All", count: allCount },
+    { key: "high", label: "🔥 Urgent", count: urgentCount },
+    { key: "medium", label: "⏳ Coming up", count: soonCount },
+    { key: "low", label: "✅ Scheduled", count: okCount },
+    { key: "overdue", label: "⚠️ Overdue", count: overdueCount },
+    { key: "wa", label: "💬 WhatsApp", count: whatsappCount },
+  ];
+
+  const getButtonClass = (f) => {
+    if (filter !== f.key) {
+      return "border-gray-200 dark:border-white/10 text-gray-500 dark:text-white/40 bg-transparent";
+    }
+    if (f.key === "high") {
+      return "border-red-500 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400";
+    }
+    if (f.key === "medium") {
+      return "border-steel-blue bg-steel-blue/5 dark:bg-steel-blue/10 text-steel-blue";
+    }
+    if (f.key === "low") {
+      return "border-lime-500 bg-lime-50 dark:bg-lime-burst/5 text-lime-600 dark:text-lime-burst";
+    }
+    if (f.key === "overdue") {
+      return "border-orange-500 bg-orange-50 dark:bg-orange-950/20 text-orange-600 dark:text-orange-400";
+    }
+    if (f.key === "wa") {
+      return "border-green-500 bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400";
+    }
+    return "border-steel-blue bg-steel-blue/5 text-steel-blue";
+  };
+
+  return (
+    <div className="flex flex-wrap items-baseline gap-2 mb-6">
+      {/* Filter buttons - auto width */}
+      <div className="flex flex-wrap gap-1 flex-1">
+        {filters.map((f) => (
+          <Button
+            key={f.key}
+            size="sm"
+            radius="full"
+            variant="bordered"
+            onClick={() => setFilter(f.key)}
+            className={`text-[10px] font-bold  py-1 h-auto min-w-fit w-auto border ${getButtonClass(f)}`}
+          >
+            {f.label}
+            {f.count > 0 && (
+              <span
+                className={`ml-1 px-1 py-0.5 rounded-full text-[8px] font-bold ${
+                  filter === f.key
+                    ? f.key === "high"
+                      ? "bg-red-200 dark:bg-red-800/50"
+                      : f.key === "medium"
+                        ? "bg-steel-blue/20"
+                        : f.key === "low"
+                          ? "bg-lime-200 dark:bg-lime-800/50"
+                          : f.key === "overdue"
+                            ? "bg-orange-200 dark:bg-orange-800/50"
+                            : "bg-green-200 dark:bg-green-800/50"
+                    : "bg-gray-100 dark:bg-white/10"
+                }`}
+              >
+                {f.count}
+              </span>
+            )}
+          </Button>
+        ))}
+      </div>
+
+      {/* Search - fixed width, stays on right */}
+      <div className="flex-shrink-0 ">
+        <Input
+          size="sm"
+          radius="full"
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          startContent={<Search size={12} className="text-gray-400" />}
+          className="w-32"
+          classNames={{
+            input: "text-[10px]",
+            inputWrapper:
+              "h-7 min-h-7 bg-white dark:bg-white/5 border w-full border-gray-200 dark:border-white/10",
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default ReminderFilters;

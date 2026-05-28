@@ -108,6 +108,14 @@ export const petsApi = baseApi.injectEndpoints({
       providesTags: ["Pets"],
     }),
 
+    // ── Get all reminders ──
+    getAllReminders: builder.query({
+      query: () => ({
+        url: "/pets/reminders/all",
+        method: "GET",
+      }),
+    }),
+
     // ── Find by microchip (public) ──
     findByMicrochip: builder.query({
       query: (chipNumber: string) => ({
@@ -129,5 +137,6 @@ export const {
   useUpdateHealthRecordMutation,
   useDeleteHealthRecordMutation,
   useGetUpcomingRemindersQuery,
+  useGetAllRemindersQuery,
   useFindByMicrochipQuery,
 } = petsApi;

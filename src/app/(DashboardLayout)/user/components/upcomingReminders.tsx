@@ -1,40 +1,29 @@
+import { useGetUpcomingRemindersQuery } from "@/src/redux/features/pets/petsApi";
 import { Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 const UpcomingReminders = () => {
-  const reminders = [
-    {
-      pet: "Max",
-      record: "Rabies Booster",
-      vet: "German Vet Clinic",
-      dueDate: "2024-04-03",
-      dueText: "Due in 4 days",
-      urgency: "medium",
-      icon: "💉",
-      whatsapp: true,
-    },
-    {
-      pet: "Luna",
-      record: "Annual Checkup",
-      vet: "VetCare Abu Dhabi",
-      dueDate: "2024-04-01",
-      dueText: "Due in 2 days",
-      urgency: "high",
-      icon: "🏥",
-      whatsapp: false,
-    },
-    {
-      pet: "Max",
-      record: "Grooming",
-      vet: "Monthly scheduled",
-      dueDate: "2024-04-09",
-      dueText: "Due in 10 days",
-      urgency: "low",
-      icon: "✂️",
-      whatsapp: false,
-    },
-  ];
+  type TReminder = {
+    pet: string;
+    record: string;
+    vet: string;
+    dueDate: string;
+    dueText: string;
+    urgency: "high" | "medium" | "low";
+    icon: string;
+    whatsapp: boolean;
+  };
+
+  const {
+    data: reminderInfo,
+    isLoading,
+    isError,
+  } = useGetUpcomingRemindersQuery(undefined);
+
+  const reminders = reminderInfo?.data ?? [];
+
+  // console.log(reminders);
 
   const getUrgencyStyle = (urgency: string) => {
     switch (urgency) {
@@ -91,23 +80,22 @@ const UpcomingReminders = () => {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        {reminders.map((r, i) => {
+        {reminders.map((r: TReminder, i: number) => {
           const urgencyStyle = getUrgencyStyle(r.urgency);
           return (
             <div
               key={i}
               className={`
-                  relative rounded-lg transition-all duration-200 hover:scale-[1.01] 
-                  overflow-hidden border-l-3 cursor-pointer
-                  ${urgencyStyle?.bgLight} ${urgencyStyle?.bgDark}
-                `}
+            relative rounded-lg transition-all duration-200 hover:scale-[1.01] 
+            overflow-hidden border-l-3 cursor-pointer
+            ${urgencyStyle?.bgLight} ${urgencyStyle?.bgDark}
+          `}
               style={{
                 borderLeftWidth: "3px",
                 borderLeftColor: urgencyStyle?.borderColor,
               }}
             >
               <div className="p-2">
-                {/* Compact row layout */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     <span className="text-sm">{r.icon}</span>
@@ -128,14 +116,13 @@ const UpcomingReminders = () => {
                           size={8}
                           className="text-steel-blue/40 dark:text-white/30"
                         />
-                        <span className="text-[8px] text-steel-blue/40 dark:text-white/30 truncate">
+                        <span className="text-[9px] text-steel-blue dark:text-white/30 font-medium truncate">
                           {r.vet}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right side - due date and WhatsApp logo */}
                   <div className="flex items-center gap-1.5 ml-2">
                     <div className="flex items-center gap-1">
                       <Clock

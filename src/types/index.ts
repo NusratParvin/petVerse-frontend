@@ -156,6 +156,10 @@ export const recordIcon: Record<string, string> = {
   "vet-visit": "🏥",
   medication: "💊",
   grooming: "✂️",
+  "lab-test": "🔬",
+  surgery: "🔪",
+  imaging: "📷",
+  hospitalization: "🏨",
   other: "📋",
 };
 
