@@ -2,6 +2,7 @@ import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
 import { NavItem } from "./menuConstants";
+import { useReminderBadge } from "./reminderBadge";
 
 interface MenuSectionProps {
   menu: NavItem[];
@@ -10,6 +11,11 @@ interface MenuSectionProps {
 const MenuSection = ({ menu }: MenuSectionProps) => {
   // console.log(menu);
   const pathname = usePathname();
+  const reminderBadge = useReminderBadge();
+
+  const menuWithBadge = menu.map((item) =>
+    item.label === "Reminders" ? { ...item, badge: reminderBadge } : item,
+  );
 
   // const navItems=role==="USER"?userLinks:adminLinks
   return (
@@ -19,7 +25,7 @@ const MenuSection = ({ menu }: MenuSectionProps) => {
       </p>
 
       <div className="space-y-0.5">
-        {menu.map((item: NavItem) => {
+        {menuWithBadge.map((item: NavItem) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
           return (
@@ -61,7 +67,7 @@ const MenuSection = ({ menu }: MenuSectionProps) => {
                 {item.label}
               </span>
               {item?.badge && (
-                <span className="ml-auto text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-gradient-to-r from-pv-coral to-[#FF6B8A] text-white  shadow-sm">
+                <span className="ml-auto text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-gradient-to-r from-coral to-[#FF6B8A] text-white  shadow-sm">
                   {item?.badge}
                 </span>
               )}

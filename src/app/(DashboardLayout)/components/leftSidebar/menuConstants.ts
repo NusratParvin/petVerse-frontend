@@ -31,7 +31,7 @@ export const userLinks: NavItem[] = [
     href: "/user/reminders",
     label: "Reminders",
     icon: Bell,
-    badge: 2,
+    // badge: 2,
   },
   {
     href: "/user/create-article",

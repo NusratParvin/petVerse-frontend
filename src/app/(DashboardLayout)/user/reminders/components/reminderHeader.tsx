@@ -5,13 +5,13 @@ type TView = "feed" | "grid" | "list";
 
 type HeaderProps = {
   remindersCount: number;
-  view: TView;
+  view: string;
   setView: (view: TView) => void;
 };
 const ReminderHeader = ({ remindersCount, view, setView }: HeaderProps) => {
   return (
     <>
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start mb-4">
         <div>
           <h1 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
             🗓️ Your pets' reminders

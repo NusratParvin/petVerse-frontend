@@ -1,33 +1,53 @@
-import { MapPin } from "lucide-react";
-import { recordIcon } from "@/src/types";
+"use client";
 
-function getUrgencyStyle(urgency) {
+import { MapPin, Calendar } from "lucide-react";
+import { RECORD_LABEL, recordIcon, TReminder } from "@/src/types";
+import { Chip } from "@heroui/react";
+
+const getUrgencyStyle = (urgency: string) => {
   if (urgency === "high") {
     return {
-      bgLight: "bg-red-50 dark:bg-red-950/20",
       textColor: "text-red-600 dark:text-red-400",
+      badgeBg: "bg-red-500",
+      badgeText: "text-white",
+      borderColor: "#FFE0E0",
     };
   }
   if (urgency === "medium") {
     return {
-      bgLight: "bg-steel-blue/5 dark:bg-steel-blue/10",
       textColor: "text-steel-blue dark:text-steel-blue/80",
+      badgeBg: "bg-steel-blue",
+      badgeText: "text-white",
+      borderColor: "#E0F0FF",
+    };
+  }
+  if (urgency === "overdue") {
+    return {
+      textColor: "text-orange-600 dark:text-orange-400",
+      badgeBg: "bg-orange-500",
+      badgeText: "text-white",
+      borderColor: "#FFF0E0",
     };
   }
   return {
-    bgLight: "bg-lime-50 dark:bg-lime-burst/5",
     textColor: "text-lime-600 dark:text-lime-burst",
+    badgeBg: "bg-lime-500",
+    badgeText: "text-black dark:text-white",
+    borderColor: "#F0FFD6",
   };
-}
+};
 
-function getPetHandle(petName) {
-  return "@" + petName.toLowerCase().replace(/\s/g, "_") + "_pet";
+function getUrgencyLabel(urgency: string) {
+  if (urgency === "high") return "🔥 Urgent";
+  if (urgency === "medium") return "⏳ Coming up";
+  if (urgency === "overdue") return "⚠️ Overdue";
+  return "✅ Scheduled";
 }
 
 function WhatsAppIcon() {
   return (
-    <div className="w-5 h-5 rounded-full bg-[#25D366]/10 flex items-center justify-center">
-      <svg viewBox="0 0 24 24" className="w-2.5 h-2.5" fill="none">
+    <div className="w-6 h-6 rounded-full bg-[#25D366]/15 flex items-center justify-center transition-all hover:bg-[#25D366]/25">
+      <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none">
         <path
           d="M12.032 2.5C6.764 2.5 2.5 6.764 2.5 12.032c0 1.84.48 3.63 1.384 5.212l-1.456 4.728 4.9-1.408a9.485 9.485 0 0 0 4.704 1.22c5.268 0 9.532-4.264 9.532-9.532 0-5.268-4.264-9.532-9.532-9.532z"
           fill="#25D366"
@@ -41,45 +61,72 @@ function WhatsAppIcon() {
   );
 }
 
-const ReminderGridCard = ({ reminder }) => {
+const ReminderListItem = ({ reminder }: { reminder: TReminder }) => {
   const style = getUrgencyStyle(reminder.urgency);
   const icon = recordIcon[reminder.type] || "📋";
 
   return (
-    <div className="bg-white dark:bg-[#1d1b2e] border border-gray-200 rounded-2xl overflow-hidden">
-      <div className="p-3">
-        <div className="flex items-center gap-2 mb-2">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-base ${style.bgLight}`}
-          >
+    <div
+      className="rounded-md border bg-gray-50 dark:bg-gray-900 dark:border-none overflow-hidden hover:shadow-md transition-shadow p-3"
+      style={{ borderColor: style.borderColor }}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3 flex-1">
+          <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-base">
             {icon}
           </div>
-          <div>
-            <div className="font-black text-xs">{reminder.pet}</div>
-            <div className="text-[8px] text-gray-500">
-              {getPetHandle(reminder.pet)}
+          <div className="flex-1  ">
+            <div className="flex flex-col items-start gap-1">
+              <span className="font-semibold text-sm text-gray-900 dark:text-white">
+                {RECORD_LABEL[reminder.type]}
+              </span>
+              <span className="text-[11px] text-steel-blue dark:text-lime-burst">
+                @{reminder.pet}
+              </span>
+            </div>
+
+            <div className="flex flex-col items-start gap-1 mt-2">
+              <span className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
+                <MapPin size={10} /> Dr. {reminder.vet}
+              </span>
+              {/* <span className="text-[10px] text-gray-400">•</span> */}
+              <span className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
+                <MapPin size={10} /> {reminder.clinicName}
+              </span>
+              {/* <span className="text-[10px] text-gray-400">•</span> */}
+
+              <span className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
+                <Calendar size={10} /> {reminder.dueDate}
+              </span>
             </div>
           </div>
         </div>
-
-        <div className="font-bold text-xs mb-1 line-clamp-1">
-          {reminder.record}
-        </div>
-
-        <div className="flex items-center gap-1 text-[8px] text-gray-500 mb-2">
-          <MapPin size={8} /> {reminder.vet.split(" ").slice(0, 2).join(" ")}
-        </div>
-
-        <div
-          className={`flex justify-between items-center ${style.bgLight} rounded-lg p-1`}
-        >
-          <span className={`text-[8px] font-black ${style.textColor}`}>
+        <div className="flex flex-col-reverse items-end justify-items-start gap-2">
+          <span className={`text-[10px] font-semibold ${style.textColor}`}>
             {reminder.dueText}
           </span>
           {reminder.whatsapp && <WhatsAppIcon />}
+          <Chip
+            size="sm"
+            radius="full"
+            variant="flat"
+            color={
+              reminder.urgency === "high"
+                ? "danger"
+                : reminder.urgency === "medium"
+                  ? "primary"
+                  : reminder.urgency === "overdue"
+                    ? "warning"
+                    : "success"
+            }
+            className="text-[9px] font-bold h-auto px-2 py-1"
+          >
+            {getUrgencyLabel(reminder.urgency)}
+          </Chip>
         </div>
       </div>
     </div>
   );
 };
-export default ReminderGridCard;
+
+export default ReminderListItem;

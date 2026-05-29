@@ -9,6 +9,7 @@ import ReminderGridCard from "./components/reminderGridCard";
 import ReminderListItem from "./components/reminderListItem";
 import { Spinner } from "@heroui/react";
 import { useGetAllRemindersQuery } from "@/src/redux/features/pets/petsApi";
+import { TReminder } from "@/src/types";
 
 const RemindersPage = () => {
   const [filter, setFilter] = useState("all");
@@ -18,33 +19,35 @@ const RemindersPage = () => {
   const { data: reminderInfo, isLoading } = useGetAllRemindersQuery(undefined);
   const reminders = reminderInfo?.data ?? [];
 
-  console.log(reminders);
-  function getFilteredReminders() {
-    let filtered = reminders;
+  // console.log(reminders);
 
-    if (filter === "high") {
-      filtered = filtered.filter((r) => r.urgency === "high");
-    } else if (filter === "medium") {
-      filtered = filtered.filter((r) => r.urgency === "medium");
-    } else if (filter === "low") {
-      filtered = filtered.filter((r) => r.urgency === "low");
+  const getFilteredReminders = () => {
+    let filteredReminders = reminders;
+    const urgencyFilters = ["high", "medium", "low", "overdue"];
+
+    if (urgencyFilters.includes(filter)) {
+      filteredReminders = filteredReminders.filter(
+        (r: TReminder) => r.urgency === filter,
+      );
     } else if (filter === "wa") {
-      filtered = filtered.filter((r) => r.whatsapp === true);
+      filteredReminders = filteredReminders.filter(
+        (r: TReminder) => r.whatsapp === true,
+      );
     }
 
     if (search !== "") {
-      filtered = filtered.filter(
-        (r) =>
+      filteredReminders = filteredReminders.filter(
+        (r: TReminder) =>
           r.pet.toLowerCase().includes(search.toLowerCase()) ||
           r.record.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
-    return filtered;
-  }
+    return filteredReminders;
+  };
 
   function getUniquePets() {
-    const petNames = [];
+    const petNames: string[] = [];
     const uniquePets = [];
 
     for (let i = 0; i < reminders.length; i++) {
@@ -58,11 +61,21 @@ const RemindersPage = () => {
     return uniquePets;
   }
 
-  const urgentCount = reminders.filter((r) => r.urgency === "high").length;
-  const soonCount = reminders.filter((r) => r.urgency === "medium").length;
-  const okCount = reminders.filter((r) => r.urgency === "low").length;
-  const overdueCount = reminders.filter((r) => r.urgency === "overdue").length;
-  const whatsappCount = reminders.filter((r) => r.whatsapp === true).length;
+  const urgentCount = reminders.filter(
+    (r: TReminder) => r.urgency === "high",
+  ).length;
+  const soonCount = reminders.filter(
+    (r: TReminder) => r.urgency === "medium",
+  ).length;
+  const okCount = reminders.filter(
+    (r: TReminder) => r.urgency === "low",
+  ).length;
+  const overdueCount = reminders.filter(
+    (r: TReminder) => r.urgency === "overdue",
+  ).length;
+  const whatsappCount = reminders.filter(
+    (r: TReminder) => r.whatsapp === true,
+  ).length;
   const allCount = reminders.length;
 
   const filteredReminders = getFilteredReminders();
@@ -107,11 +120,10 @@ const RemindersPage = () => {
         )}
 
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-1 h-3 rounded-full bg-steel-blue dark:bg-lime-burst" />
-            <span className="text-[8px] font-black uppercase text-gray-500">
-              reminder feed
-            </span>
+          <div className="flex items-center gap-2 mb-2">
+            <p className="text-[10px] font-black uppercase text-gray-500 dark:text-white/70 tracking-wide">
+              Reminder Feed
+            </p>
           </div>
 
           {filteredReminders.length === 0 && (
@@ -126,7 +138,7 @@ const RemindersPage = () => {
 
           {view === "feed" && (
             <div className="space-y-3">
-              {filteredReminders.map((reminder, idx) => (
+              {filteredReminders.map((reminder: TReminder, idx: number) => (
                 <ReminderCard key={idx} reminder={reminder} />
               ))}
             </div>
@@ -134,7 +146,7 @@ const RemindersPage = () => {
 
           {view === "grid" && (
             <div className="grid grid-cols-2 gap-3">
-              {filteredReminders.map((reminder, idx) => (
+              {filteredReminders.map((reminder: TReminder, idx: number) => (
                 <ReminderGridCard key={idx} reminder={reminder} />
               ))}
             </div>
@@ -142,7 +154,7 @@ const RemindersPage = () => {
 
           {view === "list" && (
             <div className="space-y-2">
-              {filteredReminders.map((reminder, idx) => (
+              {filteredReminders.map((reminder: TReminder, idx: number) => (
                 <ReminderListItem key={idx} reminder={reminder} />
               ))}
             </div>

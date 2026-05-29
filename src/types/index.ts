@@ -195,6 +195,18 @@ export type THealthRecordType =
   // | "injection"
   | "other";
 
+export const RECORD_LABEL: Record<THealthRecordType, string> = {
+  vaccine: "Vaccine",
+  "vet-visit": "Vet Visit",
+  medication: "Medication",
+  grooming: "Grooming",
+  "lab-test": "Lab Test",
+  surgery: "Surgery",
+  imaging: "Imaging",
+  hospitalization: "Hospitalization",
+  other: "Other",
+};
+
 export type THealthRecord = {
   _id?: string;
   type: THealthRecordType;
@@ -321,14 +333,12 @@ export interface ParseResult {
   summary: string;
 }
 
-// Input can be files, text, or both
 export interface ParseInput {
   files?: File[];
   text?: string;
 }
 
 //Insurance
-//     Insurance Constants (mirrors backend)
 export const COVERAGE_TYPES = [
   "accidents",
   "illness",
@@ -357,7 +367,7 @@ export type TCoverageFlag = (typeof COVERAGE_TYPES)[number];
 export type TInsuranceBadge = (typeof INSURANCE_BADGES)[number];
 export type TPetType = (typeof PET_TYPES)[number];
 
-//     Coverage label map (used in UI)
+//     Coverage label map
 export const COVERAGE_LABELS: Record<TCoverageFlag, string> = {
   accidents: "Accidents",
   illness: "Illness",
@@ -552,4 +562,20 @@ export type TCreateLostFoundPayload = {
   photos?: string[];
   microchipNumber?: string;
   reward?: number;
+};
+
+export type TReminder = {
+  pet: string;
+  record: string;
+  vet: string;
+  clinicName: string;
+  type: THealthRecordType;
+  species: string;
+  dueDate: string;
+  dueText: string;
+  urgency: "high" | "medium" | "low" | "overdue";
+  whatsapp: boolean;
+  icon?: string;
+  petId?: string;
+  recordId?: string;
 };

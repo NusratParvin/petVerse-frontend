@@ -35,9 +35,9 @@ const ReminderFilters = ({
     { key: "wa", label: "💬 WhatsApp", count: whatsappCount },
   ];
 
-  const getButtonClass = (f) => {
+  const getButtonClass = (f: any) => {
     if (filter !== f.key) {
-      return "border-gray-200 dark:border-white/10 text-gray-500 dark:text-white/40 bg-transparent";
+      return "border-gray-200 dark:border-white/40 text-gray-500 dark:text-white/80 bg-transparent";
     }
     if (f.key === "high") {
       return "border-red-500 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400";
@@ -58,8 +58,8 @@ const ReminderFilters = ({
   };
 
   return (
-    <div className="flex flex-wrap items-baseline gap-2 mb-6">
-      {/* Filter buttons - auto width */}
+    <div className="flex flex-wrap items-base gap-2 mb-4">
+      {/* Filter buttons */}
       <div className="flex flex-wrap gap-1 flex-1">
         {filters.map((f) => (
           <Button
@@ -67,24 +67,24 @@ const ReminderFilters = ({
             size="sm"
             radius="full"
             variant="bordered"
-            onClick={() => setFilter(f.key)}
-            className={`text-[10px] font-bold  py-1 h-auto min-w-fit w-auto border ${getButtonClass(f)}`}
+            onPress={() => setFilter(f.key)}
+            className={`text-[9px] font-bold px-1 py-0.5 h-6 min-w-fit w-auto border ${getButtonClass(f)}`}
           >
             {f.label}
             {f.count > 0 && (
               <span
-                className={`ml-1 px-1 py-0.5 rounded-full text-[8px] font-bold ${
+                className={`ml-0 px-1.5 py-0.5 rounded-full text-[8px] font-extrabold ${
                   filter === f.key
                     ? f.key === "high"
-                      ? "bg-red-200 dark:bg-red-800/50"
+                      ? "bg-red-500 text-white shadow-sm"
                       : f.key === "medium"
-                        ? "bg-steel-blue/20"
+                        ? "bg-steel-blue text-white shadow-sm"
                         : f.key === "low"
-                          ? "bg-lime-200 dark:bg-lime-800/50"
+                          ? "bg-lime-500 text-black shadow-sm"
                           : f.key === "overdue"
-                            ? "bg-orange-200 dark:bg-orange-800/50"
-                            : "bg-green-200 dark:bg-green-800/50"
-                    : "bg-gray-100 dark:bg-white/10"
+                            ? "bg-orange-500 text-white shadow-sm"
+                            : "bg-green-500 text-white shadow-sm"
+                    : "bg-gray-300 dark:bg-white/30 text-gray-800 dark:text-white"
                 }`}
               >
                 {f.count}
@@ -94,20 +94,20 @@ const ReminderFilters = ({
         ))}
       </div>
 
-      {/* Search - fixed width, stays on right */}
-      <div className="flex-shrink-0 ">
+      {/* Search  */}
+      <div className="flex-shrink-0">
         <Input
           size="sm"
           radius="full"
-          placeholder="Search..."
+          placeholder="Search by pet or record..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           startContent={<Search size={12} className="text-gray-400" />}
-          className="w-32"
+          className="w-52"
           classNames={{
             input: "text-[10px]",
             inputWrapper:
-              "h-7 min-h-7 bg-white dark:bg-white/5 border w-full border-gray-200 dark:border-white/10",
+              "h-7 min-h-7 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10",
           }}
         />
       </div>
