@@ -109,9 +109,9 @@ export default function InsurancePage() {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
           <div>
             <h1 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              🛡️ Pet Insurance Plans
+              Pet Insurance Plans 🛡️
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 text-xs ms-6 mt-1">
+            <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
               Compare UAE providers · Only 10% of UAE pets are insured
             </p>
           </div>
