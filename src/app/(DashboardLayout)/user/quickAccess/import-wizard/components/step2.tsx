@@ -176,7 +176,7 @@ export function Step2({
       {/* Actions   */}
       <div
         className="flex gap-2 justify-between mt-1 pt-1 
-        border-t border-default-200 dark:border-default-100/20"
+        border-t border-default-200 dark:border-default-100/20 pb-44"
       >
         <Button
           variant="flat"

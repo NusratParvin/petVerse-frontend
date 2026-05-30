@@ -33,7 +33,8 @@ export function Step1({
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        // <div className="grid grid-cols-2 sm:grid-cols-3 gap-2  ">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[400px] overflow-y-auto custom-scrollbar">
           {pets.map((pet) => (
             <Card
               key={pet._id}
@@ -77,10 +78,10 @@ export function Step1({
       <Button
         color="primary"
         size="sm"
-        radius="lg"
+        radius="md"
         isDisabled={!selectedPet}
         onPress={onContinue}
-        className="self-end mt-1 w-40 bg-steel-blue/90 text-white  font-medium"
+        className="self-end mt-1 w-40 bg-steel-blue/90 text-white  font-medium sticky mb-44"
       >
         Continue →
       </Button>

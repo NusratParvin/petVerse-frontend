@@ -63,7 +63,7 @@ const UpcomingReminders = () => {
   };
 
   return (
-    <div className="px-4">
+    <div className="px-2">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <div className="w-1 h-3 rounded-full bg-steel-blue dark:bg-lime-burst" />

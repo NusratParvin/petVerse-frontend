@@ -19,12 +19,11 @@ export default function LeftSidebar() {
 
   return (
     <>
-      {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden h-14 flex items-center justify-around px-4 backdrop-blur-xl bg-white/95 dark:bg-bg/95 border-t border-steel-blue/20 dark:border-steel-blue/30">
+      {/* Mobile Bottom Navigation   */}
+      <nav className=" lg:hidden fixed bottom-0 left-0 right-0 z-50 h-14 flex items-center justify-around px-4 backdrop-blur-xl bg-white/95 dark:bg-bg/95 border-t border-steel-blue/20 dark:border-steel-blue/30">
         {navItems.slice(0, 5).map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
-
           return (
             <Link
               key={item.href}
@@ -42,7 +41,7 @@ export default function LeftSidebar() {
                   }
                 `}
               >
-                <Icon size={14} />
+                <Icon size={18} />
               </div>
               <span
                 className={`
@@ -61,10 +60,10 @@ export default function LeftSidebar() {
         })}
       </nav>
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex fixed top-12   h-[calc(100vh-50px)] left-0   w-[220px] flex-col z-40 overflow-y-auto transition-all duration-500 bg-white dark:bg-bg border-r border-steel-blue/10 dark:border-lime-burst/20 custom-scrollbar ">
+      {/* Desktop Sidebar   */}
+      <aside className="hidden lg:flex fixed top-12 left-0 lg:w-[220px] h-[calc(100vh-48px)] flex-col z-40 overflow-y-auto bg-white dark:bg-bg border-r border-steel-blue/10 dark:border-lime-burst/20 custom-scrollbar">
         {/* My Pets Section */}
-        {user?.role == "USER" && <PetSection />}
+        {user?.role === "USER" && <PetSection />}
 
         {/* Navigation Section */}
         {user && <MenuSection menu={navItems} />}
@@ -95,7 +94,7 @@ export default function LeftSidebar() {
         </div>
       </aside>
 
-      {/* Mobile padding */}
+      {/* Mobile bottom padding */}
       <div className="lg:hidden h-14" />
     </>
   );

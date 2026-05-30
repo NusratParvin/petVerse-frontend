@@ -30,7 +30,7 @@ const QuickAccess = () => {
   ];
 
   return (
-    <div className="px-4 py-2">
+    <div className="px-2 py-2">
       <p className="text-[10px] font-black uppercase tracking-wider text-steel-blue dark:text-lime-burst/80 mb-2">
         Quick Access
       </p>

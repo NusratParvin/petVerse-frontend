@@ -65,7 +65,7 @@ export function Step3({
         </>
       )}
 
-      <div className="flex gap-2 justify-between mt-1">
+      <div className="flex gap-2 justify-between mt-1  pb-44">
         <Button
           variant="flat"
           size="sm"

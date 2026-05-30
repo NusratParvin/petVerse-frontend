@@ -1,22 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button, Input, Textarea, Select, SelectItem } from "@heroui/react";
+import {
+  Button,
+  Input,
+  Textarea,
+  Select,
+  SelectItem,
+  Card,
+  CardBody,
+  RadioGroup,
+  Radio,
+  Progress,
+} from "@heroui/react";
 import { useCreateLostFoundPostMutation } from "@/src/redux/features/lostFound/lostFoundApi";
-import { LF_EMIRATES, LF_SPECIES } from "@/src/types";
+import { LF_EMIRATES } from "@/src/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
 
-const SPECIES_EMOJI = {
-  dog: "🐕",
-  cat: "🐈",
-  bird: "🦜",
-  rabbit: "🐇",
-  reptile: "🦎",
-  other: "🐾",
-};
+export const SPECIES_OPTIONS = [
+  { value: "dog", label: "Dog", emoji: "🐕" },
+  { value: "cat", label: "Cat", emoji: "🐈" },
+  { value: "bird", label: "Bird", emoji: "🦜" },
+  { value: "fish", label: "Fish", emoji: "🐠" },
+  { value: "rabbit", label: "Rabbit", emoji: "🐇" },
+  { value: "reptile", label: "Reptile", emoji: "🦎" },
+  { value: "other", label: "Other", emoji: "🐾" },
+] as const;
 
 const STEPS = [
   {
@@ -39,9 +51,10 @@ const STEPS = [
   },
 ];
 
-export default function PostLostFoundPage() {
+const CreatePostLostFound = () => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const [form, setForm] = useState({
     type: "",
     species: "",
@@ -58,6 +71,15 @@ export default function PostLostFoundPage() {
   });
 
   const [createPost, { isLoading }] = useCreateLostFoundPostMutation();
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const update = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -79,7 +101,7 @@ export default function PostLostFoundPage() {
   const handleSubmit = async () => {
     try {
       await createPost({
-        type: form.type,
+        type: form.type as "lost" | "found",
         species: form.species,
         emirate: form.emirate,
         petName: form.petName,
@@ -103,294 +125,395 @@ export default function PostLostFoundPage() {
   const goNext = () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
+      window.scrollTo(0, 0);
     }
   };
 
   const goBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+      window.scrollTo(0, 0);
     }
+  };
+
+  const goToStep = (stepIndex: number) => {
+    if (stepIndex < currentStep) {
+      setCurrentStep(stepIndex);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  // Render stepper based on screen size
+  const renderStepper = () => {
+    if (isMobile) {
+      return (
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            {STEPS.map((step, index) => (
+              <div key={step.id} className="flex flex-col items-center flex-1">
+                <Button
+                  isIconOnly
+                  size="sm"
+                  radius="full"
+                  isDisabled={index > currentStep}
+                  onPress={() => goToStep(index)}
+                  color={
+                    index < currentStep
+                      ? "success"
+                      : index === currentStep
+                        ? "primary"
+                        : "default"
+                  }
+                  variant={index <= currentStep ? "solid" : "flat"}
+                  className="w-10 h-10"
+                >
+                  {index < currentStep ? <Check size={16} /> : step.emoji}
+                </Button>
+                <span
+                  className={`text-[9px] font-medium mt-1 text-center ${
+                    index === currentStep ? "text-primary" : "text-default-400"
+                  }`}
+                >
+                  {step.title}
+                </span>
+              </div>
+            ))}
+          </div>
+          <Progress
+            value={((currentStep + 1) / STEPS.length) * 100}
+            className="mt-4"
+            color="primary"
+            size="sm"
+          />
+        </div>
+      );
+    }
+
+    // Vertical stepper for desktop
+    return (
+      <div className="sticky top-4">
+        <p className="text-base font-black uppercase tracking-wider text-steel-blue dark:text-lime-burst mb-4">
+          Create post
+        </p>
+        {STEPS.map((step, index) => {
+          const isActive = index === currentStep;
+          const isCompleted = index < currentStep;
+
+          return (
+            <div key={step.id} className="flex gap-3 mb-4">
+              <div className="flex flex-col items-center">
+                <Button
+                  isIconOnly
+                  size="sm"
+                  radius="full"
+                  isDisabled={index > currentStep}
+                  onPress={() => goToStep(index)}
+                  color={
+                    isCompleted ? "success" : isActive ? "primary" : "default"
+                  }
+                  variant={isCompleted || isActive ? "solid" : "flat"}
+                  className="w-10 h-10 rounded-full text-2xl"
+                >
+                  {isCompleted ? <Check size={14} /> : step.emoji}
+                </Button>
+                {index < STEPS.length - 1 && (
+                  <div
+                    className={`w-0.5 h-10 mt-1 rounded ${
+                      index < currentStep ? "bg-success" : "bg-default-200"
+                    }`}
+                  />
+                )}
+              </div>
+              <div className="flex-1 pt-1">
+                <p
+                  className={`text-xs font-semibold ${
+                    isActive ? "text-primary" : "text-default-500"
+                  }`}
+                >
+                  {step.title}
+                </p>
+                <p className="text-[10px] text-default-400 mt-0.5">
+                  {step.description}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-transparent p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Back button */}
-        <Link
-          href="/user/quickAccess/lost-found"
-          className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 dark:hover:text-white mb-6"
-        >
-          ← Back
-        </Link>
+      <div className="w-full mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-12">
+          <div>
+            <h1 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              Report Lost / Found Pet 📢
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+              Help reunite pets with their families · Your report will be seen
+              by thousands
+            </p>
+          </div>
+          <Link
+            href="/user/quickAccess/lost-found"
+            className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-steel-blue dark:hover:text-lime-burst transition-colors mb-6"
+          >
+            ← Back to Posts
+          </Link>
+        </div>
 
         {/* Two column layout */}
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* LEFT SIDE - Vertical Stepper */}
-          <div className="md:w-64 flex-shrink-0">
-            <div className="sticky top-4">
-              <p className="text-[10px] font-black uppercase tracking-wider text-steel-blue dark:text-lime-burst/90 mb-4">
-                PROGRESS
-              </p>
-              {STEPS.map((step, index) => {
-                const isActive = index === currentStep;
-                const isCompleted = index < currentStep;
-
-                return (
-                  <div key={step.id} className="flex gap-3 mb-4">
-                    {/* Step indicator */}
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`
-                          w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all
-                          ${isCompleted ? "bg-green-500 text-white" : ""}
-                          ${isActive && !isCompleted ? "bg-steel-blue dark:bg-lime-burst text-white" : ""}
-                          ${!isActive && !isCompleted ? "bg-gray-100 dark:bg-white/10 text-gray-400" : ""}
-                        `}
-                      >
-                        {isCompleted ? <Check size={14} /> : step.emoji}
-                      </div>
-                      {index < STEPS.length - 1 && (
-                        <div
-                          className={`w-0.5 h-10 mt-1 rounded ${index < currentStep ? "bg-green-500" : "bg-gray-200 dark:bg-white/10"}`}
-                        />
-                      )}
-                    </div>
-
-                    {/* Step text */}
-                    <div className="flex-1 pt-1">
-                      <p
-                        className={`text-xs font-semibold ${isActive ? "text-steel-blue dark:text-lime-burst" : "text-gray-500 dark:text-gray-400"}`}
-                      >
-                        {step.title}
-                      </p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+        <div className="flex flex-col md:flex-row gap-6 mx-4 border">
+          {/* LEFT SIDE - Stepper */}
+          <div className={`${isMobile ? "w-full" : "md:w-52 flex-shrink-0"}`}>
+            {renderStepper()}
           </div>
 
           {/* RIGHT SIDE - Form */}
           <div className="flex-1">
-            <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-6 border border-gray-200 dark:border-white/10">
-              {/* Step 0: Basic info */}
-              {currentStep === 0 && (
-                <div className="space-y-5">
-                  <div>
-                    <p className="text-sm font-bold mb-2">Lost or found?</p>
-                    <div className="flex gap-3">
-                      {[
-                        {
-                          val: "lost",
-                          emoji: "😢",
-                          label: "Lost",
-                          color: "border-red-400 bg-red-50 dark:bg-red-900/20",
-                        },
-                        {
-                          val: "found",
-                          emoji: "🙌",
-                          label: "Found",
-                          color:
-                            "border-green-400 bg-green-50 dark:bg-green-900/20",
-                        },
-                      ].map((opt) => (
-                        <button
-                          key={opt.val}
-                          onClick={() => update("type", opt.val)}
-                          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 transition-all
-                            ${form.type === opt.val ? opt.color : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5"}
-                          `}
+            <Card className="bg-default-50 dark:bg-white/5 border border-default-200 dark:border-white/10">
+              <CardBody className="p-6">
+                {/* Step 0: Basic info */}
+                {currentStep === 0 && (
+                  <div className="space-y-5">
+                    <div>
+                      <p className="text-sm font-bold mb-2">Lost or found?</p>
+                      <div className="flex gap-3">
+                        <Button
+                          onPress={() => update("type", "lost")}
+                          color={form.type === "lost" ? "danger" : "default"}
+                          variant={form.type === "lost" ? "solid" : "bordered"}
+                          className="flex-1 py-2 h-auto"
+                          startContent={<span>😢</span>}
                         >
-                          <span>{opt.emoji}</span>
-                          <span className="font-medium text-sm">
-                            {opt.label}
-                          </span>
-                        </button>
-                      ))}
+                          Lost
+                        </Button>
+                        <Button
+                          onPress={() => update("type", "found")}
+                          color={form.type === "found" ? "success" : "default"}
+                          variant={form.type === "found" ? "solid" : "bordered"}
+                          className="flex-1 py-2 h-auto"
+                          startContent={<span>🙌</span>}
+                        >
+                          Found
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-bold mb-2">Pet type</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {SPECIES_OPTIONS.map((s) => (
+                          <Button
+                            key={s.value}
+                            onPress={() => update("species", s.value)}
+                            color={
+                              form.species === s.value ? "primary" : "default"
+                            }
+                            variant={
+                              form.species === s.value ? "solid" : "bordered"
+                            }
+                            className="flex flex-col items-center py-3 h-auto"
+                            startContent={
+                              <span className="text-2xl">{s.emoji}</span>
+                            }
+                          >
+                            <span className="text-xs capitalize">
+                              {s.label}
+                            </span>
+                          </Button>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                )}
 
-                  <div>
-                    <p className="text-sm font-bold mb-2">Pet type</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {LF_SPECIES.map((s) => (
-                        <button
-                          key={s}
-                          onClick={() => update("species", s)}
-                          className={`flex flex-col items-center py-3 rounded-xl border-2 transition-all
-                            ${form.species === s ? "border-steel-blue bg-steel-blue/5 dark:bg-steel-blue/20" : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5"}
-                          `}
-                        >
-                          <span className="text-2xl">{SPECIES_EMOJI[s]}</span>
-                          <span className="text-xs capitalize mt-1">{s}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 1: Details */}
-              {currentStep === 1 && (
-                <div className="space-y-4">
-                  <Input
-                    label="Pet name (optional)"
-                    size="sm"
-                    value={form.petName}
-                    onChange={(e) => update("petName", e.target.value)}
-                  />
-                  <Input
-                    label="Breed (optional)"
-                    size="sm"
-                    value={form.breed}
-                    onChange={(e) => update("breed", e.target.value)}
-                  />
-                  <Input
-                    label="Color & markings *"
-                    size="sm"
-                    value={form.color}
-                    onChange={(e) => update("color", e.target.value)}
-                    isRequired
-                  />
-                  <Textarea
-                    label="Description *"
-                    placeholder="Any special features, collar, behavior..."
-                    size="sm"
-                    value={form.description}
-                    onChange={(e) => update("description", e.target.value)}
-                    minRows={2}
-                  />
-                  <Input
-                    label="Microchip number (optional)"
-                    size="sm"
-                    value={form.microchipNumber}
-                    onChange={(e) => update("microchipNumber", e.target.value)}
-                  />
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <Select
-                      label="Emirate *"
-                      size="sm"
-                      selectedKeys={form.emirate ? [form.emirate] : []}
-                      onChange={(e) => update("emirate", e.target.value)}
-                    >
-                      {LF_EMIRATES.map((e) => (
-                        <SelectItem key={e}>{e}</SelectItem>
-                      ))}
-                    </Select>
+                {/* Step 1: Details */}
+                {currentStep === 1 && (
+                  <div className="space-y-4">
                     <Input
-                      label="Area *"
+                      label="Pet name (optional)"
                       size="sm"
-                      placeholder="e.g. JBR"
-                      value={form.area}
-                      onChange={(e) => update("area", e.target.value)}
+                      value={form.petName}
+                      onChange={(e) => update("petName", e.target.value)}
+                      variant="bordered"
                     />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
                     <Input
-                      label="Date *"
-                      type="date"
+                      label="Breed (optional)"
                       size="sm"
-                      value={form.dateLostFound}
-                      onChange={(e) => update("dateLostFound", e.target.value)}
+                      value={form.breed}
+                      onChange={(e) => update("breed", e.target.value)}
+                      variant="bordered"
                     />
-                    {form.type === "lost" && (
-                      <Input
-                        label="Reward (AED)"
-                        type="number"
+                    <Input
+                      label="Color & markings *"
+                      size="sm"
+                      value={form.color}
+                      onChange={(e) => update("color", e.target.value)}
+                      isRequired
+                      variant="bordered"
+                    />
+                    <Textarea
+                      label="Description *"
+                      placeholder="Any special features, collar, behavior..."
+                      size="sm"
+                      value={form.description}
+                      onChange={(e) => update("description", e.target.value)}
+                      minRows={2}
+                      variant="bordered"
+                    />
+                    <Input
+                      label="Microchip number (optional)"
+                      size="sm"
+                      value={form.microchipNumber}
+                      onChange={(e) =>
+                        update("microchipNumber", e.target.value)
+                      }
+                      variant="bordered"
+                    />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <Select
+                        label="Emirate *"
                         size="sm"
-                        placeholder="Optional"
-                        value={form.reward}
-                        onChange={(e) => update("reward", e.target.value)}
+                        selectedKeys={form.emirate ? [form.emirate] : []}
+                        onChange={(e) => update("emirate", e.target.value)}
+                        variant="bordered"
+                      >
+                        {LF_EMIRATES.map((e) => (
+                          <SelectItem key={e}>{e}</SelectItem>
+                        ))}
+                      </Select>
+                      <Input
+                        label="Area *"
+                        size="sm"
+                        placeholder="e.g. JBR"
+                        value={form.area}
+                        onChange={(e) => update("area", e.target.value)}
+                        variant="bordered"
                       />
-                    )}
-                  </div>
-                </div>
-              )}
+                    </div>
 
-              {/* Step 2: Contact */}
-              {currentStep === 2 && (
-                <div className="space-y-4 text-center">
-                  <div className="text-5xl">📞</div>
-                  <h2 className="text-xl font-bold">Almost there!</h2>
-                  <p className="text-sm text-gray-500">
-                    Leave your phone number so people can contact you
-                  </p>
-                  <Input
-                    label="Phone number *"
-                    type="tel"
-                    size="sm"
-                    placeholder="+971 50 XXX XXXX"
-                    value={form.posterPhone}
-                    onChange={(e) => update("posterPhone", e.target.value)}
-                  />
-
-                  <div className="mt-6 p-4 bg-white dark:bg-black/20 rounded-xl text-left text-sm">
-                    <p className="font-bold mb-2">Quick review:</p>
-                    <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
-                      <p>
-                        <span className="text-gray-400">Type:</span>{" "}
-                        {form.type || "—"}
-                      </p>
-                      <p>
-                        <span className="text-gray-400">Pet:</span>{" "}
-                        {form.species || "—"}{" "}
-                        {form.petName ? `(${form.petName})` : ""}
-                      </p>
-                      <p>
-                        <span className="text-gray-400">Location:</span>{" "}
-                        {form.area || "—"}, {form.emirate || "—"}
-                      </p>
-                      <p>
-                        <span className="text-gray-400">Date:</span>{" "}
-                        {form.dateLostFound || "—"}
-                      </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <Input
+                        label="Date *"
+                        type="date"
+                        size="sm"
+                        value={form.dateLostFound}
+                        onChange={(e) =>
+                          update("dateLostFound", e.target.value)
+                        }
+                        variant="bordered"
+                      />
+                      {form.type === "lost" && (
+                        <Input
+                          label="Reward (AED)"
+                          type="number"
+                          size="sm"
+                          placeholder="Optional"
+                          value={form.reward}
+                          onChange={(e) => update("reward", e.target.value)}
+                          startContent={
+                            <span className="text-default-400">AED</span>
+                          }
+                          variant="bordered"
+                        />
+                      )}
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Navigation buttons */}
-              <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-white/10">
-                {currentStep > 0 && (
-                  <Button
-                    onPress={goBack}
-                    variant="bordered"
-                    size="sm"
-                    className="flex-1"
-                  >
-                    Back
-                  </Button>
+                {/* Step 2: Contact */}
+                {currentStep === 2 && (
+                  <div className="space-y-4 text-center">
+                    <div className="text-5xl">📞</div>
+                    <h2 className="text-xl font-bold">Almost there!</h2>
+                    <p className="text-sm text-default-500">
+                      Leave your phone number so people can contact you
+                    </p>
+                    <Input
+                      label="Phone number *"
+                      type="tel"
+                      size="sm"
+                      placeholder="+971 50 XXX XXXX"
+                      value={form.posterPhone}
+                      onChange={(e) => update("posterPhone", e.target.value)}
+                      variant="bordered"
+                    />
+
+                    <Card className="mt-6 bg-white dark:bg-black/20 border border-default-200 dark:border-white/10">
+                      <CardBody className="p-4">
+                        <p className="font-bold mb-2 text-left">
+                          Quick review:
+                        </p>
+                        <div className="space-y-1 text-xs text-default-600 dark:text-default-400 text-left">
+                          <p>
+                            <span className="text-default-400">Type:</span>{" "}
+                            {form.type || "—"}
+                          </p>
+                          <p>
+                            <span className="text-default-400">Pet:</span>{" "}
+                            {form.species || "—"}{" "}
+                            {form.petName ? `(${form.petName})` : ""}
+                          </p>
+                          <p>
+                            <span className="text-default-400">Location:</span>{" "}
+                            {form.area || "—"}, {form.emirate || "—"}
+                          </p>
+                          <p>
+                            <span className="text-default-400">Date:</span>{" "}
+                            {form.dateLostFound || "—"}
+                          </p>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  </div>
                 )}
-                {currentStep < 2 ? (
-                  <Button
-                    onPress={goNext}
-                    isDisabled={!canContinue()}
-                    size="sm"
-                    className="flex-1 bg-steel-blue dark:bg-lime-burst/60 text-white dark:text-black"
-                  >
-                    Continue →
-                  </Button>
-                ) : (
-                  <Button
-                    onPress={handleSubmit}
-                    isLoading={isLoading}
-                    isDisabled={!canContinue()}
-                    size="sm"
-                    className="flex-1 bg-steel-blue dark:bg-lime-burst/60 text-white dark:text-black"
-                  >
-                    Post Report 🐾
-                  </Button>
-                )}
-              </div>
-            </div>
+
+                {/* Navigation buttons */}
+                <div className="flex gap-3 mt-6 pt-4 border-t border-default-200 dark:border-white/10">
+                  {currentStep > 0 && (
+                    <Button
+                      onPress={goBack}
+                      variant="bordered"
+                      size="sm"
+                      className="flex-1"
+                    >
+                      Back
+                    </Button>
+                  )}
+                  {currentStep < 2 ? (
+                    <Button
+                      onPress={goNext}
+                      isDisabled={!canContinue()}
+                      size="sm"
+                      color="primary"
+                      className="flex-1"
+                    >
+                      Continue →
+                    </Button>
+                  ) : (
+                    <Button
+                      onPress={handleSubmit}
+                      isLoading={isLoading}
+                      isDisabled={!canContinue()}
+                      size="sm"
+                      color="primary"
+                      className="flex-1"
+                    >
+                      Post Report 🐾
+                    </Button>
+                  )}
+                </div>
+              </CardBody>
+            </Card>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default CreatePostLostFound;

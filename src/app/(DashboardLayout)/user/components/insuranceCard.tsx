@@ -4,7 +4,7 @@ import React from "react";
 
 const InsuranceCard = () => {
   return (
-    <div className="mx-4">
+    <div className="mx-2">
       <div className="relative rounded-xl overflow-hidden transition-all duration-200 hover:scale-[1.01] group">
         {/* Light mode: vibrant gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-steel-blue via-steel-blue/90 to-steel-blue/70 dark:opacity-0" />

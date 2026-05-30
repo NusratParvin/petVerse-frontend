@@ -19,7 +19,7 @@ export function Step4({
   const hasRecords = savedCount > 0;
 
   return (
-    <div className="flex flex-col items-center gap-5 py-6 text-center">
+    <div className="flex flex-col items-center gap-5 py-6 text-center pb-44">
       <div
         className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl
         ${
@@ -74,7 +74,7 @@ export function Step4({
         size="sm"
         radius="md"
         onPress={onReset}
-        className="w-44 dark:bg-default-200/80 hover:dark:shadow-sm hover:dark:shadow-primary"
+        className="w-44 dark:bg-default-200/80 hover:dark:shadow-sm hover:dark:shadow-primary "
       >
         {hasRecords ? "Import More Records" : "Try Again"}
       </Button>
