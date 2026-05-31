@@ -19,6 +19,7 @@ import { LF_EMIRATES } from "@/src/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
+import { PawPrint, ClipboardList, Phone } from "lucide-react";
 
 export const SPECIES_OPTIONS = [
   { value: "dog", label: "Dog", emoji: "🐕" },
@@ -34,19 +35,19 @@ const STEPS = [
   {
     id: "basic",
     title: "Basic info",
-    emoji: "🐾",
+    emoji: <PawPrint size={16} />,
     description: "Lost/found & pet type",
   },
   {
     id: "details",
     title: "Details",
-    emoji: "📋",
+    emoji: <ClipboardList size={16} />,
     description: "Pet details & location",
   },
   {
     id: "contact",
     title: "Contact",
-    emoji: "📞",
+    emoji: <Phone size={16} />,
     description: "Your phone number",
   },
 ];
@@ -200,7 +201,7 @@ const CreatePostLostFound = () => {
           const isCompleted = index < currentStep;
 
           return (
-            <div key={step.id} className="flex gap-3 mb-4">
+            <div key={step.id} className="flex gap-4 mb-6 group ms-3">
               <div className="flex flex-col items-center">
                 <Button
                   isIconOnly
@@ -208,33 +209,76 @@ const CreatePostLostFound = () => {
                   radius="full"
                   isDisabled={index > currentStep}
                   onPress={() => goToStep(index)}
-                  color={
-                    isCompleted ? "success" : isActive ? "primary" : "default"
-                  }
-                  variant={isCompleted || isActive ? "solid" : "flat"}
-                  className="w-10 h-10 rounded-full text-2xl"
+                  style={{
+                    backgroundColor: isCompleted
+                      ? "#21bd5b"
+                      : isActive
+                        ? "#4682B4"
+                        : "#e5e7eb",
+                    color: "white",
+                    transform: isActive ? "scale(1.05)" : "scale(1)",
+                    boxShadow: isActive
+                      ? "0 0 0 4px rgba(70, 130, 180, 0.3)"
+                      : "none",
+                    border: "none",
+                  }}
+                  className="w-10 h-10 transition-all duration-300 mt-1"
                 >
-                  {isCompleted ? <Check size={14} /> : step.emoji}
+                  {isCompleted ? (
+                    <Check size={16} strokeWidth={3} />
+                  ) : (
+                    <span className="text-lg">{step.emoji}</span>
+                  )}
                 </Button>
                 {index < STEPS.length - 1 && (
                   <div
-                    className={`w-0.5 h-10 mt-1 rounded ${
-                      index < currentStep ? "bg-success" : "bg-default-200"
-                    }`}
+                    style={{
+                      backgroundColor:
+                        index < currentStep ? "#21bd5b" : "#e5e7eb",
+                      width: "2px",
+                      height: "80px",
+                      marginTop: "8px",
+                      borderRadius: "9999px",
+                    }}
                   />
                 )}
               </div>
-              <div className="flex-1 pt-1">
+              <div className="flex-1  ">
                 <p
-                  className={`text-xs font-semibold ${
-                    isActive ? "text-primary" : "text-default-500"
-                  }`}
+                  style={{
+                    color: isActive
+                      ? "#4682B4"
+                      : isCompleted
+                        ? "#21bd5b"
+                        : "#9ca3af",
+                    fontWeight: "bold",
+                    fontSize: "12px",
+                  }}
                 >
                   {step.title}
                 </p>
-                <p className="text-[10px] text-default-400 mt-0.5">
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0 font-medium">
                   {step.description}
                 </p>
+
+                {/* Status indicators */}
+                {isCompleted && !isActive && (
+                  <div className="flex items-center gap-1 mt-1.5">
+                    <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                    <p className="text-[9px] text-green-600 dark:text-green-400 font-medium">
+                      ✓ Completed
+                    </p>
+                  </div>
+                )}
+
+                {isActive && (
+                  <div className="flex items-center gap-1 mt-1.5">
+                    <div className="w-1 h-1 rounded-full bg-steel-blue dark:bg-lime-burst animate-pulse" />
+                    <p className="text-[9px] text-steel-blue dark:text-lime-burst font-medium">
+                      Current step
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -503,7 +547,7 @@ const CreatePostLostFound = () => {
                       color="primary"
                       className="flex-1"
                     >
-                      Post Report 🐾
+                      Post Report
                     </Button>
                   )}
                 </div>
