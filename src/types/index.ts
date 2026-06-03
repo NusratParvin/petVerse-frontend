@@ -513,6 +513,7 @@ export const LF_SPECIES = [
   "reptile",
   "other",
 ] as const;
+
 export const LF_EMIRATES = [
   "Abu Dhabi",
   "Dubai",
@@ -524,8 +525,8 @@ export const LF_EMIRATES = [
 ] as const;
 
 export type TLFPostType = (typeof LF_POST_TYPES)[number];
-export type TLFSpecies = (typeof LF_SPECIES)[number];
-export type TLFEmirate = (typeof LF_EMIRATES)[number];
+export type TLFSpecies = TSpecies;
+export type TLFEmirate = TEmirate;
 
 export type TLostFoundPost = {
   _id: string;
