@@ -47,12 +47,17 @@ export default function LostFoundPage() {
   const [species, setSpecies] = useState("");
   const [search, setSearch] = useState("");
 
-  const { data, isLoading, refetch } = useGetLostFoundPostsQuery({
-    type: type === "all" ? undefined : type,
-    emirate: emirate || undefined,
-    species: species || undefined,
-    search: search || undefined,
-  });
+  const { data, isLoading } = useGetLostFoundPostsQuery(
+    {
+      type: type === "all" ? undefined : type,
+      emirate: emirate || undefined,
+      species: species || undefined,
+      search: search || undefined,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
 
   const [markResolved] = useMarkLostFoundResolvedMutation();
   const [deletePost] = useDeleteLostFoundPostMutation();

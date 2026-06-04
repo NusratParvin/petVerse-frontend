@@ -8,9 +8,6 @@ import {
 
 export const insuranceReviewApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // ─────────────────────────────────────────
-    // Reviews
-    // ─────────────────────────────────────────
     getProviderReviews: builder.query<TInsuranceReviewResponse, string>({
       query: (providerId) => `/insurance-review/${providerId}/reviews`,
       providesTags: (_result, _error, providerId) => [

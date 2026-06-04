@@ -10,18 +10,20 @@ import { DesktopStepper, MobileStepper } from "./components/stepper";
 import { StepBasicInfo } from "./components/stepBasicInfo";
 import { StepDetails } from "./components/stepDetails";
 import { StepContact } from "./components/stepContact";
+import { TEmirate, TSpecies } from "@/src/types";
+import { isFuture, isValid, parseISO } from "date-fns";
 
 //   Types
 
 export interface FormData {
   type: string;
-  species: string;
+  species: TSpecies | "";
   petName: string;
   breed: string;
   color: string;
   description: string;
   microchipNumber: string;
-  emirate: string;
+  emirate: TEmirate | "";
   area: string;
   dateLostFound: string;
   reward: string;
@@ -58,16 +60,17 @@ function getFieldError(field: keyof FormData, value: string): string {
   }
   if (field === "dateLostFound") {
     if (!value) return "Date is required";
-    const picked = new Date(value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (picked > today) return "Date cannot be in the future";
+
+    const selectedDate = parseISO(value);
+
+    if (!isValid(selectedDate)) return "Invalid date format";
+    if (isFuture(selectedDate)) return "Date cannot be in the future";
   }
   if (field === "posterPhone") {
     if (!value) return "Phone number is required";
     //   UAE numbers
     const uaeRegex = /^(\+971|0)?[50|52|54|55|56|58|2|3|4|6|7|9]\d{7}$/;
-    if (!uaeRegex.test(value) && value.length < 8)
+    if (!uaeRegex.test(value) && value.length < 12)
       return "Enter a valid UAE phone number";
   }
   return "";
@@ -126,7 +129,6 @@ const CreatePostLostFound = () => {
     return valid;
   };
 
-  // The Continue button is enabled only when all current-step fields are error-free
   const canContinue = STEP_FIELDS[currentStep].every(
     (f) => !getFieldError(f, form[f]),
   );
@@ -157,6 +159,10 @@ const CreatePostLostFound = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateCurrentStep()) return;
+
+    if (!form.type || !form.species || !form.emirate) {
+      return null;
+    }
 
     try {
       await createPost({

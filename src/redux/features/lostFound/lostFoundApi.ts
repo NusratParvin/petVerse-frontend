@@ -1,45 +1,31 @@
-import {
-  TApiResponse,
-  TLostFoundPost,
-  TCreateLostFoundPayload,
-} from "@/src/types";
 import baseApi from "../../api/baseApi";
-
-type TLFFilters = {
-  type?: string;
-  emirate?: string;
-  species?: string;
-  status?: string;
-  search?: string;
-};
 
 export const lostFoundApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getLostFoundPosts: builder.query<
-      TApiResponse<TLostFoundPost[]>,
-      TLFFilters
-    >({
-      query: (params) => ({ url: "/lost-found", params }),
+    getLostFoundPosts: builder.query({
+      query: (params) => {
+        return { url: "/lost-found", method: "GET", params };
+      },
       providesTags: ["LostFound"],
     }),
 
-    getLostFoundPostById: builder.query<TApiResponse<TLostFoundPost>, string>({
+    getLostFoundPostById: builder.query({
       query: (id) => `/lost-found/${id}`,
       providesTags: (_r, _e, id) => [{ type: "LostFound", id }],
     }),
 
-    createLostFoundPost: builder.mutation<
-      TApiResponse<TLostFoundPost>,
-      TCreateLostFoundPayload
-    >({
-      query: (body) => ({ url: "/lost-found", method: "POST", body }),
+    createLostFoundPost: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/lost-found",
+          method: "POST",
+          body: payload,
+        };
+      },
       invalidatesTags: ["LostFound"],
     }),
 
-    updateLostFoundPost: builder.mutation<
-      TApiResponse<TLostFoundPost>,
-      { id: string; body: Partial<TCreateLostFoundPayload> }
-    >({
+    updateLostFoundPost: builder.mutation({
       query: ({ id, body }) => ({
         url: `/lost-found/${id}`,
         method: "PATCH",
@@ -48,15 +34,12 @@ export const lostFoundApi = baseApi.injectEndpoints({
       invalidatesTags: ["LostFound"],
     }),
 
-    markLostFoundResolved: builder.mutation<
-      TApiResponse<TLostFoundPost>,
-      string
-    >({
+    markLostFoundResolved: builder.mutation({
       query: (id) => ({ url: `/lost-found/${id}/resolve`, method: "PATCH" }),
       invalidatesTags: ["LostFound"],
     }),
 
-    deleteLostFoundPost: builder.mutation<TApiResponse<null>, string>({
+    deleteLostFoundPost: builder.mutation({
       query: (id) => ({ url: `/lost-found/${id}`, method: "DELETE" }),
       invalidatesTags: ["LostFound"],
     }),

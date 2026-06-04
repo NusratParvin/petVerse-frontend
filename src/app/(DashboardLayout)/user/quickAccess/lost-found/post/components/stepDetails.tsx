@@ -96,6 +96,7 @@ export const StepDetails = ({
         onChange={(e) => updateField("emirate", e.target.value)}
         isInvalid={!!errors.emirate}
         errorMessage={errors.emirate}
+        // className={INPUT_CLASSES}
       >
         {LF_EMIRATES.map((e) => (
           <SelectItem key={e}>{e}</SelectItem>

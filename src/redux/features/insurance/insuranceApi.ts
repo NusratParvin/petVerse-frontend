@@ -67,9 +67,8 @@ export const insuranceApi = baseApi.injectEndpoints({
       invalidatesTags: ["Insurance"],
     }),
 
-    // ─────────────────────────────────────────
     // AI Recommendation
-    // ─────────────────────────────────────────
+
     getInsuranceRecommendation: builder.mutation<
       TAIRecommendationResult,
       TAIRecommendationForm
