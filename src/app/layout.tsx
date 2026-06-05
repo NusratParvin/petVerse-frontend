@@ -4,7 +4,7 @@ import { Metadata, Viewport } from "next";
 
 import { Providers } from "../lib/providers";
 import { siteConfig } from "@/src/config/site";
-import { fontRaleway } from "@/src/config/fonts";
+import { fontRaleway, bebasNeue, dmSans } from "@/src/config/fonts";
 
 export const metadata: Metadata = {
   title: {
@@ -37,7 +37,14 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={clsx("min-h-screen  antialiased", fontRaleway.variable)}>
+      <body
+        className={clsx(
+          "min-h-screen  antialiased",
+          fontRaleway.variable,
+          bebasNeue.variable,
+          dmSans.variable,
+        )}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

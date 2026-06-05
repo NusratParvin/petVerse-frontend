@@ -1,6 +1,5 @@
 import { Button, Progress } from "@heroui/react";
-import { Check } from "lucide-react";
-import { PawPrint, ClipboardList, Phone } from "lucide-react";
+import { Check, PawPrint, ClipboardList, Camera } from "lucide-react";
 
 const STEPS = [
   {
@@ -13,13 +12,13 @@ const STEPS = [
     id: "details",
     title: "Details",
     emoji: <ClipboardList size={16} />,
-    description: "Pet details & location",
+    description: "Pet details & contact",
   },
   {
-    id: "contact",
-    title: "Contact",
-    emoji: <Phone size={16} />,
-    description: "Your phone number",
+    id: "photos",
+    title: "Photos",
+    emoji: <Camera size={16} />,
+    description: "Photos & review",
   },
 ];
 

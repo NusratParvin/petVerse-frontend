@@ -28,6 +28,8 @@ const config = {
         raleway: ["var(--font-raleway)"],
         grotesk: ["Space Grotesk", "sans-serif"],
         outfit: ["Outfit", "sans-serif"],
+        bebas: ["var(--font-bebas)"],
+        "dm-sans": ["var(--font-dm-sans)"],
       },
     },
   },
