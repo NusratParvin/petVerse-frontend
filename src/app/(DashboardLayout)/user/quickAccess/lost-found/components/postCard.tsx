@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Tooltip, Avatar } from "@heroui/react";
+import { Tooltip, Avatar, Chip, Button } from "@heroui/react";
 import {
   MapPin,
   Phone,
@@ -10,12 +10,15 @@ import {
   Trash2,
   Calendar,
   Sparkles,
+  Tag,
+  Handshake,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 import { speciesEmoji, TLostFoundPost } from "@/src/types";
 import { ImageCarousel } from "./imageCarousel";
 import { ImageLightbox } from "./imagelightbox";
+import WhatsAppIcon from "@/src/components/whatsAppIcon";
 
 /** Subtle paper-grain background   */
 const PAPER_TEXTURE: React.CSSProperties = {
@@ -94,7 +97,7 @@ export function PostCard({
           </div>
 
           {/* Photo / emoji placeholder */}
-          <div className="relative mb-0">
+          <div className="relative mb-0 ">
             {hasPhotos ? (
               <div className="rounded-none overflow-hidden ring-1 ring-black/5 ">
                 <ImageCarousel
@@ -107,7 +110,7 @@ export function PostCard({
               </div>
             ) : (
               <div
-                className="w-full aspect-square flex flex-col items-center justify-center rounded-none outline outline-1 -outline-offset-1 outline-black/5"
+                className="w-full h-44 sm:h-48 flex flex-col items-center justify-center rounded-none outline outline-1 -outline-offset-1 outline-black/5"
                 style={{ background: accentSoft }}
               >
                 <span className="text-7xl group-hover:scale-110 transition-transform duration-500 ease-out">
@@ -155,18 +158,13 @@ export function PostCard({
           </div>
 
           <div className="p-4">
-            {/* Click-through to detail page */}
+            {/* Click- detail page */}
             <Link
               href={`/user/quickAccess/lost-found/${post._id}`}
               className="relative block focus:outline-none "
             >
               <h2
-                className="text-base text-zinc-800 dark:text-zinc-100 mb-1 leading-none text-balance"
-                // style={{
-                //   fontFamily: "'Kalam', 'Caveat', cursive",
-                //   fontWeight: 700,
-                // }}
-
+                className="text-base text-zinc-800 dark:text-zinc-100  leading-none text-balance"
                 style={{
                   fontFamily: "'Bebas Neue', 'DM Sans', system-ui, sans-serif ",
                   // fontWeight: 700,
@@ -198,84 +196,127 @@ export function PostCard({
                 )}
               </h2>
 
-              <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-3 capitalize">
+              <p className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 mb-0.5 capitalize">
                 {post.breed ? `${post.breed} · ` : ""}
                 {post.color}
               </p>
 
-              <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-4 line-clamp-2 leading-relaxed text-pretty">
+              {/* <p className="text-[10px] text-zinc-600 dark:text-zinc-300 mb-1 line-clamp-2 leading-relaxed text-pretty">
                 {post.description}
-              </p>
+              </p> */}
             </Link>
 
             {/* Meta chips: location + microchip */}
-            <div className="relative flex flex-wrap gap-2 mb-5">
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md text-[11px] font-medium text-zinc-600 dark:text-zinc-300 ring-1 ring-black/5 dark:ring-white/10">
-                <MapPin className="w-3 h-3" />
+            <div className="relative flex flex-wrap justify-between gap-2 mb-2">
+              <div className="flex items-center gap-1 text-[10px]">
+                <MapPin className="w-2 h2" />
                 {post.area}, {post.emirate}
               </div>
 
               {post.microchipNumber && (
-                <div
-                  className="px-2 py-1 rounded-full text-[10px] font-semibold ring-1 shrink-0"
-                  style={{
-                    background: accentSoft,
-                    color: accent,
-                    borderColor: accentRing,
-                  }}
+                // <Chip
+                //   size="sm"
+                //   variant="shadow"
+                //   className="text-[10px]"
+                //   style={{
+                //     background: accentSoft,
+                //     color: accent,
+                //     borderColor: accentRing,
+                //   }}
+                // >
+                //   🔖 Microchipped
+                // </Chip>
+                <Tooltip
+                  content={`Microchip: ${post.microchipNumber}`}
+                  showArrow={true}
+                  className="text-tiny"
                 >
-                  🔖 Microchipped
-                </div>
+                  <Chip
+                    size="sm"
+                    color="warning"
+                    variant="shadow"
+                    className="text-[10px]  bg-opacity-70 "
+                  >
+                    <Tag className="w-3 h-3 cursor-help text-white  " />
+                  </Chip>
+                </Tooltip>
               )}
             </div>
 
             {/* Poster + Actions */}
-            <div className="relative pt-4 border-t border-dashed border-zinc-300/70 dark:border-zinc-700 flex items-center justify-between gap-3">
+            <div className="relative pt-2 border-t border-dashed border-zinc-300/70 dark:border-zinc-700 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2 min-w-0">
-                <Avatar
-                  size="sm"
-                  name={post.posterName || post.postedBy?.name || "?"}
-                  className="flex-shrink-0"
-                />
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 truncate">
+                <Tooltip
+                  showArrow={true}
+                  className="text-tiny"
+                  content={
+                    post.posterName || post.postedBy?.name || "Anonymous"
+                  }
+                  placement="top"
+                >
+                  <Avatar
+                    size="sm"
+                    name={post.posterName || post.postedBy?.name || "?"}
+                    className="flex-shrink-0 w-5 h-5 font-bold bg-steel-blue/10 dark:bg-transparent text-steel-blue dark:text-lime-burst ring-2 ring-steel-blue/50 dark:ring-lime-burst dark:ring-offset-0 shadow-md dark:shadow-lime-burst shadow-steel-blue cursor-pointer"
+                  />
+                </Tooltip>
+                <span className="text-[9px] font-bold text-steel-blue dark:text-lime-burst truncate">
                   {post.posterName || post.postedBy?.name || "Anonymous"}
                 </span>
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                <Tooltip content={post.posterPhone || "Contact"}>
+                <Tooltip
+                  content={post.posterPhone || "Contact"}
+                  showArrow
+                  className="text-tiny"
+                >
                   <a
-                    href={`tel:${post.posterPhone}`}
-                    className="inline-flex items-center gap-1.5 text-white text-xs font-semibold py-2 px-3 rounded-md hover:opacity-90 active:scale-[0.98] transition-all"
+                    href={`https://wa.me/${post.posterPhone?.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-white text-xs font-semibold py-1.5 px-3 rounded-md hover:opacity-90 active:scale-[0.98] transition-all"
                     style={{
                       background: accent,
                       boxShadow: `0 0 0 3px ${accentSoft}`,
                     }}
                   >
-                    <Phone className="w-3.5 h-3.5" />
+                    <WhatsAppIcon className="w-3.5 h-3.5" />
                     {isLost ? "Owner" : "Finder"}
                   </a>
                 </Tooltip>
 
                 {isOwner && !isDone && (
-                  <Tooltip content="Mark as reunited">
-                    <button
-                      onClick={() => onResolve(post._id)}
-                      className="w-8 h-8 flex items-center justify-center rounded-md bg-lime-50 dark:bg-lime-900/20 text-[#8DB82A] hover:bg-lime-100 transition-colors ring-1 ring-lime-200 dark:ring-lime-800"
+                  <Tooltip
+                    content="Mark as reunited"
+                    showArrow={true}
+                    className="text-tiny"
+                  >
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      onPress={() => onResolve(post._id)}
+                      className="w-7 h-7 bg-lime-50 dark:bg-lime-900/20 text-[#8DB82A] hover:bg-lime-100 dark:hover:bg-lime-900/40 transition-colors ring-1 ring-lime-200 dark:ring-lime-800"
                     >
-                      <CheckCircle className="w-4 h-4" />
-                    </button>
+                      <Handshake className="w-4 h-4" />
+                    </Button>
                   </Tooltip>
                 )}
 
                 {isOwner && (
-                  <Tooltip content="Delete post">
-                    <button
-                      onClick={() => onDelete(post._id)}
-                      className="w-8 h-8 flex items-center justify-center rounded-md bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 transition-colors ring-1 ring-red-200 dark:ring-red-900"
+                  <Tooltip
+                    content="Delete post"
+                    showArrow={true}
+                    className="text-tiny"
+                  >
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      onPress={() => onDelete(post._id)}
+                      className="w-7 h-7 bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors ring-1 ring-red-200 dark:ring-red-900"
                     >
                       <Trash2 className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </Tooltip>
                 )}
               </div>
