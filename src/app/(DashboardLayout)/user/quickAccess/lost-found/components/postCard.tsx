@@ -68,13 +68,14 @@ export function PostCard({
         className={`relative flex flex-col group ${isDone ? "opacity-90" : ""}`}
       >
         {/* Tape strip */}
-        <div
+        {/* <div
           className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3 w-16 h-7 rotate-2 z-20 rounded-[2px]"
           style={TAPE_STYLE}
-        />
+        /> */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3 w-16 h-7 bg-amber-200/60 dark:bg-amber-300/80 rotate-2 z-20 shadow-sm" />
 
         <div
-          className={`relative bg-neutral-50 dark:bg-zinc-900/30 p-0 mb-5 ring-1 ring-black/5 dark:ring-white/10 ${tilt} group-hover:rotate-0 transition-transform duration-300 ease-out shadow-md shadow-black/25`}
+          className={`relative bg-neutral-50 dark:bg-zinc-900/40 p-0 mb-5 ring-1 ring-black/5 dark:ring-white/10 ${tilt} group-hover:rotate-0 transition-transform duration-300 ease-out shadow-md shadow-black/25 dark:shadow-sm dark:hover:shadow-primary`}
         >
           {/* Paper grain */}
           <div className="absolute inset-0" style={PAPER_TEXTURE} />
