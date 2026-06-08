@@ -23,7 +23,7 @@ import { Search, Plus, Trash2, X, PawPrint } from "lucide-react";
 import { PostCardSkeletonGrid } from "./components/postcardSkeleton";
 import { PostCard } from "./components/postCard";
 
-const SPECIES_EMOJI: Record<string, string> = {
+export const SPECIES_EMOJI: Record<string, string> = {
   dog: "🐕",
   cat: "🐈",
   bird: "🦜",

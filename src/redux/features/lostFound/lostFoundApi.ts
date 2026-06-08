@@ -35,12 +35,16 @@ export const lostFoundApi = baseApi.injectEndpoints({
     }),
 
     markLostFoundResolved: builder.mutation({
-      query: (id) => ({ url: `/lost-found/${id}/resolve`, method: "PATCH" }),
+      query: (id) => {
+        return { url: `/lost-found/${id}/resolve`, method: "PATCH" };
+      },
       invalidatesTags: ["LostFound"],
     }),
 
     deleteLostFoundPost: builder.mutation({
-      query: (id) => ({ url: `/lost-found/${id}`, method: "DELETE" }),
+      query: (id) => {
+        return { url: `/lost-found/${id}`, method: "DELETE" };
+      },
       invalidatesTags: ["LostFound"],
     }),
   }),

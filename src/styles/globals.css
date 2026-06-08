@@ -89,3 +89,32 @@ html::-webkit-scrollbar {
 .dark .custom-scrollbar {
   scrollbar-color: rgba(184, 255, 46, 0.5) rgba(184, 255, 46, 0.1);
 }
+
+/* scrollbar lost-found */
+/* For Webkit browsers (Chrome, Safari) */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark mode */
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background: #3f3f46;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #71717a;
+}

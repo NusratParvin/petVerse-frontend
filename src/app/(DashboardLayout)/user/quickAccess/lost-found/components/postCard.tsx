@@ -5,8 +5,6 @@ import Link from "next/link";
 import { Tooltip, Avatar, Chip, Button } from "@heroui/react";
 import {
   MapPin,
-  Phone,
-  CheckCircle,
   Trash2,
   Calendar,
   Sparkles,
@@ -28,12 +26,12 @@ const PAPER_TEXTURE: React.CSSProperties = {
   pointerEvents: "none",
 };
 
-/** Frosted "tape" strip  */
-const TAPE_STYLE: React.CSSProperties = {
-  background: "rgba(244,244,245,0.55)",
-  backdropFilter: "blur(2px)",
-  boxShadow: "inset 0 0 10px rgba(0,0,0,0.06)",
-};
+// /** Frosted "tape" strip  */
+// const TAPE_STYLE: React.CSSProperties = {
+//   background: "rgba(244,244,245,0.55)",
+//   backdropFilter: "blur(2px)",
+//   boxShadow: "inset 0 0 10px rgba(0,0,0,0.06)",
+// };
 
 interface PostCardProps {
   post: TLostFoundPost;
@@ -57,7 +55,7 @@ export function PostCard({
   // console.log(post?.photos);
   const accent = isLost ? "#4682B4" : "#8DB82A";
   const accentSoft = isLost ? "rgba(70,130,180,0.10)" : "rgba(141,184,42,0.12)";
-  const accentRing = isLost ? "rgba(70,130,180,0.25)" : "rgba(141,184,42,0.30)";
+  // const accentRing = isLost ? "rgba(70,130,180,0.25)" : "rgba(141,184,42,0.30)";
 
   // Slight, deterministic flyer tilt — feels hand-pinned without chaos.
   const tilt = isLost ? "-rotate-[1.2deg]" : "rotate-[1deg]";
@@ -268,7 +266,7 @@ export function PostCard({
 
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Tooltip
-                  content={post.posterPhone || "Contact"}
+                  content={`Contact-${post.posterPhone} ` || "Contact"}
                   showArrow
                   className="text-tiny"
                 >
