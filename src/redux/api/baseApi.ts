@@ -34,6 +34,7 @@ const baseApi = createApi({
     "InsuranceRatings",
     "InsuranceReviews",
     "LostFound",
+    "Comments",
   ],
   endpoints: () => ({}),
 });

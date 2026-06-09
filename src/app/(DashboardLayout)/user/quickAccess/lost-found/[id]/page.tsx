@@ -28,8 +28,9 @@ import {
 import { useAppSelector } from "@/src/redux/hooks";
 import { useCurrentUser } from "@/src/redux/features/auth/authSlice";
 import { DetailSkeleton } from "../components/detailSkeleton";
-import { SPECIES_EMOJI } from "../page";
 import { DetailRow } from "./components/detailRow";
+import { SPECIES_EMOJI } from "../page";
+import CommentSection from "../../../components/comments/commentSection";
 
 function formatReward(amount: number): string {
   if (amount >= 1000) {
@@ -93,6 +94,7 @@ export default function LostFoundDetailPage() {
       toast.error(`Failed to delete-${err}`);
     }
   };
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -106,7 +108,7 @@ export default function LostFoundDetailPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white dark:bg-transparent p-3 sm:p-4">
+    <div className="min-h-screen w-full bg-white dark:bg-transparent p-3 sm:p-4 mb-24">
       {/* Back link */}
       <div className="text-right mb-2">
         <Link
@@ -327,7 +329,7 @@ export default function LostFoundDetailPage() {
             <Button
               as="a"
               href={`tel:${post.posterPhone}`}
-              className="flex items-center justify-center gap-2 py-3 px-4 bg-steel-blue text-white text-sm font-semibold rounded-full transition-all hover:brightness-110 active:scale-[0.98] shadow-md"
+              className="flex items-center justify-center gap-2 py-3 px-4 bg-steel-blue text-white text-sm font-semibold rounded-md transition-all hover:brightness-110 active:scale-[0.98] shadow-md"
               startContent={<Phone className="size-4" />}
             >
               Call {post.posterPhone}
@@ -337,7 +339,7 @@ export default function LostFoundDetailPage() {
               href={`https://wa.me/${(post.posterPhone || "").replace(/\D/g, "")}`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-center gap-2 py-3 px-4 bg-lime-burst text-zinc-950 text-sm font-semibold rounded-full transition-all hover:brightness-110 active:scale-[0.98] shadow-md"
+              className="flex items-center justify-center gap-2 py-3 px-4 bg-lime-burst text-steel-blue text-sm font-semibold rounded-md transition-all hover:brightness-110 active:scale-[0.98] shadow-md"
               startContent={<MessageCircle className="size-4" />}
             >
               WhatsApp
@@ -364,7 +366,7 @@ export default function LostFoundDetailPage() {
                     <Button
                       onPress={handleResolve}
                       size="sm"
-                      className="bg-lime/20 text-lime hover:bg-lime/30 transition-colors rounded-full"
+                      className="bg-lime-500/60 text-black/80 hover:text-black hover:bg-lime-500/80 transition-colors rounded-md"
                       startContent={<Check className="size-3.5" />}
                     >
                       Mark reunited
@@ -387,9 +389,17 @@ export default function LostFoundDetailPage() {
         </footer>
       </article>
 
-      <p className="max-w-3xl mx-auto mt-6 text-center text-xs italic text-zinc-400">
+      {/* <p className="max-w-3xl mx-auto mt-16 text-center text-xs italic text-zinc-400">
         Please share this flyer — every share brings a pet closer to home 🐾
-      </p>
+      </p> */}
+
+      <div className="max-w-full mx-auto mt-8">
+        <CommentSection
+          targetType="LostFound"
+          targetId={post._id}
+          postOwnerId={post.postedBy?._id}
+        />
+      </div>
 
       {/* Lightbox */}
       {lightboxIndex !== null && hasPhotos && (

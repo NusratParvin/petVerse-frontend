@@ -26,11 +26,13 @@ export const lostFoundApi = baseApi.injectEndpoints({
     }),
 
     updateLostFoundPost: builder.mutation({
-      query: ({ id, body }) => ({
-        url: `/lost-found/${id}`,
-        method: "PATCH",
-        body,
-      }),
+      query: ({ id, payload }) => {
+        return {
+          url: `/lost-found/${id}`,
+          method: "PATCH",
+          body: payload,
+        };
+      },
       invalidatesTags: ["LostFound"],
     }),
 

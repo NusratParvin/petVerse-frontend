@@ -1,5 +1,5 @@
 import { Button } from "@heroui/react";
-import { SPECIES_OPTIONS } from "../page";
+import { SPECIES_OPTIONS } from "./lostFoundForm";
 
 interface StepBasicInfoProps {
   form: { type: string; species: string };
