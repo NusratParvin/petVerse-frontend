@@ -19,8 +19,8 @@ export const commentsApi = baseApi.injectEndpoints({
     // ── get by target (Article or LostFound) ────────────────────────
     // usage: useGetCommentsByTargetQuery({ targetType: "LostFound", targetId: id })
     getCommentsByTarget: builder.query({
-      query: ({ targetType, targetId }) => ({
-        url: `/comments/${targetType}/${targetId}`,
+      query: ({ targetType, targetId, page }) => ({
+        url: `/comments/${targetType}/${targetId}/${page}`,
         method: "GET",
       }),
       providesTags: (_result, _error, arg) => [

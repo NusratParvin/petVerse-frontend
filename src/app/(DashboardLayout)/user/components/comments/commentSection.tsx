@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Chip, Skeleton } from "@heroui/react";
+import { Button, Chip, Skeleton } from "@heroui/react";
 import { MessageCircle, Eye } from "lucide-react";
 
 import { useGetCommentsByTargetQuery } from "@/src/redux/features/comments/commentsApi";
@@ -13,7 +13,6 @@ import CommentCard from "./commentCard";
 interface CommentSectionProps {
   targetType: TTargetType;
   targetId: string;
-  // for lost & found: pass the post owner id to enable "mark helpful lead"
   postOwnerId?: string;
 }
 
@@ -24,15 +23,19 @@ const CommentSection = ({
 }: CommentSectionProps) => {
   const user = useAppSelector(useCurrentUser);
   const isPostOwner = user?._id === postOwnerId;
+  const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useGetCommentsByTargetQuery({
+  console.log(user);
+  const { data, isLoading, refetch } = useGetCommentsByTargetQuery({
     targetType,
     targetId,
+    page,
   });
 
-  const comments = data?.data ?? [];
-  const sightings = comments.filter((c: any) => c.isSighting);
-  const regularComments = comments.filter((c: any) => !c.isSighting);
+  const comments = data?.data?.comments ?? [];
+
+  const sightings = comments?.filter((c: any) => c.isSighting);
+  const regularComments = comments?.filter((c: any) => !c.isSighting);
 
   return (
     <section className="w-full mt-6 space-y-4">
@@ -129,6 +132,8 @@ const CommentSection = ({
               ))}
             </div>
           )}
+
+          <Button onPress={() => setPage(page + 1)}>Load More</Button>
         </div>
       )}
     </section>
