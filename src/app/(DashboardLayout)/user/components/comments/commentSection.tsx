@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Chip, Skeleton } from "@heroui/react";
-import { MessageCircle, Eye } from "lucide-react";
+import { MessageCircle, Eye, PawPrint, Sparkles } from "lucide-react";
 
 import { useGetCommentsByTargetQuery } from "@/src/redux/features/comments/commentsApi";
 import { TTargetType } from "@/src/redux/features/comments/commentsApi";
@@ -9,6 +9,7 @@ import { useAppSelector } from "@/src/redux/hooks";
 import { useCurrentUser } from "@/src/redux/features/auth/authSlice";
 import AddCommentCard from "./addCommentCard";
 import CommentCard from "./commentCard";
+import { TComment } from "@/src/types";
 
 interface CommentSectionProps {
   targetType: TTargetType;
@@ -24,52 +25,58 @@ const CommentSection = ({
   const user = useAppSelector(useCurrentUser);
   const isPostOwner = user?._id === postOwnerId;
   const [page, setPage] = useState(1);
+  const [allComments, setAllComments] = useState<TComment[]>([]);
 
-  console.log(user);
-  const { data, isLoading, refetch } = useGetCommentsByTargetQuery({
+  const { data, isLoading } = useGetCommentsByTargetQuery({
     targetType,
     targetId,
     page,
   });
 
   const comments = data?.data?.comments ?? [];
+  const hasMore = data?.data?.hasMore;
 
-  const sightings = comments?.filter((c: any) => c.isSighting);
-  const regularComments = comments?.filter((c: any) => !c.isSighting);
+  useEffect(() => {
+    if (!data?.data?.comments) return;
+    if (page === 1) {
+      setAllComments(comments);
+    } else if (page > 1) {
+      setAllComments((prev) => [...prev, ...comments]);
+    }
+  }, [data]);
+
+  const sightings = allComments?.filter((c: any) => c.isSighting);
+  const regularComments = allComments?.filter((c: any) => !c.isSighting);
+  const isLostFound = targetType === "LostFound";
 
   return (
-    <section className="w-full mt-6 space-y-4">
+    <section className="w-full mt-4 space-y-3">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="size-4 text-steel-blue dark:text-lime-burst" />
-          <h2 className="font-semibold text-sm text-zinc-800 dark:text-zinc-200">
-            {targetType === "LostFound" ? "Sightings & Comments" : "Comments"}
+      <div className="flex items-center gap-2 px-1">
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-steel-blue/10 dark:bg-lime-burst/10 border border-steel-blue/20 dark:border-lime-burst/20">
+          <PawPrint
+            className="size-2.5 text-steel-blue dark:text-lime-burst"
+            strokeWidth={2.5}
+          />
+          <h2 className="font-semibold text-[9px] text-steel-blue dark:text-lime-burst uppercase tracking-wider">
+            {isLostFound ? "Sightings & Comments" : "Comments"}
           </h2>
+          <span className="text-[9px] font-bold text-steel-blue/70 dark:text-lime-burst/70 ml-0.5">
+            {allComments.length}
+          </span>
         </div>
-        <Chip
-          size="sm"
-          classNames={{
-            base: "bg-steel-blue/10 dark:bg-lime-burst/10",
-            content:
-              "text-steel-blue dark:text-lime-burst font-semibold text-[11px]",
-          }}
-        >
-          {comments.length}
-        </Chip>
 
-        {/* sighting count badge — lost & found only */}
-        {targetType === "LostFound" && sightings.length > 0 && (
+        {isLostFound && sightings.length > 0 && (
           <Chip
             size="sm"
-            startContent={<Eye className="size-3" />}
+            startContent={<Eye className="size-2.5" />}
             classNames={{
-              base: "bg-amber-500/10",
+              base: "bg-amber-500/10 h-5 border border-amber-400/30",
               content:
-                "text-amber-600 dark:text-amber-400 font-semibold text-[11px]",
+                "text-amber-700 dark:text-amber-400 font-bold text-[10px] px-1",
             }}
           >
-            {sightings.length} sighting{sightings.length !== 1 ? "s" : ""}
+            {sightings.length} spotted
           </Chip>
         )}
       </div>
@@ -79,61 +86,112 @@ const CommentSection = ({
 
       {/* Comment list */}
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-20 w-full rounded-xl" />
           ))}
         </div>
-      ) : comments.length === 0 ? (
-        <div className="text-center py-10 text-zinc-400 dark:text-zinc-600">
-          <MessageCircle className="size-8 mx-auto mb-2 opacity-30" />
-          <p className="text-sm">
-            {targetType === "LostFound"
-              ? "No sightings or comments yet. Be the first to help!"
-              : "No comments yet. Start the conversation!"}
+      ) : allComments?.length === 0 ? (
+        <div className="relative text-center py-10 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/30 overflow-hidden">
+          {/* decorative paws */}
+          <PawPrint
+            className="absolute top-3 left-6 size-5 text-steel-blue/10 dark:text-lime-burst/10 -rotate-12"
+            strokeWidth={2}
+          />
+          <PawPrint
+            className="absolute bottom-3 right-8 size-4 text-steel-blue/10 dark:text-lime-burst/10 rotate-45"
+            strokeWidth={2}
+          />
+          <PawPrint
+            className="absolute top-1/2 right-12 size-3 text-steel-blue/10 dark:text-lime-burst/10 rotate-12"
+            strokeWidth={2}
+          />
+
+          <div className="inline-flex size-10 rounded-full bg-steel-blue/10 dark:bg-lime-burst/10 items-center justify-center mb-2">
+            <MessageCircle className="size-5 text-steel-blue dark:text-lime-burst" />
+          </div>
+          <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+            {isLostFound ? "No sightings or comments yet" : "No comments yet"}
+          </p>
+          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1">
+            Be the first to start the conversation 🐾
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {/* Sightings first for Lost & Found */}
-          {targetType === "LostFound" && sightings.length > 0 && (
+          {isLostFound && sightings.length > 0 && (
             <div className="space-y-2">
-              <p className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold px-1">
-                Sightings
-              </p>
-              {sightings.map((comment: any) => (
-                <CommentCard
-                  key={comment._id}
-                  comment={comment}
-                  targetId={targetId}
-                  targetType={targetType}
-                  isPostOwner={isPostOwner}
-                />
-              ))}
+              <div className="flex items-center gap-1.5 px-1">
+                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/30">
+                  <Sparkles className="size-2.5 text-amber-600" />
+                  <p className="text-[9px] uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold">
+                    Sightings ({sightings.length})
+                  </p>
+                </div>
+                <div className="flex-1 h-px bg-gradient-to-r from-amber-400/30 to-transparent" />
+              </div>
+              <div className="space-y-2">
+                {sightings.map((comment: any) => (
+                  <CommentCard
+                    key={comment._id}
+                    comment={comment}
+                    targetId={targetId}
+                    targetType={targetType}
+                    isPostOwner={isPostOwner}
+                  />
+                ))}
+              </div>
             </div>
           )}
 
           {/* Regular comments */}
           {regularComments.length > 0 && (
             <div className="space-y-2">
-              {targetType === "LostFound" && sightings.length > 0 && (
-                <p className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold px-1 pt-2">
-                  Comments
-                </p>
+              {isLostFound && sightings.length > 0 && (
+                <div className="flex items-center gap-1.5 px-1 pt-1">
+                  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-steel-blue/10 dark:bg-lime-burst/10 border border-steel-blue/20 dark:border-lime-burst/20">
+                    <MessageCircle className="size-2.5 text-steel-blue dark:text-lime-burst" />
+                    <p className="text-[9px] uppercase tracking-wider text-steel-blue dark:text-lime-burst font-bold">
+                      Comments ({regularComments.length})
+                    </p>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-steel-blue/30 dark:from-lime-burst/30 to-transparent" />
+                </div>
               )}
-              {regularComments.map((comment: any) => (
-                <CommentCard
-                  key={comment._id}
-                  comment={comment}
-                  targetId={targetId}
-                  targetType={targetType}
-                  isPostOwner={isPostOwner}
-                />
-              ))}
+              <div className="space-y-2">
+                {regularComments.map((comment: any) => (
+                  <CommentCard
+                    key={comment._id}
+                    comment={comment}
+                    targetId={targetId}
+                    targetType={targetType}
+                    isPostOwner={isPostOwner}
+                  />
+                ))}
+              </div>
             </div>
           )}
 
-          <Button onPress={() => setPage(page + 1)}>Load More</Button>
+          {hasMore && (
+            <div className="pt-1">
+              <Button
+                size="sm"
+                variant="bordered"
+                isDisabled={!hasMore}
+                onPress={() => setPage(page + 1)}
+                isLoading={isLoading}
+                startContent={
+                  !isLoading && (
+                    <PawPrint className="size-3" strokeWidth={2.5} />
+                  )
+                }
+                className="w-full text-[11px] h-8 font-bold uppercase tracking-wider text-steel-blue dark:text-lime-burst border border-dashed border-steel-blue/40 dark:border-lime-burst/40 hover:bg-steel-blue/5 dark:hover:bg-lime-burst/5 rounded-xl"
+              >
+                Load more
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </section>

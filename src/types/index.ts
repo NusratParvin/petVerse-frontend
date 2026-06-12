@@ -96,16 +96,32 @@ export interface TVoteInfo {
 
 export interface TComment {
   _id: string;
-  articleId: string;
+  targetType: "Article" | "LostFound";
+  targetId: string;
+
   commenter: {
     commenterId: string;
     name: string;
-    profilePhoto: string;
+    profilePhoto?: string;
   };
+
   content: string;
+
   upvotes: number;
   downvotes: number;
   voteInfo: TVoteInfo[];
+
+  // lost & found sighting fields (null for articles)
+  isSighting: boolean;
+  sightingLocation?: string;
+  sightingPhoto?: string;
+  isHelpfulLead: boolean;
+
+  isDeleted: boolean;
+
+  // threaded replies
+  parentId?: string | null;
+
   createdAt: string;
   updatedAt: string;
 }

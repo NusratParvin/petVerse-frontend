@@ -11,7 +11,6 @@ import {
   Star,
   MessageCircle,
   Check,
-  PawPrint,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -32,6 +31,7 @@ interface CommentCardProps {
   targetId: string;
   targetType: TTargetType;
   isPostOwner?: boolean;
+  // future: thread depth
   depth?: number;
 }
 
@@ -129,74 +129,47 @@ const CommentCard = ({
   return (
     <div
       className={`
-        relative rounded-md overflow-hidden transition-all duration-200
-        before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] 
+        relative rounded-xl border transition-all duration-200
         ${
           isHelpfulLead
-            ? "border border-lime-burst/40 bg-lime-burst/[0.04] dark:bg-lime-burst/5 shadow-[0_2px_12px_-4px_rgba(132,204,22,0.25)]"
+            ? "border-lime-burst/40 bg-lime-burst/5 dark:bg-lime-burst/5"
             : isSighting
-              ? "border border-amber-400/30 bg-amber-500/[0.04] dark:bg-amber-500/5"
-              : "border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 hover:border-zinc-300 dark:hover:border-zinc-700"
+              ? "border-amber-400/30 bg-amber-500/5 dark:bg-amber-500/5"
+              : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40"
         }
-        ${depth > 0 ? "ml-6 mt-2" : ""}
+        ${depth > 0 ? "ml-8 mt-2" : ""}
       `}
     >
       {/* helpful lead banner */}
       {isHelpfulLead && (
-        <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-lime-burst/25 via-lime-burst/15 to-transparent border-b border-lime-burst/20">
+        <div className="flex items-center gap-1.5 px-4 py-1.5 bg-lime-burst/20 dark:bg-lime-burst/10 rounded-t-xl border-b border-lime-burst/20">
           <Star className="size-3 text-lime-600 dark:text-lime-burst fill-current" />
-          <span className="text-[10px] font-bold text-lime-700 dark:text-lime-burst uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-lime-700 dark:text-lime-burst uppercase tracking-wide">
             Helpful Lead
           </span>
-          <PawPrint
-            className="size-3 text-lime-600/60 dark:text-lime-burst/60 ml-auto"
-            strokeWidth={2}
-          />
         </div>
       )}
 
-      <div className="p-3 pl-4 space-y-2">
+      <div className="p-3 space-y-2">
         {/* top row */}
         <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="relative shrink-0">
-              <Avatar
-                size="sm"
-                name={
-                  commentData?.commenter?.name?.charAt(0).toUpperCase() || "U"
-                }
-                src={commentData?.commenter?.profilePhoto || undefined}
-                classNames={{
-                  base: "bg-steel-blue/20 dark:bg-steel-blue/30 ring-2 ring-white dark:ring-zinc-900",
-                  name: "text-steel-blue dark:text-lime-burst text-xs font-bold",
-                }}
-              />
-              {isSighting && (
-                <div className="absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full bg-amber-500 grid place-items-center ring-2 ring-white dark:ring-zinc-900">
-                  <Eye className="size-2 text-white" strokeWidth={3} />
-                </div>
-              )}
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 truncate">
-                  {commentData?.commenter?.name || "Anonymous"}
-                </span>
-                {isPostOwner &&
-                  user?._id === commentData?.commenter?.commenterId && (
-                    <Chip
-                      size="sm"
-                      classNames={{
-                        base: "bg-steel-blue/10 dark:bg-lime-burst/10 h-3.5 px-1",
-                        content:
-                          "text-steel-blue dark:text-lime-burst text-[8px] font-bold uppercase",
-                      }}
-                    >
-                      OWNER
-                    </Chip>
-                  )}
-              </div>
-              <span className="text-[10px] text-zinc-400">
+          <div className="flex items-center gap-2">
+            <Avatar
+              size="sm"
+              name={
+                commentData?.commenter?.name?.charAt(0).toUpperCase() || "U"
+              }
+              src={commentData?.commenter?.profilePhoto || undefined}
+              classNames={{
+                base: "bg-steel-blue/20 dark:bg-steel-blue/30 shrink-0",
+                name: "text-steel-blue dark:text-lime-burst text-xs font-bold",
+              }}
+            />
+            <div>
+              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                {commentData?.commenter?.name || "Anonymous"}
+              </span>
+              <span className="text-[11px] text-zinc-400 ml-2">
                 {formatDistanceToNow(new Date(commentData?.createdAt), {
                   addSuffix: true,
                 })}
@@ -204,23 +177,25 @@ const CommentCard = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-1 shrink-0">
+          {/* badges */}
+          <div className="flex items-center gap-1.5 shrink-0">
             {isSighting && (
               <Chip
                 size="sm"
                 startContent={<Eye className="size-3 pe-0.5 text-amber-700" />}
                 classNames={{
-                  base: "bg-amber-500/15 px-2 border border-amber-400/30",
+                  base: "bg-amber-500/15 px-2 ",
                   content:
-                    "text-amber-700 dark:text-amber-400 text-[9px] font-bold uppercase tracking-wide",
+                    "text-amber-600 dark:text-amber-400 text-[10px] font-semibold",
                 }}
               >
                 Sighting
               </Chip>
             )}
 
+            {/* owner actions */}
             {isOwner && !isEditing && (
-              <div className="flex items-center gap-0.5">
+              <div className="flex items-center gap-1">
                 <Tooltip showArrow={true} content="Edit">
                   <button
                     onClick={() => setIsEditing(true)}
@@ -242,13 +217,11 @@ const CommentCard = ({
           </div>
         </div>
 
-        {/* sighting location pill */}
+        {/* sighting location */}
         {isSighting && commentData?.sightingLocation && (
-          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-400/30">
-            <MapPin className="size-2.5 text-amber-600 dark:text-amber-400" />
-            <span className="text-[10px] font-medium text-amber-700 dark:text-amber-400">
-              {commentData.sightingLocation}
-            </span>
+          <div className="flex items-center gap-1.5 text-[10px] tracking-wide text-amber-600 dark:text-amber-400">
+            <MapPin className="size-2.5" />
+            <span>{commentData.sightingLocation}</span>
           </div>
         )}
 
@@ -260,53 +233,53 @@ const CommentCard = ({
             onSubmit={handleUpdate}
           />
         ) : (
-          <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
+          <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed pl-2">
             {commentData?.content}
           </p>
         )}
 
         {/* sighting photo */}
         {isSighting && commentData?.sightingPhoto && (
-          <div>
+          <div className="pl-8">
             <img
               src={commentData.sightingPhoto}
               alt="Sighting photo"
-              className="rounded-lg max-h-48 object-cover border border-amber-300/40 shadow-sm"
+              className="rounded-md max-h-48 object-cover border border-zinc-200 dark:border-zinc-700"
             />
           </div>
         )}
 
         {/* footer actions */}
-        <div className="flex items-center justify-between pt-1 border-t border-dashed border-zinc-200/70 dark:border-zinc-800">
-          <div className="flex items-center gap-0.5">
-            {/* vote pill */}
-            <div className="flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800/60 p-0.5">
-              <button
-                onClick={handleUpvote}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-zinc-500 hover:text-steel-blue dark:hover:text-lime-burst hover:bg-white dark:hover:bg-zinc-900 transition-all text-[10px] font-semibold"
-              >
-                <ArrowUp className="size-3" />
-                <span>{commentData?.upvotes}</span>
-              </button>
-              <div className="w-px h-3 bg-zinc-300 dark:bg-zinc-700" />
-              <button
-                onClick={handleDownvote}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-zinc-500 hover:text-red-500 hover:bg-white dark:hover:bg-zinc-900 transition-all text-[10px] font-semibold"
-              >
-                <ArrowDown className="size-3" />
-                <span>{commentData?.downvotes}</span>
-              </button>
-            </div>
+        <div className="flex items-center justify-between ">
+          <div className="flex items-center gap-1">
+            {/* upvote */}
+            <button
+              onClick={handleUpvote}
+              className="flex items-center gap-1 px-2 py-1 rounded-lg text-zinc-500 hover:text-steel-blue dark:hover:text-lime-burst hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-[10px]"
+            >
+              <ArrowUp className="size-3" />
+              <span>{commentData?.upvotes}</span>
+            </button>
+
+            {/* downvote */}
+            <button
+              onClick={handleDownvote}
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-zinc-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-[10px]"
+            >
+              <ArrowDown className="size-3" />
+              <span>{commentData?.downvotes}</span>
+            </button>
 
             {/* reply — wired for future threads, disabled for now */}
             <Tooltip showArrow={true} content="Replies coming soon">
-              <button className="flex items-center gap-1 px-2 py-1 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors text-[10px] opacity-60 font-medium">
+              <button className="flex items-center gap-1 px-2 py-1 rounded-md text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors text-xs opacity-60 text-[10px]">
                 <MessageCircle className="size-3" />
                 <span>Reply</span>
               </button>
             </Tooltip>
           </div>
 
+          {/* mark helpful lead — post owner only, lost & found only */}
           {isLostFound && isPostOwner && isSighting && (
             <Tooltip
               content={
@@ -317,34 +290,22 @@ const CommentCard = ({
             >
               <button
                 onClick={handleMarkHelpfulLead}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide transition-all ${
+                className={`flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition-colors ${
                   isHelpfulLead
-                    ? "text-zinc-900 bg-lime-burst shadow-sm"
-                    : "text-zinc-600 dark:text-zinc-400 border border-dashed border-lime-burst/40 hover:bg-lime-burst/10 hover:text-lime-700 dark:hover:text-lime-burst"
+                    ? "text-lime-600 dark:text-lime-burst bg-lime-burst/10"
+                    : "text-zinc-700 hover:text-lime-600 dark:hover:text-lime-burst hover:bg-lime-burst/10"
                 }`}
               >
-                <Check className="size-3" />
-                {isHelpfulLead ? "Helpful" : "Mark helpful"}
+                <Check className="size-3.5" />
+                {isHelpfulLead ? "Helpful lead" : "Mark helpful"}
               </button>
             </Tooltip>
           )}
         </div>
       </div>
 
-      {/* ===== FUTURE: reply threads =====
-      <div className="border-t border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30">
-        {commentData.replies?.map((reply: any) => (
-          <CommentCard
-            key={reply._id}
-            comment={reply}
-            targetId={targetId}
-            targetType={targetType}
-            isPostOwner={isPostOwner}
-            depth={depth + 1}
-          />
-        ))}
-      </div>
-      ================================== */}
+      {/* future: render replies here using parentId */}
+      {/* {comment.replies?.map(reply => <CommentCard key={reply._id} comment={reply} depth={depth + 1} ... />)} */}
     </div>
   );
 };
