@@ -24,7 +24,7 @@ export const StepPhotos = ({ form, errors, updatePhotos }: StepPhotosProps) => (
       <div className="text-4xl">📸</div>
       <h2 className="text-lg font-bold">Add photos</h2>
       <p className="text-xs text-default-500">
-        Photos help people recognise your pet faster
+        Photos help people recognize your pet faster
       </p>
     </div>
 

@@ -39,11 +39,14 @@ export const commentsApi = baseApi.injectEndpoints({
 
     // ── update content ──────────────────────────────────────────────
     updateComment: builder.mutation({
-      query: ({ commentId, content }) => ({
+      query: ({ commentId, ...data }) => ({
         url: `/comments/${commentId}`,
         method: "PATCH",
-        body: { content },
+        body: data,
       }),
+      // invalidatesTags: (_result, _error, arg) => [
+      //   { type: "Comments", id: arg.targetId },
+      // ],
     }),
 
     // ── soft delete ─────────────────────────────────────────────────

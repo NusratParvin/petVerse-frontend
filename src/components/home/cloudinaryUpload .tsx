@@ -8,7 +8,7 @@ const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
 //   upload one file to Cloudinary
-async function uploadToCloudinary(file: File): Promise<string> {
+export const uploadToCloudinary = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", UPLOAD_PRESET as string);
@@ -21,22 +21,15 @@ async function uploadToCloudinary(file: File): Promise<string> {
   if (!res.ok) throw new Error("Upload failed");
   const data = await res.json();
   return data.secure_url as string;
-}
+};
 
 interface CloudinaryUploadProps {
-  // Current image URL(s) — pass a string for single, string[] for multiple
   value: string | string[];
-  // Called with the new URL(s) after upload
   onChange: (value: string | string[]) => void;
-  // "single" = one image (e.g. cover photo), "multiple" = gallery
-  mode?: "single" | "multiple";
-  // Max images allowed in multiple mode (default: 5)
+  mode?: "single" | "multiple"; //(default: 5)
   maxImages?: number;
-  // Label shown above the upload area
   label?: string;
-  // Helper text shown inside the dropzone
   hint?: string;
-  // Show error message below
   error?: string;
 }
 
@@ -52,7 +45,7 @@ export const CloudinaryUpload = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Normalise value so we always work with arrays internally
+  // Normalize value
   const images: string[] = Array.isArray(value) ? value : value ? [value] : [];
 
   const isFull = mode === "multiple" && images.length >= maxImages;
@@ -64,29 +57,28 @@ export const CloudinaryUpload = ({
 
     try {
       if (mode === "single") {
-        // Only upload the first file; replace existing
+        // Only upload the first file
         const url = await uploadToCloudinary(files[0]);
-        onChange(url); // returns a string
+        onChange(url);
       } else {
-        // Upload all selected files in parallel
+        // Upload all selected files
         const fileArray = Array.from(files).slice(0, maxImages - images.length);
         const urls = await Promise.all(fileArray.map(uploadToCloudinary));
-        onChange([...images, ...urls]); // returns a string[]
+        onChange([...images, ...urls]);
       }
     } catch (err) {
       console.error("Cloudinary upload error:", err);
     } finally {
       setIsUploading(false);
-      // Reset input so the same file can be re-selected
       if (inputRef.current) inputRef.current.value = "";
     }
   };
 
   const removeImage = (index: number) => {
     if (mode === "single") {
-      onChange(""); // returns empty string
+      onChange("");
     } else {
-      onChange(images.filter((_, i) => i !== index)); // returns string[]
+      onChange(images.filter((_, i) => i !== index));
     }
   };
 
@@ -104,7 +96,7 @@ export const CloudinaryUpload = ({
         </p>
       )}
 
-      {/* Upload zone — shown when we can still add images */}
+      {/* Upload zone  */}
       {canUpload && (
         <div
           onClick={() => inputRef.current?.click()}

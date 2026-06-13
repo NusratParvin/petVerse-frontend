@@ -32,12 +32,12 @@ import { DetailRow } from "./components/detailRow";
 import { SPECIES_EMOJI } from "../page";
 import CommentSection from "../../../components/comments/commentSection";
 
-function formatReward(amount: number): string {
+const formatReward = (amount: number): string => {
   if (amount >= 1000) {
     return `AED ${(amount / 1000).toFixed(amount % 1000 === 0 ? 0 : 1)}k`;
   }
   return `AED ${amount}`;
-}
+};
 
 export default function LostFoundDetailPage() {
   const { id } = useParams<{ id: string }>();

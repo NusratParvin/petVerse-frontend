@@ -298,7 +298,7 @@ export const StepDetails = ({
       )}
     </div>
 
-    {/* ── Phone moved here from step 3 ── */}
+    {/*  Phone  */}
     <div className="pt-2 border-t border-default-200 dark:border-white/10">
       <Input
         label="Your phone number *"
