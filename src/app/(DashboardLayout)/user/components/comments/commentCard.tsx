@@ -208,7 +208,7 @@ const CommentCard = ({
             />
           ) : (
             <p className="mt-0.5 text-[11px] text-zinc-700 dark:text-zinc-300 leading-relaxed break-words">
-              {commentData?.content}
+              {commentData?.content}ddd
             </p>
           )}
 
@@ -235,7 +235,7 @@ const CommentCard = ({
           {/* Reply thread */}
           {!isEditing && depth < 4 && (
             <ReplyThread
-              initialReplies={(commentData as any).replies ?? []}
+              replyCount={(commentData as any).count ?? 0}
               targetId={targetId}
               targetType={targetType}
               parentCommentId={commentData._id}

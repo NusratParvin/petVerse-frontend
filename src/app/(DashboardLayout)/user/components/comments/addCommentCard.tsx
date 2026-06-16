@@ -81,14 +81,14 @@ const AddCommentCard = ({
         name: user?.name,
         profilePhoto: user?.profilePhoto || "",
       },
-      ...(parentCommentId && { parentCommentId }),
+      ...(parentCommentId && { parentId: parentCommentId }),
       ...(uploadedImageUrl && { sightingPhoto: uploadedImageUrl }),
       ...(isLostFound && {
         isSighting,
         sightingLocation: data.sightingLocation || "",
       }),
     };
-
+    // console.log(commentData, parentCommentId);
     const toastId = toast.loading(
       isReply
         ? "Posting reply..."
@@ -99,6 +99,7 @@ const AddCommentCard = ({
 
     try {
       const res = await addComment(commentData).unwrap();
+      console.log(res);
       reset();
       setIsSighting(false);
       setUploadedImageUrl(null);

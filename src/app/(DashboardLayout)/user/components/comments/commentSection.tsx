@@ -31,7 +31,7 @@ const CommentSection = ({
   });
   const comments = data?.data?.comments ?? [];
   const hasMore = data?.data?.hasMore;
-
+  // console.log(comments);
   useEffect(() => {
     if (!data?.data?.comments) return;
     if (page === 1) {

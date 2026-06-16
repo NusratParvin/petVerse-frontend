@@ -28,6 +28,19 @@ export const commentsApi = baseApi.injectEndpoints({
       ],
     }),
 
+    getRepliesByParentId: builder.query({
+      query: ({ parentId, page }) => {
+        console.log(parentId, page);
+        return {
+          url: `/comments/replies/${parentId}/${page}`,
+          method: "GET",
+        };
+      },
+      providesTags: (_result, _error, arg) => [
+        { type: "Comments", id: arg.parentId },
+      ],
+    }),
+
     // ── vote ────────────────────────────────────────────────────────
     voteComment: builder.mutation({
       query: ({ commentId, voteType }) => ({
@@ -89,6 +102,7 @@ export const commentsApi = baseApi.injectEndpoints({
 export const {
   useAddCommentMutation,
   useGetCommentsByTargetQuery,
+  useGetRepliesByParentIdQuery,
   useVoteCommentMutation,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
