@@ -182,14 +182,15 @@ const CommentCard = ({
           </div>
 
           {/* Location pill */}
-          {!isEditing && isSighting && commentData?.sightingLocation && (
-            <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-400/30">
-              <MapPin className="size-2.5 text-amber-600 dark:text-amber-400" />
-              <span className="text-[9px] font-medium text-amber-700 dark:text-amber-400">
-                {commentData.sightingLocation}
-              </span>
-            </div>
-          )}
+          {!isEditing &&
+            commentData?.sightingLocation(
+              <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-400/30">
+                <MapPin className="size-2.5 text-amber-600 dark:text-amber-400" />
+                <span className="text-[9px] font-medium text-amber-700 dark:text-amber-400">
+                  {commentData.sightingLocation}
+                </span>
+              </div>,
+            )}
 
           {/* Content / Edit */}
           {isEditing ? (
@@ -208,12 +209,12 @@ const CommentCard = ({
             />
           ) : (
             <p className="mt-0.5 text-[11px] text-zinc-700 dark:text-zinc-300 leading-relaxed break-words">
-              {commentData?.content}ddd
+              {commentData?.content}
             </p>
           )}
 
           {/* Sighting photo */}
-          {!isEditing && isSighting && commentData?.sightingPhoto && (
+          {!isEditing && commentData?.sightingPhoto && (
             <img
               src={commentData.sightingPhoto}
               alt="Sighting"
@@ -235,7 +236,7 @@ const CommentCard = ({
           {/* Reply thread */}
           {!isEditing && depth < 4 && (
             <ReplyThread
-              replyCount={(commentData as any).count ?? 0}
+              replyCount={(commentData as any).replyCount ?? 0}
               targetId={targetId}
               targetType={targetType}
               parentCommentId={commentData._id}
