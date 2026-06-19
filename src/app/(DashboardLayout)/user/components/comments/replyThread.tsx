@@ -18,6 +18,10 @@ interface ReplyThreadProps {
   depth: number;
   onCommentUpdated: (updated: TComment) => void;
   onCommentDeleted: (id: string) => void;
+
+  showReplies: boolean;
+  isReplying: boolean;
+  setIsReplying: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ReplyThread = ({
@@ -29,9 +33,13 @@ const ReplyThread = ({
   depth,
   onCommentUpdated,
   onCommentDeleted,
+
+  showReplies,
+  isReplying,
+  setIsReplying,
 }: ReplyThreadProps) => {
-  const [showReplies, setShowReplies] = useState(false);
-  const [isReplying, setIsReplying] = useState(false);
+  // const [showReplies, setShowReplies] = useState(false);
+  // const [isReplying, setIsReplying] = useState(false);
   const [page, setPage] = useState(1);
   const [allReplies, setAllReplies] = useState<TComment[]>([]);
   const [totalCount, setTotalCount] = useState(replyCount);
@@ -39,10 +47,10 @@ const ReplyThread = ({
 
   const { data, isFetching } = useGetRepliesByParentIdQuery(
     { parentId: parentCommentId, page },
-    { skip: !hasFetched },
+    { skip: !showReplies },
   );
 
-  console.log(data?.data?.replies);
+  // console.log(data?.data?.replies);
 
   useEffect(() => {
     if (!data?.data?.replies) return;
@@ -63,15 +71,14 @@ const ReplyThread = ({
 
   console.log(data);
 
-  const handleToggle = () => {
-    if (!hasFetched) setHasFetched(true);
-    setShowReplies((v) => !v);
-  };
+  // const handleToggle = () => {
+  //   if (!hasFetched) setHasFetched(true);
+  //   setShowReplies((v) => !v);
+  // };
 
   const handleNewReply = (newReply: TComment) => {
     setAllReplies((prev) => [...prev, newReply]);
     setTotalCount((prev) => prev + 1);
-    setShowReplies(true);
     setIsReplying(false);
   };
 
@@ -89,8 +96,8 @@ const ReplyThread = ({
 
   return (
     <div className="mt-1.5">
-      <div className="flex items-center gap-2">
-        {/* Reply button */}
+      {/* <div className="flex items-center gap-2">
+          // Reply button 
         <button
           onClick={() => setIsReplying((v) => !v)}
           className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium transition-colors ${
@@ -103,7 +110,7 @@ const ReplyThread = ({
           <span>{isReplying ? "Cancel" : "Reply"}</span>
         </button>
 
-        {/* Show/hide toggle — only if there are replies */}
+        // Show/hide toggle — only if there are replies 
         {totalCount > 0 && (
           <button
             onClick={handleToggle}
@@ -119,7 +126,7 @@ const ReplyThread = ({
             </span>
           </button>
         )}
-      </div>
+      </div> */}
 
       {/* Composer */}
       {isReplying && (
@@ -139,8 +146,9 @@ const ReplyThread = ({
       {showReplies && allReplies.length > 0 && (
         <div className="mt-1 space-y-1">
           {allReplies.map((reply) => (
-            <div key={reply._id} className="relative">
-              <CornerDownRight className="absolute -left-0.5 top-3 size-3 text-zinc-300 dark:text-zinc-700 pointer-events-none" />
+            // <div key={reply._id} className="relative">
+            //   <CornerDownRight className="absolute -left-0.5 top-3 size-3 text-zinc-300 dark:text-zinc-700 pointer-events-none" />
+            <div key={reply._id}>
               <CommentCard
                 comment={reply as any}
                 targetId={targetId}

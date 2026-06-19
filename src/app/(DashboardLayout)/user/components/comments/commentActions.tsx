@@ -7,10 +7,24 @@ import { useAppSelector } from "@/src/redux/hooks";
 import { useCurrentUser } from "@/src/redux/features/auth/authSlice";
 import { TComment } from "@/src/types";
 
+// interface CommentActionsProps {
+//   commentId: string;
+//   upvotes: number;
+//   downvotes: number;
+//   onVoted: (updated: TComment) => void;
+// }
+
 interface CommentActionsProps {
   commentId: string;
   upvotes: number;
   downvotes: number;
+
+  replyCount?: number;
+  isReplying?: boolean;
+
+  onReplyClick?: () => void;
+  onToggleReplies?: () => void;
+
   onVoted: (updated: TComment) => void;
 }
 
@@ -18,6 +32,11 @@ const CommentActions = ({
   commentId,
   upvotes,
   downvotes,
+  replyCount,
+  onReplyClick,
+  onToggleReplies,
+  isReplying,
+
   onVoted,
 }: CommentActionsProps) => {
   const user = useAppSelector(useCurrentUser);
@@ -69,6 +88,23 @@ const CommentActions = ({
           <span>{downvotes}</span>
         </button>
       </div>
+      {/* ///// */}
+      <button
+        onClick={onReplyClick}
+        className="flex items-center gap-1 text-[11px] text-zinc-500 hover:text-steel-blue dark:hover:text-lime-burst"
+      >
+        <MessageCircle className="size-3.5" />
+        {isReplying ? "Cancel" : "Reply"}
+      </button>
+
+      {replyCount! > 0 && (
+        <button
+          onClick={onToggleReplies}
+          className="text-[11px] text-zinc-500 hover:text-steel-blue dark:hover:text-lime-burst"
+        >
+          {replyCount} {replyCount === 1 ? "reply" : "replies"}
+        </button>
+      )}
     </div>
   );
 };
