@@ -25,6 +25,8 @@ import {
 import { logoutCookies } from "@/src/services/AuthService";
 import { Switch } from "@heroui/react";
 import ThemeToggle from "@/src/components/ThemeToggle";
+import NotificationBell from "../user/pages/components/Notificationbell";
+import baseApi from "@/src/redux/api/baseApi";
 
 interface PageDetail {
   _id: string;
@@ -77,6 +79,7 @@ const NavbarDashboard = () => {
       const result = await logoutCookies();
       if (result.success) {
         dispatch(logout());
+        dispatch(baseApi.util.resetApiState());
         toast.success("Logged out successfully!", { id: toastId });
         router.push("/");
       } else {
@@ -168,11 +171,14 @@ const NavbarDashboard = () => {
       <div className="flex items-center gap-3">
         <ThemeToggle />
 
-        <InvitationsPopover
+        {/* <InvitationsPopover
           handleAccept={handleAccept}
           handleReject={handleReject}
           invitations={pageDetails}
-        />
+        /> */}
+
+        <NotificationBell />
+
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar

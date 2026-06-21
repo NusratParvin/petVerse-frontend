@@ -49,6 +49,45 @@ export const lostFoundApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["LostFound"],
     }),
+
+    getAllLostFoundPostsForAdmin: builder.query({
+      query: (params) => ({
+        url: "/lost-found/admin/all",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["LostFound"],
+    }),
+
+    // admin: get stats for the summary cards
+    // GET /lost-found/admin/stats
+    getLostFoundStats: builder.query({
+      query: () => ({
+        url: "/lost-found/admin/stats",
+        method: "GET",
+      }),
+      providesTags: ["LostFound"],
+    }),
+
+    // admin: force delete any post
+    // DELETE /lost-found/admin/:id
+    adminDeleteLostFoundPost: builder.mutation({
+      query: (id) => ({
+        url: `/lost-found/admin/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["LostFound"],
+    }),
+
+    // admin: force resolve any post
+    // PATCH /lost-found/admin/:id/resolve
+    adminMarkLostFoundResolved: builder.mutation({
+      query: (id) => ({
+        url: `/lost-found/admin/${id}/resolve`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["LostFound"],
+    }),
   }),
 });
 
@@ -59,4 +98,9 @@ export const {
   useUpdateLostFoundPostMutation,
   useMarkLostFoundResolvedMutation,
   useDeleteLostFoundPostMutation,
+
+  useGetAllLostFoundPostsForAdminQuery,
+  useGetLostFoundStatsQuery,
+  useAdminDeleteLostFoundPostMutation,
+  useAdminMarkLostFoundResolvedMutation,
 } = lostFoundApi;

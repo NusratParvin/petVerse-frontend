@@ -50,6 +50,7 @@ export const adminLinks: NavItem[] = [
     // icon: <Home size={16} />,
   },
   { href: "/admin/vets", label: "Vets", icon: Building2 },
+  { href: "/admin/lost&found", label: "Lost & Found", icon: Building2 },
 
   {
     href: "/admin/manage-users",

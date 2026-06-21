@@ -5,8 +5,13 @@ import SuggestedArticles from "../../user/components/suggestedArticles";
 import InsuranceCard from "../../user/components/insuranceCard";
 import UpcomingReminders from "../../user/components/upcomingReminders";
 import QuickAccess from "../../user/components/quickAccess";
+import { useAppSelector } from "@/src/redux/hooks";
+import { useCurrentUser } from "@/src/redux/features/auth/authSlice";
 
 export default function Sidebar() {
+  const user = useAppSelector(useCurrentUser);
+  if (user?.role === "ADMIN") return null;
+
   return (
     <div className="flex flex-col border-none bg-transparent gap-4 p-0">
       {/*   Quick Access Section   */}
