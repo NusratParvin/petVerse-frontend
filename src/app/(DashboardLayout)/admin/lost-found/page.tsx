@@ -5,7 +5,6 @@ import {
   CardBody,
   CardHeader,
   Button,
-  Chip,
   Avatar,
   Input,
   Select,
@@ -35,19 +34,6 @@ import {
 import { toast } from "sonner";
 import { format } from "date-fns";
 import Link from "next/link";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip as ReTooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Legend,
-} from "recharts";
 
 import {
   useGetAllLostFoundPostsForAdminQuery,
@@ -55,115 +41,41 @@ import {
   useAdminDeleteLostFoundPostMutation,
   useAdminMarkLostFoundResolvedMutation,
 } from "@/src/redux/features/lostFound/lostFoundApi";
-
-// ─── constants ────────────────────────────────────────────────────────────────
-const EMIRATES = [
-  "Dubai",
-  "Abu Dhabi",
-  "Sharjah",
-  "Ajman",
-  "RAK",
-  "Fujairah",
-  "UAQ",
-];
-const SPECIES = ["Dog", "Cat", "Bird", "Rabbit", "Hamster", "Reptile", "Other"];
-const COLORS = [
-  "#3B82F6",
-  "#84cc16",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#06b6d4",
-];
+import { StatCard } from "./components/statCard";
+import LostFoundCharts from "./components/charts";
+import LostFoundFilters from "./components/filters";
+import { StatusChip } from "./components/statusChip";
 
 const SPECIES_EMOJI: Record<string, string> = {
   dog: "🐕",
   cat: "🐈",
-  bird: "🐦",
+  bird: "🦜",
+  fish: "🐠",
   rabbit: "🐇",
-  hamster: "🐹",
   reptile: "🦎",
   other: "🐾",
+  exotic: "🦋",
 };
 
-// ─── stat card ────────────────────────────────────────────────────────────────
-const StatCard = ({
-  label,
-  value,
-  sub,
-  color,
-  icon: Icon,
-}: {
-  label: string;
-  value: string | number;
-  sub?: string;
-  color: string;
-  icon: any;
-}) => (
-  <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
-    <CardBody className="p-4 flex flex-row items-center gap-4">
-      <div className={`p-3 rounded-xl ${color}`}>
-        <Icon className="size-5 text-white" />
-      </div>
-      <div>
-        <p className="text-2xl font-bold text-zinc-800 dark:text-zinc-100">
-          {value}
-        </p>
-        <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-          {label}
-        </p>
-        {sub && <p className="text-[10px] text-zinc-400">{sub}</p>}
-      </div>
-    </CardBody>
-  </Card>
-);
+const ManageLostFoundPage = () => {
+  // const [search, setSearch] = useState("");
+  // const [typeFilter, setTypeFilter] = useState("");
+  // const [statusFilter, setStatusFilter] = useState("");
+  // const [emirateFilter, setEmirateFilter] = useState("");
+  // const [speciesFilter, setSpeciesFilter] = useState("");
 
-// ─── status chip ──────────────────────────────────────────────────────────────
-const StatusChip = ({ status, type }: { status: string; type: string }) => {
-  if (status === "resolved") {
-    return (
-      <Chip
-        size="sm"
-        classNames={{
-          base: "bg-emerald-500/10",
-          content:
-            "text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]",
-        }}
-      >
-        Resolved
-      </Chip>
-    );
-  }
-  return type === "lost" ? (
-    <Chip
-      size="sm"
-      classNames={{
-        base: "bg-red-500/10",
-        content: "text-red-500 font-semibold text-[11px]",
-      }}
-    >
-      Missing
-    </Chip>
-  ) : (
-    <Chip
-      size="sm"
-      classNames={{
-        base: "bg-amber-500/10",
-        content: "text-amber-600 font-semibold text-[11px]",
-      }}
-    >
-      Found
-    </Chip>
-  );
-};
+  const [filters, setFilters] = useState({
+    search: "",
+    typeFilter: "",
+    statusFilter: "",
+    emirateFilter: "",
+    speciesFilter: "",
+  });
 
-// ─── main page ────────────────────────────────────────────────────────────────
-export default function ManageLostFoundPage() {
-  const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [emirateFilter, setEmirateFilter] = useState("");
-  const [speciesFilter, setSpeciesFilter] = useState("");
+  const updateFilters = (key: string, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [actionType, setActionType] = useState<"delete" | "resolve" | null>(
     null,
@@ -173,13 +85,16 @@ export default function ManageLostFoundPage() {
 
   const queryParams = useMemo(() => {
     const p: Record<string, string> = {};
+    const { search, typeFilter, statusFilter, emirateFilter, speciesFilter } =
+      filters;
+
     if (typeFilter) p.type = typeFilter;
     if (statusFilter) p.status = statusFilter;
     if (emirateFilter) p.emirate = emirateFilter;
     if (speciesFilter) p.species = speciesFilter;
     if (search) p.search = search;
     return p;
-  }, [typeFilter, statusFilter, emirateFilter, speciesFilter, search]);
+  }, [filters]);
 
   const { data, isLoading, refetch } =
     useGetAllLostFoundPostsForAdminQuery(queryParams);
@@ -220,15 +135,16 @@ export default function ManageLostFoundPage() {
   };
 
   const clearFilters = () => {
-    setSearch("");
-    setTypeFilter("");
-    setStatusFilter("");
-    setEmirateFilter("");
-    setSpeciesFilter("");
+    setFilters({
+      typeFilter: "",
+      statusFilter: "",
+      emirateFilter: "",
+      speciesFilter: "",
+      search: "",
+    });
   };
 
-  const hasFilters =
-    search || typeFilter || statusFilter || emirateFilter || speciesFilter;
+  const hasFilters = Object.values(filters).some((val) => val !== "");
 
   // chart data
   const pieData = stats
@@ -307,106 +223,11 @@ export default function ManageLostFoundPage() {
         )}
       </div>
 
-      {/* ── charts ── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* status pie */}
-        <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
-          <CardHeader className="pb-0 px-5 pt-4">
-            <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              Status Split
-            </p>
-          </CardHeader>
-          <CardBody className="pt-0 px-2">
-            <ResponsiveContainer width="100%" height={160}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={65}
-                  dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                  labelLine={false}
-                >
-                  {pieData.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i]} />
-                  ))}
-                </Pie>
-                <ReTooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardBody>
-        </Card>
-
-        {/* lost vs found bar */}
-        <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
-          <CardHeader className="pb-0 px-5 pt-4">
-            <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              Lost vs Found
-            </p>
-          </CardHeader>
-          <CardBody className="pt-0 px-2">
-            <ResponsiveContainer width="100%" height={160}>
-              <BarChart
-                data={typeData}
-                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <ReTooltip />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                  {typeData.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </CardBody>
-        </Card>
-
-        {/* species breakdown */}
-        <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
-          <CardHeader className="pb-0 px-5 pt-4">
-            <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              By Species
-            </p>
-          </CardHeader>
-          <CardBody className="pt-2 px-5 space-y-2 overflow-y-auto max-h-44">
-            {stats?.speciesBreakdown?.map((s: any, i: number) => (
-              <div key={i} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-base">
-                    {SPECIES_EMOJI[s._id?.toLowerCase()] ?? "🐾"}
-                  </span>
-                  <span className="text-xs text-zinc-600 dark:text-zinc-400 capitalize">
-                    {s._id}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-16 h-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-steel-blue dark:bg-lime-burst"
-                      style={{
-                        width: `${Math.min((s.count / (stats?.total || 1)) * 100, 100)}%`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 w-4">
-                    {s.count}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </CardBody>
-        </Card>
-      </div>
+      {/* // LostFoundCharts */}
+      <LostFoundCharts pieData={pieData} typeData={typeData} stats={stats} />
 
       {/* ── filters ── */}
-      <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
+      {/* <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
         <CardBody className="p-4 space-y-3">
           <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
             <Filter className="size-3.5" />
@@ -503,7 +324,14 @@ export default function ManageLostFoundPage() {
             </Select>
           </div>
         </CardBody>
-      </Card>
+      </Card> */}
+
+      <LostFoundFilters
+        filters={filters}
+        updateFilters={updateFilters}
+        clearFilters={clearFilters}
+        hasFilters={hasFilters}
+      />
 
       {/* ── table ── */}
       <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
@@ -732,4 +560,6 @@ export default function ManageLostFoundPage() {
       </Modal>
     </div>
   );
-}
+};
+
+export default ManageLostFoundPage;
