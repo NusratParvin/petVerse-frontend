@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button, Skeleton, useDisclosure } from "@heroui/react";
 import {
   CheckCircle,
@@ -27,12 +27,18 @@ const ManageLostFoundPage = () => {
     speciesFilter: "",
   });
 
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
   const updateFilters = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
+    setPage(1);
   };
 
   const queryParams = useMemo(() => {
     const p: Record<string, string> = {};
+
+    ((p.page = page.toString()), (p.limit = limit.toString()));
     const { search, typeFilter, statusFilter, emirateFilter, speciesFilter } =
       filters;
 
@@ -42,14 +48,18 @@ const ManageLostFoundPage = () => {
     if (speciesFilter) p.species = speciesFilter;
     if (search) p.search = search;
     return p;
-  }, [filters]);
+  }, [filters, page, limit]);
 
   const { data, isLoading, refetch } =
     useGetAllLostFoundPostsForAdminQuery(queryParams);
   const { data: statsData, isLoading: statsLoading } =
     useGetLostFoundStatsQuery(undefined);
+  // console.log(data?.meta);
 
   const posts = data?.data ?? [];
+  const total = data?.meta?.total ?? 0;
+  const totalPages = data?.meta?.totalPages ?? 0;
+  const hasMore = data?.meta?.hasMore ?? false;
   const stats = statsData?.data;
 
   const clearFilters = () => {
@@ -60,6 +70,11 @@ const ManageLostFoundPage = () => {
       speciesFilter: "",
       search: "",
     });
+    setPage(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
 
   const hasFilters = Object.values(filters).some((val) => val !== "");
@@ -154,11 +169,24 @@ const ManageLostFoundPage = () => {
       />
 
       {/* ── table ── */}
+      {/*   <LostFoundTable
+        posts={posts}
+        isLoading={isLoading}
+        clearFilters={clearFilters}
+        hasFilters={hasFilters}
+      />
+ */}
       <LostFoundTable
         posts={posts}
         isLoading={isLoading}
         clearFilters={clearFilters}
         hasFilters={hasFilters}
+        page={page}
+        total={total}
+        totalPages={totalPages}
+        hasMore={hasMore}
+        limit={limit}
+        onPageChange={handlePageChange}
       />
     </div>
   );
