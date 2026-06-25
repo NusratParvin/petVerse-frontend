@@ -251,7 +251,7 @@ const LostFoundTable = ({
                               <Tooltip content="View post">
                                 <Button
                                   as={Link}
-                                  href={`/user/quickAccess/lost-found/${post._id}`}
+                                  href={`/admin/lost-found/${post._id}`}
                                   isIconOnly
                                   size="sm"
                                   variant="light"

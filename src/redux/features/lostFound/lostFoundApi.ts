@@ -50,6 +50,7 @@ export const lostFoundApi = baseApi.injectEndpoints({
       invalidatesTags: ["LostFound"],
     }),
 
+    //admin-get all lF data
     getAllLostFoundPostsForAdmin: builder.query({
       query: (params) => {
         console.log(params);
@@ -88,6 +89,33 @@ export const lostFoundApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["LostFound"],
     }),
+
+    // admin: get single post with full owner details
+    getPostForAdmin: builder.query({
+      query: (id) => ({
+        url: `/lost-found/admin/${id}`,
+        method: "GET",
+      }),
+      providesTags: (_r, _e, id) => [{ type: "LostFound", id }],
+    }),
+
+    // admin: contact owner by email
+    contactOwnerByEmail: builder.mutation({
+      query: ({ id, subject, message }) => ({
+        url: `/lost-found/admin/${id}/contact-email`,
+        method: "POST",
+        body: { subject, message },
+      }),
+    }),
+
+    // admin: contact owner by whatsapp
+    contactOwnerByWhatsApp: builder.mutation({
+      query: ({ id, message }) => ({
+        url: `/lost-found/admin/${id}/contact-whatsapp`,
+        method: "POST",
+        body: { message },
+      }),
+    }),
   }),
 });
 
@@ -103,4 +131,8 @@ export const {
   useGetLostFoundStatsQuery,
   useAdminDeleteLostFoundPostMutation,
   useAdminMarkLostFoundResolvedMutation,
+
+  useGetPostForAdminQuery,
+  useContactOwnerByEmailMutation,
+  useContactOwnerByWhatsAppMutation,
 } = lostFoundApi;
