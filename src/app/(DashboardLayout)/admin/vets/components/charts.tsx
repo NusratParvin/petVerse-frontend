@@ -1,334 +1,232 @@
-// components/VetCharts.tsx
 "use client";
-import { Card, CardHeader, CardBody } from "@heroui/react";
+
 import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip as ReTooltip,
-  ResponsiveContainer,
   BarChart,
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  ComposedChart,
-  Line,
-  Area,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
 } from "recharts";
+import { Stethoscope, Siren } from "lucide-react";
+import { Spinner } from "@heroui/react";
+import { formatEmirate } from "./utils";
+import { useGetVetStatsQuery } from "@/src/redux/features/vets/vetsApi";
 
-const COLORS = [
-  "#3B82F6",
-  "#84cc16",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#06b6d4",
-];
-
-interface VetChartsProps {
-  stats: any;
-}
-
-const SPECIALITY_EMOJI: Record<string, string> = {
-  dogs: "🐕",
-  cats: "🐈",
-  birds: "🦜",
-  fish: "🐠",
-  rabbits: "🐇",
-  reptiles: "🦎",
-  exotic: "🦋",
-  "small-animals": "🐹",
-  emergency: "🚨",
-  surgery: "🔬",
-  dental: "🦷",
-  dermatology: "🧴",
-  ophthalmology: "👁️",
-  nutrition: "🥗",
+const getCoverageBadge = (count: number, total: number) => {
+  const ratio = count / total;
+  if (ratio >= 0.6)
+    return {
+      label: "Well covered",
+      text: "text-emerald-600 dark:text-emerald-400",
+      bg: "bg-emerald-500/10",
+      barColor: "#10b981",
+    };
+  if (ratio >= 0.35)
+    return {
+      label: "Moderate",
+      text: "text-yellow-600 dark:text-yellow-400",
+      bg: "bg-yellow-400/10",
+      barColor: "#facc15",
+    };
+  if (ratio >= 0.15)
+    return {
+      label: "Limited",
+      text: "text-orange-600 dark:text-orange-400",
+      bg: "bg-orange-400/10",
+      barColor: "#fb923c",
+    };
+  return {
+    label: "Gap",
+    text: "text-red-500 dark:text-red-400",
+    bg: "bg-red-400/10",
+    barColor: "#f87171",
+  };
 };
 
-export const VetCharts = ({ stats }: VetChartsProps) => {
-  // Top specialities distribution
-  const specialityData =
-    stats?.specialityBreakdown?.slice(0, 8).map((item: any) => ({
-      name: item._id,
-      value: item.count,
-      emoji: SPECIALITY_EMOJI[item._id] || "🏥",
-    })) ?? [];
+export default function VetsStats() {
+  const { data, isLoading } = useGetVetStatsQuery(undefined);
+  const stats = data?.data;
 
-  // Rating distribution (buckets)
-  const ratingData = stats?.ratingDistribution ?? [
-    { range: "4.5-5.0", count: 0 },
-    { range: "4.0-4.4", count: 0 },
-    { range: "3.5-3.9", count: 0 },
-    { range: "3.0-3.4", count: 0 },
-    { range: "<3.0", count: 0 },
-  ];
-
-  // Emirate distribution
-  const emirateData =
-    stats?.emirateBreakdown?.map((item: any) => ({
-      name: item._id,
-      value: item.count,
-    })) ?? [];
-
-  // Emergency vs Regular
-  const emergencyData = stats
-    ? [
-        { name: "24/7 Emergency", value: stats.emergency },
-        { name: "Regular Hours", value: stats.total - stats.emergency },
-      ]
-    : [];
-
-  // Price range distribution (if available)
-  const priceRangeData = stats?.priceRangeBreakdown ?? [];
-
-  // If no data, show placeholder
-  if (!stats || specialityData.length === 0) {
+  if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[1, 2, 3].map((i) => (
-          <Card
-            key={i}
-            className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800"
-          >
-            <CardBody className="p-6 flex items-center justify-center h-[180px]">
-              <p className="text-sm text-zinc-400">No data available</p>
-            </CardBody>
-          </Card>
-        ))}
+      <div className="flex items-center justify-center h-40">
+        <Spinner size="sm" />
       </div>
     );
   }
 
+  if (!stats) return null;
+
+  const emergencyPct = stats.totalClinics
+    ? Math.round((stats.emergencyCount / stats.totalClinics) * 100)
+    : 0;
+
+  const emirateData = [...stats.byEmirate].sort((a, b) => b.count - a.count);
+  const maxSpecialityCount = Math.max(
+    ...stats.bySpeciality.map((s: any) => s.count),
+  );
+
+  const statsPill = [
+    {
+      icon: (
+        <Stethoscope className="size-3.5 text-steel-blue dark:text-lime-burst" />
+      ),
+      label: `${stats.totalClinics} clinics`,
+    },
+    {
+      icon: <Siren className="size-3.5 text-red-500" />,
+      label: `${emergencyPct}% emergency coverage`,
+    },
+    {
+      icon: <span className="text-xs text-yellow-500">★</span>,
+      label: `${stats.averageRating} avg rating`,
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {/* Top Specialities - Horizontal Bar */}
-      <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800 md:col-span-2">
-        <CardHeader className="pb-0 px-5 pt-4">
-          <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-            Top Specialities
-          </p>
-          <p className="text-[10px] text-zinc-400 mt-0.5">
-            Most common services offered
-          </p>
-        </CardHeader>
-        <CardBody className="pt-2 px-5 pb-4">
-          <div className="space-y-3">
-            {specialityData.slice(0, 6).map((item: any, i: number) => {
-              const total = specialityData.reduce(
-                (acc: number, d: any) => acc + d.value,
-                0,
-              );
-              const percentage =
-                total > 0 ? ((item.value / total) * 100).toFixed(1) : 0;
-              const color = COLORS[i % COLORS.length];
-
-              return (
-                <div key={i} className="flex items-center gap-3">
-                  <span className="text-xl w-8 text-center">{item.emoji}</span>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-0.5">
-                      <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 capitalize">
-                        {item.name.replace("-", " ")}
-                      </span>
-                      <span className="text-[10px] text-zinc-400">
-                        {item.value} clinics
-                      </span>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{
-                          width: `${Math.min(Number(percentage), 100)}%`,
-                          backgroundColor: color,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+    <div className="space-y-4">
+      {/* Stat pills */}
+      <div className="flex items-center gap-3">
+        {statsPill.map(({ icon, label }) => (
+          <div
+            key={label}
+            className="flex items-center gap-2 px-6 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 shadow-sm  dark:shadow-primary"
+          >
+            {icon}
+            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">
+              {label}
+            </span>
           </div>
-        </CardBody>
-      </Card>
+        ))}
+      </div>
 
-      {/* Emergency Availability */}
-      <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
-        <CardHeader className="pb-0 px-5 pt-4">
-          <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-            Emergency Availability
-          </p>
-          <p className="text-[10px] text-zinc-400 mt-0.5">
-            24/7 vs regular hours
-          </p>
-        </CardHeader>
-        <CardBody className="pt-0 px-2">
-          <ResponsiveContainer width="100%" height={140}>
-            <PieChart>
-              <Pie
-                data={emergencyData}
-                cx="50%"
-                cy="50%"
-                innerRadius={35}
-                outerRadius={55}
-                dataKey="value"
-                label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                labelLine={false}
-                label={{
-                  fontSize: 9,
-                  fontWeight: 600,
-                  fill: "#6b7280",
-                }}
-              >
-                {emergencyData.map((_, i) => (
-                  <Cell
-                    key={`cell-${i}`}
-                    fill={i === 0 ? "#ef4444" : "#84cc16"}
-                    stroke={i === 0 ? "#ef4444" : "#84cc16"}
-                    strokeWidth={1.5}
-                  />
-                ))}
-              </Pie>
-              <ReTooltip />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="flex justify-center gap-4 mt-1">
-            <div className="flex items-center gap-1.5">
-              <div className="size-2.5 rounded-full bg-red-500" />
-              <span className="text-[9px] text-zinc-600 dark:text-zinc-400">
-                24/7 ({emergencyData[0]?.value || 0})
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="size-2.5 rounded-full bg-green-500" />
-              <span className="text-[9px] text-zinc-600 dark:text-zinc-400">
-                Regular ({emergencyData[1]?.value || 0})
-              </span>
-            </div>
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Rating Distribution */}
-      <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
-        <CardHeader className="pb-0 px-5 pt-4">
-          <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-            Rating Distribution
-          </p>
-          <p className="text-[10px] text-zinc-400 mt-0.5">
-            Avg: {stats?.avgRating?.toFixed(1) ?? 0} ⭐
-          </p>
-        </CardHeader>
-        <CardBody className="pt-2 px-5 pb-4 space-y-2">
-          {ratingData.map((item: any, i: number) => {
-            const total = ratingData.reduce(
-              (acc: number, d: any) => acc + d.count,
-              0,
-            );
-            const percentage =
-              total > 0 ? ((item.count / total) * 100).toFixed(0) : 0;
-            const color =
-              i === 0
-                ? "#84cc16"
-                : i === 1
-                  ? "#22d3ee"
-                  : i === 2
-                    ? "#f59e0b"
-                    : i === 3
-                      ? "#fb923c"
-                      : "#ef4444";
-
-            return (
-              <div key={i} className="flex items-center gap-2">
-                <span className="text-[10px] font-medium text-zinc-600 dark:text-zinc-400 w-14">
-                  {item.range}
-                </span>
-                <div className="flex-1 h-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${Math.min(Number(percentage), 100)}%`,
-                      backgroundColor: color,
-                    }}
-                  />
-                </div>
-                <span className="text-[10px] text-zinc-400 w-8 text-right">
-                  {item.count}
-                </span>
-              </div>
-            );
-          })}
-        </CardBody>
-      </Card>
-
-      {/* Emirate Distribution */}
-      <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800 md:col-span-2">
-        <CardHeader className="pb-0 px-5 pt-4">
-          <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Emirate bar chart */}
+        <div className="bg-white dark:bg-zinc-900/60 border border-zinc-100 dark:border-zinc-800/60 rounded-md p-4 shadow-sm dark:shadow-primary">
+          <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">
             Clinics by Emirate
           </p>
-          <p className="text-[10px] text-zinc-400 mt-0.5">
-            Geographic distribution
+          <p className="text-[10px] text-zinc-400 mt-0.5 mb-3">
+            Coverage distribution across UAE
           </p>
-        </CardHeader>
-        <CardBody className="pt-0 px-2">
-          <ResponsiveContainer width="100%" height={140}>
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart
               data={emirateData}
-              margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              layout="vertical"
+              margin={{ left: 8, right: 24, top: 0, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="name" tick={{ fontSize: 8 }} />
-              <YAxis tick={{ fontSize: 8 }} />
-              <ReTooltip />
-              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                {emirateData.map((_, i) => (
+              <XAxis
+                type="number"
+                tick={{ fontSize: 10 }}
+                tickLine={false}
+                axisLine={false}
+                allowDecimals={false}
+              />
+              <YAxis
+                type="category"
+                dataKey="emirate"
+                tick={{ fontSize: 10 }}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={formatEmirate}
+                width={80}
+              />
+              <Tooltip
+                cursor={{ fill: "transparent" }}
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const d = payload[0].payload;
+                  return (
+                    <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 text-[11px] shadow-md">
+                      <p className="font-semibold text-zinc-700 dark:text-zinc-200">
+                        {formatEmirate(d.emirate)}
+                      </p>
+                      <p className="text-zinc-500">{d.count} clinics</p>
+                      <p className="text-red-500">
+                        {d.emergencyCount} emergency
+                      </p>
+                      <p className="text-yellow-500">★ {d.averageRating}</p>
+                    </div>
+                  );
+                }}
+              />
+              <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={18}>
+                {emirateData.map((entry, index) => (
                   <Cell
-                    key={`cell-${i}`}
-                    fill={COLORS[i % COLORS.length]}
-                    stroke={COLORS[i % COLORS.length]}
-                    strokeWidth={1}
+                    key={entry.emirate}
+                    fill={
+                      index === 0
+                        ? "#3b82f6"
+                        : index === emirateData.length - 1
+                          ? "#f87171"
+                          : "#60a5fa"
+                    }
                   />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </CardBody>
-      </Card>
+          {emirateData.length > 0 && (
+            <p className="text-[10px] text-zinc-400 mt-2 border-t border-zinc-100 dark:border-zinc-800 pt-2">
+              <span className="text-red-400 font-medium">
+                {formatEmirate(emirateData[emirateData.length - 1].emirate)}
+              </span>{" "}
+              has the least coverage —{" "}
+              {emirateData[emirateData.length - 1].count} clinic
+              {emirateData[emirateData.length - 1].count !== 1 ? "s" : ""}
+            </p>
+          )}
+        </div>
 
-      {/* If price range data is available */}
-      {priceRangeData.length > 0 && (
-        <Card className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800">
-          <CardHeader className="pb-0 px-5 pt-4">
-            <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              Price Range
-            </p>
-            <p className="text-[10px] text-zinc-400 mt-0.5">
-              Consultation fees
-            </p>
-          </CardHeader>
-          <CardBody className="pt-0 px-2">
-            <ResponsiveContainer width="100%" height={140}>
-              <BarChart
-                data={priceRangeData}
-                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="name" tick={{ fontSize: 8 }} />
-                <YAxis tick={{ fontSize: 8 }} />
-                <ReTooltip />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]} fill="#3B82F6" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardBody>
-        </Card>
-      )}
+        {/* Speciality ranked list */}
+        <div className="bg-white dark:bg-zinc-900/60 border border-zinc-100 dark:border-zinc-800/60 rounded-md p-4 shadow-sm  dark:shadow-primary">
+          <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">
+            Speciality Coverage
+          </p>
+          <p className="text-[10px] text-zinc-400 mt-0.5 mb-3">
+            Which specialities are underserved
+          </p>
+          <div className="space-y-1 max-h-[210px] overflow-y-auto custom-scrollbar pr-1">
+            {stats.bySpeciality.map((s: any, i: number) => {
+              const badge = getCoverageBadge(s.count, stats.totalClinics);
+              const barWidth = Math.max((s.count / maxSpecialityCount) * 80, 3);
+              return (
+                <div
+                  key={s.speciality}
+                  className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md bg-zinc-50 dark:bg-zinc-800/60"
+                >
+                  <span className="text-[10px] text-zinc-400 w-4 text-right flex-shrink-0">
+                    {i + 1}
+                  </span>
+                  <span className="text-[11px] capitalize text-zinc-600 dark:text-zinc-300 flex-1 truncate">
+                    {s.speciality.replace(/-/g, " ")}
+                  </span>
+                  <div className="w-20 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full flex-shrink-0">
+                    <div
+                      className="h-1.5 rounded-full"
+                      style={{
+                        width: `${barWidth}px`,
+                        backgroundColor: badge.barColor,
+                      }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-zinc-400 w-4 text-right flex-shrink-0">
+                    {s.count}
+                  </span>
+                  <span
+                    className={`text-[9px] px-1.5 py-0.5 rounded-full flex-shrink-0 font-medium ${badge.bg} ${badge.text}`}
+                  >
+                    {badge.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
+}

@@ -1,149 +1,74 @@
 "use client";
 
-import React, { useState, useCallback, useMemo, useEffect } from "react";
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Input,
-  Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  Chip,
-  User,
-  Pagination,
-  Spinner,
-  useDisclosure,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@heroui/react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { Button } from "@heroui/react";
+import { Hospital, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   useDeleteVetMutation,
   useGetVetsQuery,
 } from "@/src/redux/features/vets/vetsApi";
-import { TVet } from "@/src/types";
-import { ChevronDown, EllipsisVertical, Plus, Search } from "lucide-react";
-import { StarIcon } from "./components/starIcon";
+
+import VetsTable from "./components/table";
+import VetsFilters from "./components/filters";
 import {
-  DeleteConfirmModal,
   useDeleteModal,
+  DeleteConfirmModal,
 } from "../../components/modal/deleteConfirmModal.tsx";
-import { useRouter } from "next/navigation";
-import {
-  capitalize,
-  formatEmirate,
-  formatPriceRange,
-  getEmirateColor,
-} from "./components/utils";
+import VetsStats from "./components/charts";
 
-// Column definitions for the table
-const columns = [
-  { name: "CLINIC", uid: "clinicName", sortable: true },
-  { name: "CONTACT PERSON", uid: "name", sortable: true },
-  { name: "LOCATION", uid: "location" },
-  { name: "EMIRATE", uid: "emirate", sortable: true },
-  { name: "SPECIALITIES", uid: "specialities" },
-  { name: "PRICE RANGE", uid: "priceRange" },
-  { name: "EMERGENCY", uid: "emergency", sortable: true },
-  { name: "RATING", uid: "rating", sortable: true },
-  { name: "ACTIONS", uid: "actions" },
-];
-
-// Emirate options for filtering
-const emirateOptions = [
-  { name: "Dubai", uid: "dubai" },
-  { name: "Abu Dhabi", uid: "abu-dhabi" },
-  { name: "Sharjah", uid: "sharjah" },
-  { name: "Ajman", uid: "ajman" },
-  { name: "Ras Al Khaimah", uid: "ras-al-khaimah" },
-  { name: "Fujairah", uid: "fujairah" },
-  { name: "Umm Al Quwain", uid: "umm-al-quwain" },
-];
-
-// Speciality options for filtering
-const specialityOptions = [
-  { name: "Dogs", uid: "dogs" },
-  { name: "Cats", uid: "cats" },
-  { name: "Birds", uid: "birds" },
-  { name: "Fish", uid: "fish" },
-  { name: "Rabbits", uid: "rabbits" },
-  { name: "Reptiles", uid: "reptiles" },
-  { name: "Exotic", uid: "exotic" },
-  { name: "Small Animals", uid: "small-animals" },
-  { name: "Emergency", uid: "emergency" },
-  { name: "Surgery", uid: "surgery" },
-  { name: "Dental", uid: "dental" },
-  { name: "Dermatology", uid: "dermatology" },
-  { name: "Ophthalmology", uid: "ophthalmology" },
-  { name: "Nutrition", uid: "nutrition" },
-];
-
-const INITIAL_VISIBLE_COLUMNS = [
-  "clinicName",
-  "location",
-  "specialities",
-  "emergency",
-  "rating",
-  "actions",
-];
+const DEFAULT_FILTERS = {
+  search: "",
+  emirateFilter: "",
+  specialityFilter: "",
+  emergencyFilter: "",
+  ratingFilter: "",
+};
 
 export default function VetsPage() {
-  const [filterValue, setFilterValue] = useState("");
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set([]));
-  const [visibleColumns, setVisibleColumns] = useState(
-    new Set(INITIAL_VISIBLE_COLUMNS),
-  );
-  const [emirateFilter, setEmirateFilter] = useState<Set<string>>(new Set());
-  const [specialityFilter, setSpecialityFilter] = useState<Set<string>>(
-    new Set(),
-  );
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const router = useRouter();
+
+  // Filter state
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const hasFilters = Object.values(filters).some((v) => v !== "");
+
+  // Table state
+  const [page, setPage] = useState(1);
+  const limitPerPage = 10;
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "clinicName",
     direction: "ascending" as "ascending" | "descending",
   });
-  const [page, setPage] = useState(1);
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const router = useRouter();
 
-  // Build query params for RTK Query
+  // Reset page on filter change
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
+  const updateFilters = useCallback((key: any, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setFilters(DEFAULT_FILTERS);
+  }, []);
+
+  // Build query params
   const queryParams = useMemo(() => {
     const params: Record<string, unknown> = {
       page: page.toString(),
-      limit: rowsPerPage.toString(),
+      limit: limitPerPage.toString(),
       sortBy: sortDescriptor.column,
       sortOrder: sortDescriptor.direction === "ascending" ? "asc" : "desc",
     };
-
-    if (filterValue) {
-      params.search = filterValue;
-    }
-
-    if (emirateFilter.size > 0) {
-      params.emirate = Array.from(emirateFilter).join(",");
-    }
-
-    if (specialityFilter.size > 0) {
-      params.speciality = Array.from(specialityFilter)[0];
-    }
-
+    if (filters.search) params.search = filters.search;
+    if (filters.emirateFilter) params.emirate = filters.emirateFilter;
+    if (filters.specialityFilter) params.speciality = filters.specialityFilter;
+    if (filters.emergencyFilter) params.emergency = filters.emergencyFilter;
+    if (filters.ratingFilter) params.rating = filters.ratingFilter;
     return params;
-  }, [
-    page,
-    rowsPerPage,
-    sortDescriptor,
-    filterValue,
-    emirateFilter,
-    specialityFilter,
-  ]);
+  }, [page, limitPerPage, sortDescriptor, filters]);
 
   const {
     data: vetResponse,
@@ -151,452 +76,75 @@ export default function VetsPage() {
     isFetching,
   } = useGetVetsQuery(queryParams);
   const [deleteVet, { isLoading: isDeleting }] = useDeleteVetMutation();
-
   const { isOpen, itemToDelete, openDeleteModal, closeDeleteModal } =
     useDeleteModal();
 
-  // console.log(vetResponse);
-  console.log(selectedKeys);
   const vets = vetResponse?.data || [];
   const total = vetResponse?.meta?.total || 0;
   const pages = vetResponse?.meta?.pages || 1;
-
-  // Reset page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [filterValue, emirateFilter, specialityFilter]);
-
-  const headerColumns = useMemo(() => {
-    return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
-    );
-  }, [visibleColumns]);
+  // const hasMore = vetResponse?.meta?.hasMore || false;
 
   const handleDelete = async () => {
     if (itemToDelete?.id) {
       try {
         await deleteVet(itemToDelete.id).unwrap();
         closeDeleteModal();
-        //  success toast
       } catch (error) {
         console.error("Failed to delete vet:", error);
-        //   error toast
       }
     }
   };
-
-  const handleEdit = (vet: TVet) => {
-    router.push(`/admin/vets/${vet._id}?mode=edit`);
-  };
-
-  const handleView = (vet: TVet) => {
-    router.push(`/admin/vets/${vet._id}?mode=view`);
-  };
-
-  const handleAddNew = () => {
-    router.push("vets/new");
-  };
-
-  const renderCell = useCallback(
-    (vet: TVet, columnKey: string | number) => {
-      switch (columnKey) {
-        case "clinicName":
-          return (
-            <User
-              avatarProps={{
-                radius: "lg",
-                src:
-                  vet.coverPhoto ||
-                  `https://ui-avatars.com/api/?name=${encodeURIComponent(vet.clinicName)}&background=0D8F81&color=fff`,
-              }}
-              description={vet.area}
-              name={vet.clinicName}
-            />
-          );
-        case "name":
-          return vet.name || "—";
-        case "location":
-          return (
-            <div className="flex flex-col">
-              <p className="text-bold text-small">{vet.area}</p>
-              <p className="text-tiny text-default-400 truncate max-w-[200px]">
-                {vet.address}
-              </p>
-            </div>
-          );
-        case "emirate":
-          return (
-            <Chip
-              className="capitalize"
-              color={getEmirateColor(vet.emirate) as any}
-              size="sm"
-              variant="flat"
-            >
-              {formatEmirate(vet.emirate)}
-            </Chip>
-          );
-        case "specialities":
-          return (
-            <div className="flex flex-wrap gap-1 max-w-[200px]">
-              {vet.specialities?.slice(0, 2).map((spec) => (
-                <Chip
-                  key={spec}
-                  size="sm"
-                  variant="flat"
-                  className="capitalize text-xs"
-                >
-                  {spec.replace("-", " ")}
-                </Chip>
-              ))}
-              {vet.specialities && vet.specialities.length > 2 && (
-                <Chip size="sm" variant="flat" className="text-xs">
-                  +{vet.specialities.length - 2}
-                </Chip>
-              )}
-            </div>
-          );
-        case "priceRange":
-          return (
-            <span className="text-small font-medium">
-              {formatPriceRange(vet.priceRange)}
-            </span>
-          );
-        case "emergency":
-          return (
-            <Chip
-              className="capitalize"
-              color={vet.emergency ? "danger" : "default"}
-              size="sm"
-              variant={vet.emergency ? "solid" : "flat"}
-            >
-              {vet.emergency ? "24/7" : "No"}
-            </Chip>
-          );
-        case "rating":
-          return (
-            <div className="flex items-center gap-1">
-              <StarIcon filled={true} className="text-warning" />
-              <span className="text-small font-semibold">
-                {vet.rating?.toFixed(1) || "0"}
-              </span>
-              <span className="text-tiny text-default-400">
-                ({vet.reviewCount || 0})
-              </span>
-            </div>
-          );
-        case "actions":
-          return (
-            <div className="relative flex justify-end items-center gap-2">
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button isIconOnly size="sm" variant="light">
-                    <EllipsisVertical className="text-default-300" />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu>
-                  <DropdownItem key="view" onPress={() => handleView(vet)}>
-                    View Details
-                  </DropdownItem>
-                  <DropdownItem key="edit" onPress={() => handleEdit(vet)}>
-                    Edit Clinic
-                  </DropdownItem>
-                  {/* <DropdownItem
-                    key="delete"
-                    className="text-danger"
-                    color="danger"
-                    onPress={() => {
-                      setDeleteConfirm(vet._id);
-                      onOpen();
-                    }}
-                  > */}
-                  <DropdownItem
-                    key="delete"
-                    className="text-danger"
-                    color="danger"
-                    onPress={() =>
-                      openDeleteModal(vet._id, vet.clinicName, "vet clinic")
-                    }
-                  >
-                    Delete
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-          );
-        default:
-          return vet[columnKey as keyof TVet] as React.ReactNode;
-      }
-    },
-    [openDeleteModal],
-  );
-
-  const onNextPage = useCallback(() => {
-    if (page < pages) {
-      setPage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = useCallback(() => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  }, [page]);
-
-  const onRowsPerPageChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setRowsPerPage(Number(e.target.value));
-      setPage(1);
-    },
-    [],
-  );
-
-  const onSearchChange = useCallback((value: string) => {
-    setFilterValue(value);
-    setPage(1);
-  }, []);
-
-  const onClear = useCallback(() => {
-    setFilterValue("");
-    setPage(1);
-  }, []);
-
-  const topContent = useMemo(() => {
-    return (
-      <div className="flex flex-col gap-1 pt-4 text-xs">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%] text-xs focus:ring-0 focus:ring-transparent"
-            size="sm"
-            placeholder="Search by clinic, doctor, or area..."
-            startContent={<Search size={14} />}
-            value={filterValue}
-            onClear={onClear}
-            onValueChange={onSearchChange}
-          />
-          <div className="flex gap-3">
-            {/* Emirate Filter Dropdown */}
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDown size={14} />}
-                  variant="flat"
-                  size="sm"
-                >
-                  {emirateFilter.size > 0
-                    ? `Emirates (${emirateFilter.size})`
-                    : "Emirate"}
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection={false}
-                aria-label="Emirate Filter"
-                closeOnSelect={false}
-                selectedKeys={emirateFilter}
-                selectionMode="multiple"
-                onSelectionChange={(keys) =>
-                  setEmirateFilter(keys as Set<string>)
-                }
-              >
-                {emirateOptions.map((emirate) => (
-                  <DropdownItem key={emirate.uid} className="capitalize">
-                    {emirate.name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-
-            {/* Speciality Filter Dropdown */}
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDown size={14} />}
-                  variant="flat"
-                  size="sm"
-                >
-                  {specialityFilter.size > 0
-                    ? `Specialities (${specialityFilter.size})`
-                    : "Speciality"}
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection={false}
-                aria-label="Speciality Filter"
-                closeOnSelect={false}
-                selectedKeys={specialityFilter}
-                selectionMode="multiple"
-                onSelectionChange={(keys) =>
-                  setSpecialityFilter(keys as Set<string>)
-                }
-              >
-                {specialityOptions.map((speciality) => (
-                  <DropdownItem key={speciality.uid} className="capitalize">
-                    {speciality.name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-
-            {/* Columns Dropdown */}
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDown size={14} />}
-                  variant="flat"
-                  size="sm"
-                >
-                  Columns
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={(keys) =>
-                  setVisibleColumns(keys as Set<string>)
-                }
-              >
-                {columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
-                    {capitalize(column.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-
-            <Button
-              // color="primary"
-              className="bg-steel-blue text-white dark:bg-lime-burst/70"
-              size="sm"
-              endContent={<Plus size={14} />}
-              onPress={handleAddNew}
-            >
-              Add New Vet
-            </Button>
-          </div>
-        </div>
-        <div className="flex justify-between items-center text-xs">
-          <span className="text-default-400">
-            Total {total} veterinary clinics
-          </span>
-          <label className="flex items-center text-default-400  ">
-            Rows per page:
-            <select
-              className="bg-transparent outline-none text-default-400 text-xs ml-2"
-              onChange={onRowsPerPageChange}
-              value={rowsPerPage}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-            </select>
-          </label>
-        </div>
-      </div>
-    );
-  }, [
-    filterValue,
-    emirateFilter,
-    specialityFilter,
-    visibleColumns,
-    rowsPerPage,
-    total,
-    onSearchChange,
-  ]);
-
-  const bottomContent = useMemo(() => {
-    return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
-          {selectedKeys.size === total && total > 0
-            ? "All items selected"
-            : `${selectedKeys.size} of ${total} selected`}
-        </span>
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={pages}
-          onChange={setPage}
-        />
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
-            Previous
-          </Button>
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    );
-  }, [selectedKeys, total, page, pages, onPreviousPage, onNextPage]);
-
-  const loadingState = isLoading || isFetching ? "loading" : "idle";
 
   return (
     <>
-      <div className="px-4 border-0 border-transparent ">
-        <Table
-          isHeaderSticky
-          aria-label="Veterinary clinics table"
-          bottomContent={bottomContent}
-          bottomContentPlacement="outside"
-          classNames={{
-            wrapper: "max-h-[600px]",
-          }}
-          selectedKeys={selectedKeys}
-          selectionMode="multiple"
-          sortDescriptor={sortDescriptor}
-          topContent={topContent}
-          topContentPlacement="outside"
-          onSelectionChange={(keys) => setSelectedKeys(keys as Set<string>)}
-          onSortChange={(descriptor) => setSortDescriptor(descriptor as any)}
-        >
-          <TableHeader columns={headerColumns}>
-            {(column) => (
-              <TableColumn
-                key={column.uid}
-                align={column.uid === "actions" ? "center" : "start"}
-                allowsSorting={column.sortable}
-              >
-                {column.name}
-              </TableColumn>
-            )}
-          </TableHeader>
-          <TableBody
-            emptyContent={
-              loadingState === "loading"
-                ? "Loading..."
-                : "No veterinary clinics found"
-            }
-            items={vets}
-            loadingContent={<Spinner />}
-            loadingState={loadingState}
+      <div className="px-4 pt-2 pb-36 space-y-2">
+        {/* Page header */}
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-steel-blue/10 dark:bg-lime-burst/10 rounded-lg">
+              <Hospital className="size-4 text-steel-blue dark:text-lime-burst/70" />
+            </div>
+            <div>
+              <h1 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                Vet Clinics
+              </h1>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                {total} clinics registered across the UAE
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            className="bg-steel-blue text-white dark:bg-lime-burst/70"
+            endContent={<Plus size={14} />}
+            onPress={() => router.push("vets/new")}
           >
-            {(item: TVet) => (
-              <TableRow key={item._id}>
-                {(columnKey) => (
-                  <TableCell>{renderCell(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>{" "}
+            Add New Vet
+          </Button>
+        </div>
+        <VetsStats />
+        {/* Filters */}
+        <VetsFilters
+          filters={filters}
+          hasFilters={hasFilters}
+          updateFilters={updateFilters}
+          clearFilters={clearFilters}
+        />
+        {/* Table */}
+        <VetsTable
+          vets={vets}
+          total={total}
+          page={page}
+          pages={pages}
+          limit={limitPerPage}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          sortDescriptor={sortDescriptor}
+          onPageChange={setPage}
+          onSortChange={setSortDescriptor}
+          onDelete={(id, name) => openDeleteModal(id, name, "vet clinic")}
+        />
       </div>
 
       <DeleteConfirmModal

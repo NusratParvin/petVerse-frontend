@@ -42,11 +42,17 @@ const vetsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Vets"],
     }),
+
+    getVetStats: builder.query({
+      query: () => ({ url: "/vets/stats", method: "GET" }),
+      providesTags: ["Vets"],
+    }),
   }),
 });
 
 export const {
   useGetVetsQuery,
+  useGetVetStatsQuery,
   useGetSingleVetQuery,
   useCreateVetMutation,
   useUpdateVetMutation,

@@ -15,6 +15,7 @@ import {
   Building2,
   LucideIcon,
   Search,
+  MessageSquare,
 } from "lucide-react";
 
 export interface NavItem {
@@ -70,6 +71,11 @@ export const adminLinks: NavItem[] = [
     label: "Manage Payments",
     // icon: <DollarSign size={16} />,
     icon: DollarSign,
+  },
+  {
+    href: "/admin/manage-comments",
+    label: "Manage Comments",
+    icon: MessageSquare,
   },
   { href: "/admin/my-profile", label: "My Profile", icon: User },
   {

@@ -84,17 +84,33 @@ export const commentsApi = baseApi.injectEndpoints({
 
     // ── admin: all comments with filters ────────────────────────────
     // usage: useGetAllCommentsForAdminQuery({ targetType: "LostFound", isSighting: true })
+
+    getCommentStats: builder.query({
+      query: () => ({ url: "/comments/stats", method: "GET" }),
+      providesTags: [{ type: "Comments", id: "STATS" }],
+    }),
+
     getAllCommentsForAdmin: builder.query({
       query: (params?: {
         targetType?: TTargetType;
         isSighting?: boolean;
         isHelpfulLead?: boolean;
-      }) => ({
-        url: "/comments",
-        method: "GET",
-        params,
-      }),
+        isDeleted?: boolean;
+        page?: number;
+        limit?: number;
+      }) => ({ url: "/comments", method: "GET", params }),
       providesTags: [{ type: "Comments", id: "ADMIN_LIST" }],
+    }),
+
+    restoreComment: builder.mutation({
+      query: (id: string) => ({
+        url: `/comments/${id}/restore`,
+        method: "PATCH",
+      }),
+      invalidatesTags: [
+        { type: "Comments", id: "ADMIN_LIST" },
+        { type: "Comments", id: "STATS" },
+      ],
     }),
   }),
 });
@@ -108,4 +124,8 @@ export const {
   useDeleteCommentMutation,
   useMarkHelpfulLeadMutation,
   useGetAllCommentsForAdminQuery,
+
+  useGetCommentStatsQuery,
+
+  useRestoreCommentMutation,
 } = commentsApi;

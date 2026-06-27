@@ -97,22 +97,26 @@ const ManageLostFoundPage = () => {
   return (
     <div className="min-h-screen bg-transparent p-3 pt-2 pb-36 space-y-2 rounded-none">
       {/* ── header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-base font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-2">
-            <PawPrint className="size-4 text-steel-blue dark:text-lime-burst" />
-            Lost & Found Management
-          </h1>
-          <p className="text-[10px] text-zinc-500 mt-0.5 ps-6">
-            Monitor, moderate and manage all lost & found posts
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 bg-steel-blue/10 dark:bg-lime-burst/10 rounded-lg">
+            <PawPrint className="size-4 text-steel-blue dark:text-lime-burst/70" />
+          </div>
+          <div>
+            <h1 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+              Lost & Found Management
+            </h1>
+            <p className="text-xs text-zinc-400 mt-0.5">
+              Monitor, moderate and manage all lost & found posts
+            </p>
+          </div>
         </div>
         <Button
           size="sm"
           variant="flat"
           onPress={() => refetch()}
           startContent={<RefreshCw className="size-3.5" />}
-          className="text-xs text-zinc-600 dark:text-zinc-400 self-start sm:self-auto"
+          className="text-xs text-zinc-600 dark:text-zinc-400"
         >
           Refresh
         </Button>
