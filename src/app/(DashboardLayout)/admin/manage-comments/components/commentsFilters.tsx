@@ -66,7 +66,7 @@ export default function CommentsFilters({
             startContent={<Search className="size-3.5 text-zinc-400" />}
             classNames={{
               inputWrapper:
-                "bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 h-9 p-1",
+                "bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 h-7 p-1",
               input: "text-[11px]",
             }}
             className="col-span-2 sm:col-span-1"
@@ -116,7 +116,7 @@ export default function CommentsFilters({
               }
               classNames={{
                 trigger:
-                  "bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 h-9",
+                  "bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 h-7",
                 value: "text-[11px] text-zinc-800 dark:text-zinc-200",
                 selectorIcon: "size-4",
               }}

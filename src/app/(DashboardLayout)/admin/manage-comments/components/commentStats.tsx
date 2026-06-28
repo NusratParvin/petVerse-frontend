@@ -8,6 +8,31 @@ export default function CommentsStats() {
   const { data, isLoading } = useGetCommentStatsQuery(undefined);
   const stats = data?.data;
 
+  const statPills = [
+    {
+      icon: (
+        <MessageCircle className="size-3.5 text-steel-blue dark:text-lime-burst" />
+      ),
+      label: `${stats.total} total comments`,
+    },
+    {
+      icon: <Eye className="size-3.5 text-blue-500" />,
+      label: `${stats.articleComments} on articles`,
+    },
+    {
+      icon: <MessageCircle className="size-3.5 text-amber-500" />,
+      label: `${stats.lostFoundComments} on lost & found`,
+    },
+    {
+      icon: <ThumbsUp className="size-3.5 text-emerald-500" />,
+      label: `${stats.sightings} sightings`,
+    },
+    {
+      icon: <Trash2 className="size-3.5 text-red-400" />,
+      label: `${stats.deleted} deleted`,
+    },
+  ];
+
   if (isLoading)
     return (
       <div className="flex justify-center h-32 items-center">
@@ -24,37 +49,14 @@ export default function CommentsStats() {
     <div className="space-y-4">
       {/* Stat pills */}
       <div className="flex flex-wrap gap-2">
-        {[
-          {
-            icon: (
-              <MessageCircle className="size-3.5 text-steel-blue dark:text-lime-burst" />
-            ),
-            label: `${stats.total} total comments`,
-          },
-          {
-            icon: <Eye className="size-3.5 text-blue-500" />,
-            label: `${stats.articleComments} on articles`,
-          },
-          {
-            icon: <MessageCircle className="size-3.5 text-amber-500" />,
-            label: `${stats.lostFoundComments} on lost & found`,
-          },
-          {
-            icon: <ThumbsUp className="size-3.5 text-emerald-500" />,
-            label: `${stats.sightings} sightings`,
-          },
-          {
-            icon: <Trash2 className="size-3.5 text-red-400" />,
-            label: `${stats.deleted} deleted`,
-          },
-        ].map(({ icon, label }) => (
+        {statPills.map((s: { icon: React.ReactNode; label: string }) => (
           <div
-            key={label}
+            key={s.label}
             className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 shadow-sm"
           >
-            {icon}
+            {s.icon}
             <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">
-              {label}
+              {s.label}
             </span>
           </div>
         ))}
@@ -90,7 +92,8 @@ export default function CommentsStats() {
                 color: "bg-blue-400",
                 total: stats.total,
               },
-            ].map(({ label, count, color, total }) => {
+            ].map((e) => {
+              const { label, count, color, total } = e;
               const pct = total ? Math.round((count / total) * 100) : 0;
               return (
                 <div key={label}>
@@ -137,23 +140,23 @@ export default function CommentsStats() {
                 width: `${sightingConversionPct}%`,
                 color: "bg-emerald-500",
               },
-            ].map(({ label, value, width, color }) => (
-              <div key={label}>
+            ].map((f) => (
+              <div key={f.label}>
                 <div className="flex justify-between text-[11px] mb-1">
                   <span className="text-zinc-600 dark:text-zinc-300">
-                    {label}
+                    {f.label}
                   </span>
-                  <span className="text-zinc-400">{value}</span>
+                  <span className="text-zinc-400">{f.value}</span>
                 </div>
                 <div className="h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full">
                   <div
-                    className={`h-2 rounded-full ${color}`}
-                    style={{ width }}
+                    className={`h-2 rounded-full ${f.color}`}
+                    style={{ width: f.width }}
                   />
                 </div>
               </div>
             ))}
-            {/* Conversion rate callout */}
+            {/* Conversion rate  */}
             <div className="mt-2 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
               <span className="text-[11px] text-zinc-400">Conversion rate</span>
               <span
@@ -177,7 +180,7 @@ export default function CommentsStats() {
             Recent Activity
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {stats.recentActivity?.slice(0, 6).map((c) => (
+            {stats.recentActivity?.slice(0, 6).map((c: any) => (
               <div
                 key={c._id}
                 className="flex items-start gap-2.5 p-2.5 rounded-md bg-zinc-50 dark:bg-zinc-800/60"
