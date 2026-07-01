@@ -62,9 +62,9 @@ export const commentsApi = baseApi.injectEndpoints({
       // ],
     }),
 
-    // ── soft delete ─────────────────────────────────────────────────
+    //   soft delete
     deleteComment: builder.mutation({
-      query: ({ commentId }) => ({
+      query: (commentId) => ({
         url: `/comments/${commentId}`,
         method: "DELETE",
       }),
@@ -73,16 +73,19 @@ export const commentsApi = baseApi.injectEndpoints({
       ],
     }),
 
-    // ── mark helpful lead (post owner only) ─────────────────────────
+    //   mark helpful lead (post owner only)
     markHelpfulLead: builder.mutation({
       query: ({ commentId, isHelpfulLead }) => ({
         url: `/comments/${commentId}/helpful-lead`,
         method: "PATCH",
         body: { isHelpfulLead },
       }),
+      // invalidatesTags: (_result, _error, arg) => [
+      //   { type: "Comments", id: arg.targetId },
+      // ],
     }),
 
-    // ── admin: all comments with filters ────────────────────────────
+    //   admin: all comments with filters
     // usage: useGetAllCommentsForAdminQuery({ targetType: "LostFound", isSighting: true })
 
     getCommentStats: builder.query({

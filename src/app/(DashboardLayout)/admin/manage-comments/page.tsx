@@ -35,6 +35,9 @@ export default function CommentsPage() {
 
   const queryParams = useMemo(() => {
     const p: Record<string, any> = { page, limit: 10 };
+
+    if (filters.search) p.search = filters.search;
+
     if (filters.targetType) p.targetType = filters.targetType;
     if (filters.isSighting !== "") p.isSighting = filters.isSighting === "true";
     if (filters.isHelpfulLead !== "")
@@ -43,12 +46,14 @@ export default function CommentsPage() {
     return p;
   }, [filters, page]);
 
-  const { data, isLoading, isFetching } =
+  const { data, isLoading, isFetching, refetch } =
     useGetAllCommentsForAdminQuery(queryParams);
 
   const comments = data?.data ?? [];
   const total = data?.meta?.total ?? 0;
   const pages = data?.meta?.pages ?? 1;
+
+  console.log(data);
 
   return (
     <div className="px-4 pb-36 space-y-4">
@@ -84,6 +89,7 @@ export default function CommentsPage() {
         isLoading={isLoading}
         isFetching={isFetching}
         onPageChange={setPage}
+        refetchComments={refetch}
       />
     </div>
   );

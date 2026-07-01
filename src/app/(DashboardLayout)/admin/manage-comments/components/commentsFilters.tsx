@@ -35,7 +35,7 @@ export default function CommentsFilters({
 
   return (
     <Card className="bg-white dark:bg-zinc-900/60 shadow-sm border border-zinc-100 dark:border-zinc-800/60 rounded-md dark:shadow-primary">
-      <CardBody className="p-4 space-y-3">
+      <CardBody className="p-3 space-y-3">
         <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
           <Filter className="size-3.5" />
           <span>Filters</span>

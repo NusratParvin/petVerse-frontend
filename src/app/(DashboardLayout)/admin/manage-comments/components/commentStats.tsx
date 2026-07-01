@@ -13,23 +13,23 @@ export default function CommentsStats() {
       icon: (
         <MessageCircle className="size-3.5 text-steel-blue dark:text-lime-burst" />
       ),
-      label: `${stats.total} total comments`,
+      label: `${stats?.total} total comments`,
     },
     {
       icon: <Eye className="size-3.5 text-blue-500" />,
-      label: `${stats.articleComments} on articles`,
+      label: `${stats?.articleComments} on articles`,
     },
     {
       icon: <MessageCircle className="size-3.5 text-amber-500" />,
-      label: `${stats.lostFoundComments} on lost & found`,
+      label: `${stats?.lostFoundComments} on lost & found`,
     },
     {
       icon: <ThumbsUp className="size-3.5 text-emerald-500" />,
-      label: `${stats.sightings} sightings`,
+      label: `${stats?.sightings} sightings`,
     },
     {
       icon: <Trash2 className="size-3.5 text-red-400" />,
-      label: `${stats.deleted} deleted`,
+      label: `${stats?.deleted} deleted`,
     },
   ];
 
@@ -175,7 +175,7 @@ export default function CommentsStats() {
         </div>
 
         {/* Recent activity feed */}
-        <div className="lg:col-span-2 bg-white dark:bg-zinc-900/60 border border-zinc-100 dark:border-zinc-800/60 rounded-md p-4 shadow-sm dark:shadow-primary">
+        {/* <div className="lg:col-span-2 bg-white dark:bg-zinc-900/60 border border-zinc-100 dark:border-zinc-800/60 rounded-md p-4 shadow-sm dark:shadow-primary">
           <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-200 mb-3">
             Recent Activity
           </p>
@@ -225,7 +225,7 @@ export default function CommentsStats() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
