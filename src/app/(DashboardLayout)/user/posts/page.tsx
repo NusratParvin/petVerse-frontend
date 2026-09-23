@@ -296,7 +296,7 @@ export default function HomeFeed() {
   // ==========================================
 
   return (
-    <div className="w-full space-y-4 pb-8 px-2">
+    <div className="w-full space-y-2 pb-8 px-2">
       <PostComposer currentUser={currentUser} pets={pets} />
 
       {isLoading ? (
