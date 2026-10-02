@@ -33,24 +33,13 @@ export const postsApi = baseApi.injectEndpoints({
       invalidatesTags: ["Feed", "UserPosts"],
     }),
 
-    //   getFeed: builder.infiniteQuery({
-    //     infiniteQueryOptions: {
-    //       initialPageParam: 0,
-    //       getNextPageParam: (lastPage, allPages, lastPageParam) =>
-    //         lastPageParam + 1,
-    //       getPreviousPageParam: (firstPage, allPages, firstPageParam) => {
-    //         return firstPageParam > 0 ? firstPageParam - 1 : undefined
-    //       },
-    //     },
-    //     query({ pageParam }) {
-    //       return `https://example.com/listItems?page=${pageParam}`
-    //     },
-    //   }),
-    // }),
+    getPostById: builder.query({
+      query: (id: string) => `/posts/${id}`,
+      providesTags: (_res, _err, id) => [{ type: "UserPosts", id }],
+    }),
 
     getFeed: builder.infiniteQuery<any, TFeedArg, number>({
       infiniteQueryOptions: {
-        // Your existing API starts at page 1
         initialPageParam: 1,
 
         getNextPageParam: (
@@ -60,20 +49,10 @@ export const postsApi = baseApi.injectEndpoints({
           _allPageParams,
           queryArg,
         ) => {
-          // Supports either:
-          //
-          // { data: [...] }
-          //
-          // or:
-          //
-          // [...]
-
           const posts = Array.isArray(lastPage)
             ? lastPage
             : (lastPage?.data ?? []);
 
-          // If backend returned fewer than limit,
-          // we reached the final page.
           if (posts.length < queryArg.limit) {
             return undefined;
           }
@@ -89,15 +68,6 @@ export const postsApi = baseApi.injectEndpoints({
 
       providesTags: ["Feed"],
     }),
-
-    // getFeed: builder.query<any, { page?: number; limit?: number } | void>({
-    //   query: (arg) => {
-    //     const page = arg?.page ?? 1;
-    //     const limit = arg?.limit ?? 15;
-    //     return `/posts/feed?page=${page}&limit=${limit}`;
-    //   },
-    //   providesTags: ["Feed"],
-    // }),
 
     getUserPosts: builder.query<any, string>({
       query: (userId) => `/posts/user/${userId}`,
@@ -144,4 +114,5 @@ export const {
   useReactToPostMutation,
   useUpdatePostMutation,
   useDeletePostMutation,
+  useGetPostByIdQuery,
 } = postsApi;

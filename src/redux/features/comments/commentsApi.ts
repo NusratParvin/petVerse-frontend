@@ -1,6 +1,6 @@
 import baseApi from "../../api/baseApi";
 
-export type TTargetType = "Article" | "LostFound";
+export type TTargetType = "Article" | "LostFound" | "Post";
 
 export const commentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

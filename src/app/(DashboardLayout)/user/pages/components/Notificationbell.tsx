@@ -58,10 +58,12 @@ const TYPE_CONFIG: Record<
 };
 
 //   nav target per notification
-const getNavTarget = (n: any): string => {
+const getNavTarget = (n: any) => {
   if (n.targetType === "LostFound")
     return `/user/quickAccess/lost-found/${n.targetId}`;
   if (n.targetType === "Article") return `/user/article/${n.targetId}`;
+
+  if (n.targetType === "Post") return `/user/posts/${n.targetId}`;
   return "#";
 };
 
