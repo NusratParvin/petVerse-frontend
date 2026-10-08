@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Avatar } from "@heroui/react";
 import { ExternalLink } from "lucide-react";
 import { stripHtml, timeAgo } from "./utils";
-import { MediaGrid } from "./MediaGrid";
+import { MediaGrid } from "./mediaGridFiles";
+// import { MediaGrid } from "./MediaGrid";
 
 type TMediaItem = { url: string; type: "image" | "video" };
 

@@ -1,15 +1,15 @@
+"use client";
+
 import { AlertTriangle } from "lucide-react";
 
-const ErrorNewsfeed = () => {
+export default function ErrorNewsfeed() {
   return (
-    <div className="flex items-center justify-center h-28 mt-24 w-2/3 mx-auto p-4 bg-red-50 border border-red-400 text-red-700 rounded-lg shadow-md">
-      <AlertTriangle className="w-6 h-6 text-red-700 mr-3" />
+    <div className="mx-auto mt-10 flex w-2/3 max-w-lg items-center justify-center rounded-xl border border-red-300 bg-red-50 p-4 text-red-700 shadow-sm dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+      <AlertTriangle className="mr-3 h-6 w-6 shrink-0" />
       <div>
-        <h2 className="font-bold text-lg mb-1">Error Loading Data !!!</h2>
+        <h2 className="mb-1 text-base font-bold">Error loading articles</h2>
         <p className="text-sm">Something went wrong. Please try again later.</p>
       </div>
     </div>
   );
-};
-
-export default ErrorNewsfeed;
+}

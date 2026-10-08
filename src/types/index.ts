@@ -66,17 +66,41 @@ export type TReactionSummary = {
   angry: number;
 };
 
+export type TArticleCategory =
+  | "Tip"
+  | "Story"
+  | "Health"
+  | "Nutrition"
+  | "Training"
+  | "News";
+
+export type TPetType =
+  | "dog"
+  | "cat"
+  | "fish"
+  | "bird"
+  | "rabbit"
+  | "reptile"
+  | "other";
+
 export type TArticle = {
   _id: string;
   authorId: TPopulatedAuthor;
   title: string;
-  content: string;
-  category: "Tip" | "Story";
+  content?: string;
+  excerpt: string;
+  category: TArticleCategory;
+  petType: TPetType;
+  tags: string[];
   images?: string;
+  readTime: number; // minutes
+  viewCount: number;
+  isFeatured: boolean;
   upvotes: number;
   downvotes: number;
   voteInfo: TVoteInfo[];
   comments: string[];
+  commentCount: number;
   isPremium: boolean;
   isPublish?: boolean;
   shareCount: number;
@@ -86,6 +110,22 @@ export type TArticle = {
   createdAt: string;
   updatedAt: string;
   __v?: number;
+};
+
+export type TArticlesMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext?: boolean;
+  hasPrev?: boolean;
+};
+
+export type TArticlesResponse = {
+  success: boolean;
+  message: string;
+  data: TArticle[];
+  meta: TArticlesMeta;
 };
 
 export interface TVoteInfo {
@@ -605,3 +645,5 @@ export type TReminder = {
   petId?: string;
   recordId?: string;
 };
+
+// export type THome

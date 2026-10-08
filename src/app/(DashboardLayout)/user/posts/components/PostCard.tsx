@@ -435,7 +435,7 @@ import { REACTIONS } from "./postCard/constants";
 import { PostHeader } from "./postCard/postHeader";
 import { SharedContentPreview } from "./postCard/sharedContentPreview";
 import { ReactionButton } from "./postCard/reactionButton";
-import { MediaGrid } from "./postCard/mediaGrid";
+import { MediaGrid } from "./postCard/mediaGridFiles";
 
 export default function PostCard({
   post,
